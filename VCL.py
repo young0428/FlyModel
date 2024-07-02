@@ -20,7 +20,7 @@ class VCL(nn.Module):
         h, w = video_size
         flatten_size =  (h//(2**num_layers)) * (w//(2**num_layers)) * 16
         self.mu = nn.Linear(flatten_size , self.latent_dims)
-        self.sig = nn.Linear(flatten_size , self.latent_dims)
+        self.log_var = nn.Linear(flatten_size , self.latent_dims)
         
         self.fc = nn.Sequential(
             nn.Linear(self.latent_dims, 128),
@@ -30,21 +30,23 @@ class VCL(nn.Module):
             nn.Linear(256, 1),
             nn.Sigmoid()
         )
-        self.conv_lstm.half()
-        self.mu = self.mu.half()
-        self.sig = self.sig.half()
-        self.fc = self.fc.half()
+        # self.conv_lstm = self.conv_lstm.half()
+        # self.mu = self.mu.half()
+        # self.log_var = self.log_var.half()
+        # self.fc = self.fc.half()
         
     def swap_axis_for_input(self, t):
         return t.permute(0, 1, 4, 2, 3)
     
     
-    def reparameterization(self, mu, sig):
-        epsilon = torch.randn_like(sig)
-        z = mu + sig * epsilon
+    def reparameterization(self, mu, log_var):
+        std = torch.exp(log_var * 0.5)
+        epsilon = torch.randn_like(std)
+        z = mu + std * epsilon
         return z
+    
     def forward(self, x):
-        x = x.half()
+        #x = x.half()
         x = self.swap_axis_for_input(x) # B, T, C, H, W
         
         
@@ -52,24 +54,25 @@ class VCL(nn.Module):
         #(time_step, channel(16), h//3, w//3)
         
         cl_output = cl_output[-1]
-        cl_output = cl_output.view(cl_output.size(0), cl_output.size(1), -1) # flatten
+        #cl_output = cl_output.view(cl_output.size(0), cl_output.size(1), -1) # flatten
+        cl_output = torch.flatten(cl_output, start_dim=2)
         
         # (time_step, dims(ch * h//3 * w//3) )
         mu = F.relu(self.mu(cl_output))
-        log_std = F.relu(self.sig(cl_output))   # log
+        log_var = F.relu(self.log_var(cl_output))   # log
         # (time_step, 64 )
         
-        z = self.reparameterization(mu, torch.exp(0.5 * log_std)) # log std -> std
+        z = self.reparameterization(mu, torch.exp(0.5 * log_var)) # log std -> std
         
         # (time_step, 1), time series graph
         output = self.fc(z).squeeze()
         
         
-        return output, mu, log_std
+        return output, mu, log_var
         
-def loss_function(pred, target, mu, log_std):
+def loss_function(pred, target, mu, log_var):
     mse_loss =  F.mse_loss(pred, target, reduction='sum')
-    kl_div = 0.5 * torch.sum(mu.pow(2) + log_std.exp() - log_std - 1)
+    kl_div = 0.5 * torch.sum(mu.pow(2) + log_var.exp() - log_var - 1)
     
     return mse_loss + kl_div
 
@@ -77,22 +80,27 @@ class VCL_Trainer :
     def __init__(self, model, lr):
         self.lr = lr
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
-        self.model = model.to(self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
+        self.model = model
+        self.model = self.model.to(self.device)
+        self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr)
         
     def step(self, input, target):
         input = input.to(self.device)
         target = target.to(self.device)
         
-        pred, mu, log_std = self.model(input)
-        loss = loss_function(pred, target, mu, log_std)
-        
-
+        # for idx, param in enumerate(self.model.parameters()):
+        #     if idx < 2 : print(param)
         self.optimizer.zero_grad()
+        pred, mu, log_var = self.model(input)
+        loss = loss_function(pred, target, mu, log_var)
+
         
         loss.backward()
+        
+        
         self.optimizer.step()
+        
+
         
         return loss
     

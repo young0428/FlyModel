@@ -36,8 +36,8 @@ class ConvLSTMCell(nn.Module):
 
     def init_hidden(self, batch_size, image_size):
         height, width = image_size
-        return (torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device, dtype=torch.float16),
-                torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device, dtype=torch.float16))
+        return (torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device, dtype=torch.float32),
+                torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device, dtype=torch.float32))
 
 
 class ConvLSTM(nn.Module):
@@ -74,7 +74,7 @@ class ConvLSTM(nn.Module):
         self.max_pool = nn.MaxPool2d(kernel_size=pooling_size)
 
     def forward(self, input_tensor, hidden_state=None):
-        input_tensor = input_tensor.half()
+        #input_tensor = input_tensor.half()
         if not self.batch_first:
             input_tensor = input_tensor.permute(1, 0, 2, 3, 4)
 
