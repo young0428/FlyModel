@@ -7,7 +7,7 @@ from tqdm import tqdm  # Import tqdm for progress bars
 if __name__ == '__main__':
     batch_size = 3
     frame_num = 30
-    lr = 1e-8
+    lr = 1e-3
     epochs = 100
     
     h = 360
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     for epoch in range(epochs):
         video_start_point_tuples = generate_tuples(total_frame, frame_per_sliding, int(fps * window_size))
         batches = list(get_batches(video_start_point_tuples, batch_size))
-        
+        print("")
         print(f"Epoch {epoch + 1}/{epochs}")
         
         # Use tqdm to create a progress bar for the batches with reduced width
@@ -53,9 +53,11 @@ if __name__ == '__main__':
             batch_input_data = torch.tensor(batch_input_data)
             batch_target_data = torch.tensor(batch_target_data)
             
-            loss = trainer.step(batch_input_data, batch_target_data)
+            loss, pred = trainer.step(batch_input_data, batch_target_data)
             
             # Update the progress bar with the current loss
             progress_bar.set_postfix(loss=f"{loss.item():.5f}")
+        
+        print(pred)
     
     exit()

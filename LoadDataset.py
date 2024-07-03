@@ -92,7 +92,7 @@ def get_data_from_batch(video_tensor, batch_set, frame_per_window, fps):
         #wba_data.append(get_wba_from_time(video_num, start_frame // fps, frame_per_window / fps))
         
         
-    return np.array(video_data), np.array(wba_data)
+    return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
 
 
 

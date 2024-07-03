@@ -102,7 +102,7 @@ class VCL_Trainer :
         
 
         
-        return loss
+        return loss, pred
     
     def predict(self, input):
         input = input.to(self.device)
