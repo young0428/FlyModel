@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from VCL import VCL, VCL_Trainer
-from LoadVideo import *
+from LoadDataset import *
 from tqdm import tqdm  # Import tqdm for progress bars
 
 if __name__ == '__main__':
@@ -47,13 +47,11 @@ if __name__ == '__main__':
         for batch in progress_bar:
             batch_input_data = []
             batch_target_data = []
-            for start_point in batch:
-                batch_input_data.append(video_data[start_point[0]][start_point[1]:start_point[1] + frame_per_window])
-                batch_target_data.append(np.ones(frame_num).tolist())
-                # batch_target_data.append(get_wba_from_time(start_point[1] // fps, window_size))
             
-            batch_input_data = torch.tensor(np.array(batch_input_data))  # .half()
-            batch_target_data = torch.tensor(batch_target_data)  # .half()
+            batch_input_data, batch_target_data = get_data_from_batch(video_data, batch, frame_per_window, fps)
+            
+            batch_input_data = torch.tensor(batch_input_data)
+            batch_target_data = torch.tensor(batch_target_data)
             
             loss = trainer.step(batch_input_data, batch_target_data)
             

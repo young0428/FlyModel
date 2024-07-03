@@ -78,15 +78,22 @@ def get_batches(tuples_list, batch_size):
     random.shuffle(tuples_list)
     for i in range(0, len(tuples_list), batch_size):
         yield tuples_list[i:i + batch_size]
-        
-def get_data_from_batch(video_tensor, set, frame_per_window):
+
+def get_wba_from_time(video_num, start_time, duration):
+    pass
+def get_data_from_batch(video_tensor, batch_set, frame_per_window, fps):
     video_data = []
-    for set in batches:
+    wba_data = []
+    
+    for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-    return video_data
-def get_wba_from_time(time, duration):
-    pass
+        wba_data.append(np.ones(frame_per_window)) # for test
+        #wba_data.append(get_wba_from_time(video_num, start_frame // fps, frame_per_window / fps))
+        
+        
+    return np.array(video_data), np.array(wba_data)
+
 
 
 if __name__ == "__main__":
