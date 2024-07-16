@@ -18,22 +18,30 @@ if __name__ == '__main__':
     sliding_size = 0.5
     frame_per_sliding = int(fps * sliding_size)
     frame_per_window = int(fps * window_size)
+    result_delay = 15
     
+    
+    folder_path = "/host/c/Users/AHNSOJUNG/Downloads/naturalistic"
+    mat_file_name = "experimental_data.mat"
     # test_input = torch.randn(batch_size, frame_num, h, w, c).half() # B, T, H, W, C
     
     input_dims = 5  # [origin, up, down, right, left]
     model = VCL(input_dims=input_dims, video_size=(h, w))
     trainer = VCL_Trainer(model, lr)
 
-    folder_path = "/host/c/Users/AHNSOJUNG/Downloads/naturalistic"
+    
     
     video_data = LoadVideo(folder_path)  # (video_num, frame_num, h, w, c)
                                          # video_num : 0 = Bird, 1 = City, 2 = Forest
+    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
+    downsampled_wba_data = interpolate_wba_data(wba_data, original_freq=1000, target_freq=30)
     total_frame = np.shape(video_data)[1]
     
+    
+    
     # Make tuple for random batching and random sampling
-    # (video_num, frame_num)
-    # to get data, video_data[ batch[0] ][ batch[1]:batch[1]+frame_per_window ]
+    # batch_set = (fly#, video#, trial#, start_frame)
+    
     
     for epoch in range(epochs):
         video_start_point_tuples = generate_tuples(total_frame, frame_per_sliding, int(fps * window_size))
@@ -53,7 +61,7 @@ if __name__ == '__main__':
             batch_input_data = torch.tensor(batch_input_data)
             batch_target_data = torch.tensor(batch_target_data)
             
-            loss, pred = trainer.step(batch_input_data, batch_target_data)
+            loss, pred = trainer.step(batch_input_data, batch_target_data, result_delay=result_delay)
             
             # Update the progress bar with the current loss
             progress_bar.set_postfix(loss=f"{loss.item():.5f}")

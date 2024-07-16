@@ -27,8 +27,7 @@ class VCL(nn.Module):
             nn.ReLU(),
             nn.Linear(128, 256),
             nn.ReLU(),
-            nn.Linear(256, 1),
-            nn.Sigmoid()
+            nn.Linear(256, 1)
         )
         # self.conv_lstm = self.conv_lstm.half()
         # self.mu = self.mu.half()
@@ -84,7 +83,7 @@ class VCL_Trainer :
         self.model = self.model.to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr)
         
-    def step(self, input, target):
+    def step(self, input, target, result_delay = 15):
         input = input.to(self.device)
         target = target.to(self.device)
         
@@ -92,6 +91,8 @@ class VCL_Trainer :
         #     if idx < 2 : print(param)
         self.optimizer.zero_grad()
         pred, mu, log_var = self.model(input)
+        pred = pred[:, result_delay:] # regulization
+        target = target[:, result_delay:] / 90
         loss = loss_function(pred, target, mu, log_var)
 
         
