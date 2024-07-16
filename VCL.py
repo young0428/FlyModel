@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -57,6 +58,7 @@ class VCL(nn.Module):
         cl_output = torch.flatten(cl_output, start_dim=2)
         
         # (time_step, dims(ch * h//3 * w//3) )
+        
         mu = F.relu(self.mu(cl_output))
         log_var = F.relu(self.log_var(cl_output))   # log
         # (time_step, 64 )
@@ -82,6 +84,17 @@ class VCL_Trainer :
         self.model = model
         self.model = self.model.to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr)
+    
+    def predict(self, input):
+        input = input.to(self.device)
+        pred, *_ = self.model(input)
+        return pred
+    
+    def save(self, path):
+        torch.save(self.model.state_dict(), path)
+    
+    def load(self, path):
+        self.model.load_state_dict(torch.load(path, map_location=self.device))
         
     def step(self, input, target, result_delay = 15):
         input = input.to(self.device)
@@ -91,24 +104,34 @@ class VCL_Trainer :
         #     if idx < 2 : print(param)
         self.optimizer.zero_grad()
         pred, mu, log_var = self.model(input)
-        pred = pred[:, result_delay:] # regulization
-        target = target[:, result_delay:] / 90
-        loss = loss_function(pred, target, mu, log_var)
+        delayed_pred = pred[:, result_delay:] # regulization
+        delayed_mu = mu[:, result_delay:]
+        delayed_log_var = log_var[:, result_delay:]
+        delayed_target = target[:, result_delay:] / 90
+        loss = loss_function(delayed_pred, delayed_target, delayed_mu, delayed_log_var)
 
         
         loss.backward()
-        
-        
         self.optimizer.step()
-        
-
-        
         return loss, pred
     
-    def predict(self, input):
-        input = input.to(self.device)
-        pred, *_ = self.model(input)
-        return pred
+    def evaluate(self, input, target, result_delay=15):
+        self.model.eval()
+        with torch.no_grad():
+            input = input.to(self.device)
+            target = target.to(self.device)
+            pred, mu, log_var = self.model(input)
+            delayed_pred = pred[:, result_delay:]  # regulization
+            delayed_mu = mu[:, result_delay:]
+            delayed_log_var = log_var[:, result_delay:]
+            delayed_target = target[:, result_delay:] / 90
+            loss = loss_function(delayed_pred, delayed_target, delayed_mu, delayed_log_var)
+        self.model.train()
+        return loss, pred
+    
+    
+    
+    
         
     
 

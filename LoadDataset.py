@@ -69,13 +69,19 @@ def LoadVideo(folder_path):
     return combined_video_tensors
 
 def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
-    tuples_list = []
+    training_tuples_list = []
+    test_tuples_list = []
     for video_n in range(video_num):  # n = 0, 1, 2, video#
         for fly_n in range(fly_num):
             for trial_n in range(trial_num):
+                test_period = list(random.sample(range(10), 3))
                 for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
-                    tuples_list.append((fly_n, video_n, trial_n, start_frame))
-    return tuples_list
+                    if (start_frame / (frame_num - fps)) // 0.1 in test_period:
+                        test_tuples_list.append((fly_n, video_n, trial_n, start_frame))
+                    else:
+                        training_tuples_list.append((fly_n, video_n, trial_n, start_frame))
+                    
+    return training_tuples_list, test_tuples_list
 
 def get_batches(tuples_list, batch_size):
     random.shuffle(tuples_list)
@@ -91,7 +97,6 @@ def convert_mat_to_array(mat_file_path):
         num_trials = experimental_data.shape[1]
         
         
-        # 결과를 저장할 배열을 초기화합니다.
         wba_data = np.zeros((num_flies, num_videos, num_trials, 120000))
         
         for fly in range(num_flies):
@@ -105,7 +110,6 @@ def convert_mat_to_array(mat_file_path):
                     rwba_ref = experimental_data[4][trial][video][fly]
                     rwba_data = mat_file[rwba_ref][:]
                     
-                    # LWBA - RWBA 값을 wba_data 배열에 저장합니다.
                     wba_data[fly, video, trial, :] = lwba_data - rwba_data
                     
     return wba_data
@@ -146,8 +150,7 @@ def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1,
         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
         #wba_data.append(np.ones(frame_per_window)) # for test
         #wba_data.append(get_wba_from_time(video_num, start_frame // fps, frame_per_window / fps))
-        wba_data.append(wba_tensor[fly_num, video_num, trial_num, start_frame + result_delay + 1 : start_frame + frame_per_window + 1])
-        
+        wba_data.append(wba_tensor[fly_num][video_num][trial_num][start_frame + 1 : start_frame + frame_per_window + 1])
         
     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
 
@@ -158,7 +161,6 @@ if __name__ == "__main__":
     mat_file_path = "./experimental_data.mat"
     wba_data = convert_mat_to_array(mat_file_path)
     wba_data_interpolated = interpolate_wba_data(wba_data)
-    print(np.shape(wba_data_interpolated))
     
     
         
