@@ -1,2 +1,3 @@
 *.mat
 /naturalistic/*
+/convLSTM_3layers/*

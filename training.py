@@ -1,12 +1,12 @@
-#%%
 import torch
 import numpy as np
 from VCL import VCL, VCL_Trainer
 from LoadDataset import *
-from tqdm import tqdm  # Import tqdm for progress bars
+from tqdm import tqdm
 from collections import deque
 import pickle
 import os
+import matplotlib.pyplot as plt
 
 def save_tuples(filename, data):
     with open(filename, 'wb') as f:
@@ -16,58 +16,51 @@ def load_tuples(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
-batch_size = 3
+batch_size = 10
 frame_num = 30
-lr = 1e-4
+lr = 1e-3
 epochs = 30
 
 h = 360
 w = 720
 c = 5
 fps = 30
+downsampling_factor = 2
+
 window_size = 1
 sliding_size = 0.5
 frame_per_sliding = int(fps * sliding_size)
 frame_per_window = int(fps * window_size)
-result_delay = 15
-
+result_patience = 15
 
 folder_path = "./naturalistic"
 mat_file_name = "experimental_data.mat"
-# test_input = torch.randn(batch_size, frame_num, h, w, c).half() # B, T, H, W, C
+checkpoint_name = "fly_model"
+model_name = "./convLSTM_3layers"
+os.makedirs(model_name, exist_ok=True)
 
 input_dims = 5  # [origin, up, down, right, left]
-model = VCL(input_dims=input_dims, video_size=(h, w))
+model = VCL(input_dims=input_dims, video_size=(h//downsampling_factor, w// downsampling_factor), result_patience = result_patience)
 trainer = VCL_Trainer(model, lr)
+trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
 
-
-
-video_data = LoadVideo(folder_path)  # (video_num, frame_num, h, w, c)
-                                        # video_num : 0 = Bird, 1 = City, 2 = Forest
+video_data = LoadVideo(folder_path, downsampling_factor)  # (video_num, frame_num, h, w, c)
 wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
 downsampled_wba_data = interpolate_wba_data(wba_data, original_freq=1000, target_freq=30)
 total_frame = np.shape(video_data)[1]
 
-
-
-
-# Make tuple for random batching and random sampling
-# batch_set = (fly#, video#, trial#, start_frame)
-
-#%%
-
-
-filename = 'tuples.pkl'
+filename = f'./tuples_avg_trial.pkl'
 if os.path.exists(filename):
-    # 파일이 존재하면 튜플을 불러옴
     training_tuples, test_tuples = load_tuples(filename)
     print("Loaded tuples from file.")
 else:
-    # 파일이 존재하지 않으면 튜플을 생성하고 저장
     training_tuples, test_tuples = generate_tuples(total_frame, frame_per_sliding, int(fps * window_size))
     save_tuples(filename, (training_tuples, test_tuples))
     print("Generated and saved tuples.")
     
+print(f"interpolated wba shape : {np.shape(downsampled_wba_data)}")
+print(f"traning_tuples : {np.shape(training_tuples)}")
+print(f"test_tuples : {np.shape(test_tuples)}")
     
 recent_losses = deque(maxlen=100)
 for epoch in range(epochs):
@@ -79,12 +72,12 @@ for epoch in range(epochs):
     
     for batch in progress_bar:
         batch_input_data, batch_target_data = get_data_from_batch(
-            video_data, downsampled_wba_data, batch, frame_per_window, fps, result_delay)
+            video_data, downsampled_wba_data, batch, frame_per_window, fps)
         
         batch_input_data = torch.tensor(batch_input_data)
-        batch_target_data = torch.tensor(batch_target_data)
+        batch_target_data = torch.tensor(batch_target_data[:,result_patience:])
         
-        loss, pred = trainer.step(batch_input_data, batch_target_data, result_delay=result_delay)
+        loss, pred = trainer.step(batch_input_data, batch_target_data)
         
         recent_losses.append(loss.item())
 
@@ -95,7 +88,7 @@ for epoch in range(epochs):
         
         progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}")
     
-    trainer.save("fly_model.ckpt")
+    trainer.save(f"{model_name}/{checkpoint_name}.ckpt")
     
     # Test phase after each epoch
     test_batches = list(get_batches(test_tuples, batch_size))
@@ -104,17 +97,50 @@ for epoch in range(epochs):
 
     for batch in progress_bar:
         batch_input_data, batch_target_data = get_data_from_batch(
-            video_data, downsampled_wba_data, batch, frame_per_window, fps, result_delay)
+            video_data, downsampled_wba_data, batch, frame_per_window, fps)
         
         batch_input_data = torch.tensor(batch_input_data)
-        batch_target_data = torch.tensor(batch_target_data)
+        batch_target_data = torch.tensor(batch_target_data[:,result_patience:])
         
-        loss, pred = trainer.evaluate(batch_input_data, batch_target_data, result_delay=result_delay)
+        loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
         total_test_loss += loss.item()
         progress_bar.set_postfix(loss=f"{loss.item():.5f}")
 
     avg_test_loss = total_test_loss / len(test_batches)
     print(f"Average test loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
+    
+    # Save test results
+    epoch_results_path = f"{model_name}/results"
+    os.makedirs(epoch_results_path, exist_ok=True)
+    
+    selected_tuples = []
+    for video_num in range(3):
+        video_specific_tuples = [t for t in test_tuples if t[1] == video_num]
+        selected_tuples.extend(video_specific_tuples[:3])
 
+    fig, axes = plt.subplots(3, 3, figsize=(15, 15))
+    
+    for i in range(0, len(selected_tuples), batch_size):
+        batch_tuples = selected_tuples[i:min(i + batch_size, 9)]
+        
+        batch_input_data, batch_target_data = get_data_from_batch(
+            video_data, downsampled_wba_data, batch_tuples, frame_per_window, fps)
 
-# %%
+        batch_input_data = torch.tensor(batch_input_data)
+        batch_target_data = torch.tensor(batch_target_data[:,result_patience:])
+        
+        _, pred = trainer.evaluate(batch_input_data, batch_target_data)
+        
+
+        
+        for j in range(len(batch_tuples)):
+            fly_num, video_num, start_frame = batch_tuples[j]
+            ax = axes.flatten()[i + j]
+            ax.plot(batch_target_data[j].cpu().numpy(), label="Target", color="gray", alpha=0.5)
+            ax.plot(pred[j].cpu().numpy(), label="Prediction", color="black")  
+            ax.set_title(f"Tuple: (fly {fly_num}, video {video_num}, frame {start_frame})")
+            ax.legend()
+    
+    plt.tight_layout()
+    plt.savefig(f"{epoch_results_path}/epoch {epoch + 1}.png")
+    plt.close(fig)
