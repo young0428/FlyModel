@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import os
 import random
+import numpy as np
+from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
 
@@ -75,18 +77,16 @@ def get_batches(tuples_list, batch_size):
     for i in range(0, len(tuples_list), batch_size):
         yield tuples_list[i:i + batch_size]
         
-def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
-    original_freq = 1000 
+def interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30):
+    original_freq = 1000
 
-    duration = wba_data.shape[-1] / original_freq 
+    duration = wba_data.shape[-1] / original_freq
     original_time = np.arange(0, wba_data.shape[-1]) / original_freq
     new_time = np.arange(0, duration, 1 / target_freq)
-
 
     new_data_shape = wba_data.shape[:-1] + (new_time.size,)
     wba_data_interpolated = np.zeros(new_data_shape)
 
-    # 모든 데이터에 대해 인터폴레이션 수행
     for fly in range(wba_data.shape[0]):
         for video in range(wba_data.shape[1]):
             # 데이터 추출
@@ -97,7 +97,11 @@ def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
 
             wba_data_interpolated[fly, video, :] = interpolator(new_time)
 
-    return wba_data_interpolated
+    # 마지막 차원에 대해 차분을 구함
+    wba_data_diff = np.diff(wba_data_interpolated, axis=-1)
+
+    return wba_data_interpolated, wba_data_diff
+
 
 ########################### average 안함 ###########################
 # def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
@@ -207,6 +211,23 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
                     
     return training_tuples_list, test_tuples_list
 
+def low_pass_filter(data, cutoff_freq, sample_rate=1000):
+    nyquist_rate = 0.5 * sample_rate
+    normal_cutoff = cutoff_freq / nyquist_rate
+    b, a = butter(N=4, Wn=normal_cutoff, btype='low', analog=False)
+    filtered_data = filtfilt(b, a, data, axis=-1)
+    return filtered_data
+
+def apply_low_pass_filter_to_wba_data(wba_data, cutoff_freq, sample_rate=1000):
+    num_flies, num_videos, _ = wba_data.shape
+    filtered_wba_data = np.zeros_like(wba_data)
+    
+    for fly in range(num_flies):
+        for video in range(num_videos):
+            filtered_wba_data[fly, video, :] = low_pass_filter(wba_data[fly, video, :], cutoff_freq, sample_rate)
+            
+    return filtered_wba_data
+
 def convert_mat_to_array(mat_file_path):
     with h5py.File(mat_file_path, 'r') as mat_file:
         experimental_data = mat_file['experimental_data']
@@ -250,46 +271,56 @@ def convert_mat_to_array(mat_file_path):
 def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
     video_data = []
     wba_data = []
-    # batch_set = (fly#, video#, trial#, start_frame)
+    # batch_set = (fly#, video#, start_frame)
     for set in batch_set:
-        #fly_num, video_num, trial_num, start_frame = set
         fly_num, video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-        wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1 : start_frame + frame_per_window + 1]/100)
+        wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1: start_frame + frame_per_window + 1]/10)
         
     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
-
-
+#%%
 import h5py
 import matplotlib.pyplot as plt
 if __name__ == "__main__":
-    mat_file_path = "./experimental_data.mat"
+    mat_file_path = "./naturalistic/experimental_data.mat"
     wba_data = convert_mat_to_array(mat_file_path)
-    wba_data_interpolated = interpolate_wba_data(wba_data)
     
+#%%
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.5, 1000)
+    interpolated_filtered_wba_data, interpolated_filtered_wba_diff_data = interpolate_and_diff_wba_data(wba_data_filtered)
     
-        
-        
-        
-    
-    # frame_num = 3600
-    # frame_per_sliding = 15
-    # batch_size = 3
-    
-    
-    # folder_path = "C:/Users/dudgb2380/Downloads/naturalistic_video"
-    # video_data = LoadVideo(folder_path)
-    # print(video_data.shape)
-    
-    # tuples = generate_tuples(frame_num, frame_per_sliding, 30)
-    # batches = list(get_batches(tuples, batch_size))
-    
+    interpolated_orignal_wba_data, interpolated_orignal_wba_diff_data = interpolate_and_diff_wba_data(wba_data)
+    xlim = 900
+    interpolated_filtered_wba_data = interpolated_filtered_wba_data[0][0][:xlim]
+    interpolated_filtered_wba_diff_data = interpolated_filtered_wba_diff_data[0][0][:xlim]
+    interpolated_orignal_wba_data = interpolated_orignal_wba_data[0][0][:xlim]
+    interpolated_orignal_wba_diff_data = interpolated_orignal_wba_diff_data[0][0][:xlim]
 
-    # # 결과 출력
-    # for t in batches:
-    #     pass
+    
+    plt.subplot(2, 1, 1)
+    
+    plt.plot(interpolated_orignal_wba_data)
+    plt.plot(interpolated_filtered_wba_data)
+    plt.title('Interpolated WBA Data')
+    plt.xlabel('Time')
+    plt.ylabel('WBA')
+    plt.grid(True)
 
+    # 두 번째 서브플롯
+    plt.subplot(2, 1, 2)
+    
+    #plt.plot(interpolated_orignal_wba_diff_data)
+    plt.plot(interpolated_filtered_wba_diff_data)
+    plt.title('Interpolated and Differenced WBA Data')
+    plt.xlabel('Time')
+    plt.ylabel('Differenced WBA')
+    plt.grid(True)
 
-
+    # 레이아웃 조정 및 표시
+    plt.tight_layout()
+    plt.show()
+#%%
+    
+    
 
 

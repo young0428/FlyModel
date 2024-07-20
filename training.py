@@ -34,19 +34,19 @@ frame_per_window = int(fps * window_size)
 result_patience = 15
 
 folder_path = "./naturalistic"
-mat_file_name = "experimental_data.mat"
+mat_file_name = "expermental_data_fc5hz.mat"
 checkpoint_name = "fly_model"
-model_name = "./convLSTM_3layers"
+model_name = "./convLSTM_Dense2048_fc5"
 os.makedirs(model_name, exist_ok=True)
 
 input_dims = 5  # [origin, up, down, right, left]
 model = VCL(input_dims=input_dims, video_size=(h//downsampling_factor, w// downsampling_factor), result_patience = result_patience)
 trainer = VCL_Trainer(model, lr)
-trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
+current_epoch = trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
 
 video_data = LoadVideo(folder_path, downsampling_factor)  # (video_num, frame_num, h, w, c)
 wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
-downsampled_wba_data = interpolate_wba_data(wba_data, original_freq=1000, target_freq=30)
+wba_data, wba_diff_data = interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30)
 total_frame = np.shape(video_data)[1]
 
 filename = f'./tuples_avg_trial.pkl'
@@ -58,26 +58,27 @@ else:
     save_tuples(filename, (training_tuples, test_tuples))
     print("Generated and saved tuples.")
     
-print(f"interpolated wba shape : {np.shape(downsampled_wba_data)}")
+print(f"interpolated wba shape : {np.shape(wba_data)}")
 print(f"traning_tuples : {np.shape(training_tuples)}")
 print(f"test_tuples : {np.shape(test_tuples)}")
+
     
 recent_losses = deque(maxlen=100)
-for epoch in range(epochs):
+for epoch in list(range(current_epoch, epochs)):
     batches = list(get_batches(training_tuples, batch_size))
     print("")
     print(f"Epoch {epoch + 1}/{epochs}")
 
-    progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=100)
+    progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=150)
     
     for batch in progress_bar:
         batch_input_data, batch_target_data = get_data_from_batch(
-            video_data, downsampled_wba_data, batch, frame_per_window, fps)
+            video_data, wba_data, batch, frame_per_window, fps)
         
         batch_input_data = torch.tensor(batch_input_data)
         batch_target_data = torch.tensor(batch_target_data[:,result_patience:])
         
-        loss, pred = trainer.step(batch_input_data, batch_target_data)
+        loss, pred, mse_loss, kl_div = trainer.step(batch_input_data, batch_target_data)
         
         recent_losses.append(loss.item())
 
@@ -86,23 +87,23 @@ for epoch in range(epochs):
         else:
             avg_recent_loss = 0
         
-        progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}")
+        progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}", mse_loss = f"{mse_loss:.5f}", kl_div = f"{kl_div:.5f}")
     
-    trainer.save(f"{model_name}/{checkpoint_name}.ckpt")
+    trainer.save(f"{model_name}/{checkpoint_name}.ckpt", epoch)
     
     # Test phase after each epoch
     test_batches = list(get_batches(test_tuples, batch_size))
     total_test_loss = 0
-    progress_bar = tqdm(test_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=100)
+    progress_bar = tqdm(test_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
     for batch in progress_bar:
         batch_input_data, batch_target_data = get_data_from_batch(
-            video_data, downsampled_wba_data, batch, frame_per_window, fps)
+            video_data, wba_data, batch, frame_per_window, fps)
         
         batch_input_data = torch.tensor(batch_input_data)
         batch_target_data = torch.tensor(batch_target_data[:,result_patience:])
         
-        loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
+        loss, pred, mse_loss, kl_div = trainer.evaluate(batch_input_data, batch_target_data)
         total_test_loss += loss.item()
         progress_bar.set_postfix(loss=f"{loss.item():.5f}")
 
@@ -124,12 +125,12 @@ for epoch in range(epochs):
         batch_tuples = selected_tuples[i:min(i + batch_size, 9)]
         
         batch_input_data, batch_target_data = get_data_from_batch(
-            video_data, downsampled_wba_data, batch_tuples, frame_per_window, fps)
+            video_data, wba_data, batch_tuples, frame_per_window, fps)
 
         batch_input_data = torch.tensor(batch_input_data)
         batch_target_data = torch.tensor(batch_target_data[:,result_patience:])
         
-        _, pred = trainer.evaluate(batch_input_data, batch_target_data)
+        _, pred, _, _ = trainer.evaluate(batch_input_data, batch_target_data)
         
 
         
