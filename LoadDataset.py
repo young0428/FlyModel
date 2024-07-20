@@ -278,6 +278,19 @@ def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1,
         wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1: start_frame + frame_per_window + 1]/10)
         
     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
+
+def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc = 0.4):
+    video_data = LoadVideo(folder_path, downsampling_factor)
+    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
+    filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc)
+    _, interpolated_diff_wba_data = interpolate_and_diff_wba_data(filtered_wba_data, original_freq=1000, target_freq=30)
+    total_frame = np.shape(video_data)[1]
+    
+    return video_data, interpolated_diff_wba_data, total_frame
+    
+    
+    
+
 #%%
 import h5py
 import matplotlib.pyplot as plt

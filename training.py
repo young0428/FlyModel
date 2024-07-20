@@ -16,7 +16,7 @@ def load_tuples(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
-batch_size = 10
+batch_size = 20
 frame_num = 30
 lr = 1e-3
 epochs = 30
@@ -25,7 +25,7 @@ h = 360
 w = 720
 c = 5
 fps = 30
-downsampling_factor = 2
+downsampling_factor = 4
 
 window_size = 1
 sliding_size = 0.5
@@ -34,9 +34,9 @@ frame_per_window = int(fps * window_size)
 result_patience = 15
 
 folder_path = "./naturalistic"
-mat_file_name = "expermental_data_fc5hz.mat"
+mat_file_name = "experimental_data.mat"
 checkpoint_name = "fly_model"
-model_name = "./convLSTM_Dense2048_fc5"
+model_name = "./convLSTM_fc0.4_diff"
 os.makedirs(model_name, exist_ok=True)
 
 input_dims = 5  # [origin, up, down, right, left]
@@ -44,10 +44,11 @@ model = VCL(input_dims=input_dims, video_size=(h//downsampling_factor, w// downs
 trainer = VCL_Trainer(model, lr)
 current_epoch = trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
 
-video_data = LoadVideo(folder_path, downsampling_factor)  # (video_num, frame_num, h, w, c)
-wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
-wba_data, wba_diff_data = interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30)
-total_frame = np.shape(video_data)[1]
+# video_data = LoadVideo(folder_path, downsampling_factor)  # (video_num, frame_num, h, w, c)
+# wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
+# wba_data, wba_diff_data = interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30)
+# total_frame = np.shape(video_data)[1]
+video_data, wba_data, total_frame = load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc = 0.4)
 
 filename = f'./tuples_avg_trial.pkl'
 if os.path.exists(filename):
