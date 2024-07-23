@@ -200,7 +200,7 @@ def interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30):
 def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
     training_tuples_list = []
     test_tuples_list = []
-    for video_n in range(video_num):  # n = 0, 1, 2, video#
+    for video_n in range(2,3):  # n = 0, 1, 2, video#
         test_period = list(random.sample(range(10), 3))
         for fly_n in range(fly_num):
             for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
@@ -210,6 +210,8 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
                     training_tuples_list.append((fly_n, video_n, start_frame))
                     
     return training_tuples_list, test_tuples_list
+
+
 
 def low_pass_filter(data, cutoff_freq, sample_rate=1000):
     nyquist_rate = 0.5 * sample_rate
@@ -275,7 +277,7 @@ def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1,
     for set in batch_set:
         fly_num, video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-        wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1: start_frame + frame_per_window + 1]/10)
+        wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1: start_frame + frame_per_window + 1])
         
     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
 
@@ -299,21 +301,28 @@ if __name__ == "__main__":
     wba_data = convert_mat_to_array(mat_file_path)
     
 #%%
-    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.5, 1000)
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7, 1000)
     interpolated_filtered_wba_data, interpolated_filtered_wba_diff_data = interpolate_and_diff_wba_data(wba_data_filtered)
     
     interpolated_orignal_wba_data, interpolated_orignal_wba_diff_data = interpolate_and_diff_wba_data(wba_data)
-    xlim = 900
-    interpolated_filtered_wba_data = interpolated_filtered_wba_data[0][0][:xlim]
-    interpolated_filtered_wba_diff_data = interpolated_filtered_wba_diff_data[0][0][:xlim]
-    interpolated_orignal_wba_data = interpolated_orignal_wba_data[0][0][:xlim]
-    interpolated_orignal_wba_diff_data = interpolated_orignal_wba_diff_data[0][0][:xlim]
+    fps = 30
+    start = 0 *fps
+    end = 35 *fps
+    interpolated_filtered_wba_data1 = interpolated_filtered_wba_data[0][2][start:end]
+    interpolated_filtered_wba_data2 = interpolated_filtered_wba_data[1][2][start:end]
+    
+    interpolated_filtered_wba_diff_data1 = interpolated_filtered_wba_diff_data[0][2][start:end]
+    interpolated_filtered_wba_diff_data2 = interpolated_filtered_wba_diff_data[1][2][start:end]
+    
+    interpolated_orignal_wba_data = interpolated_orignal_wba_data[0][2][start:end]
+    interpolated_orignal_wba_diff_data = interpolated_orignal_wba_diff_data[0][2][start:end]
 
     
     plt.subplot(2, 1, 1)
     
-    plt.plot(interpolated_orignal_wba_data)
-    plt.plot(interpolated_filtered_wba_data)
+    plt.plot(interpolated_filtered_wba_data1)
+    plt.plot(interpolated_filtered_wba_data2)
+    
     plt.title('Interpolated WBA Data')
     plt.xlabel('Time')
     plt.ylabel('WBA')
@@ -322,8 +331,9 @@ if __name__ == "__main__":
     # 두 번째 서브플롯
     plt.subplot(2, 1, 2)
     
-    #plt.plot(interpolated_orignal_wba_diff_data)
-    plt.plot(interpolated_filtered_wba_diff_data)
+    plt.plot(interpolated_filtered_wba_diff_data1)
+    plt.plot(interpolated_filtered_wba_diff_data2)
+    
     plt.title('Interpolated and Differenced WBA Data')
     plt.xlabel('Time')
     plt.ylabel('Differenced WBA')
