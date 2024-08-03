@@ -270,7 +270,7 @@ def convert_mat_to_array(mat_file_path):
                     
     return wba_data
 
-def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
+def get_data_from_batch_v2(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
     video_data = []
     wba_data = []
     # batch_set = (fly#, video#, start_frame)
@@ -289,6 +289,62 @@ def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc 
     total_frame = np.shape(video_data)[1]
     
     return video_data, interpolated_diff_wba_data, total_frame
+
+def generate_tuples_optic(frame_num, frame_per_sliding, fps=30, video_num = 3):
+    training_tuples_list = []
+    test_tuples_list = []
+    for video_n in range(video_num):  # n = 0, 1, 2, video#
+        test_period = list(random.sample(range(10), 3))
+        for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
+            if (start_frame / (frame_num - fps)) // 0.1 in test_period:
+                test_tuples_list.append((video_n, start_frame))
+            else:
+                training_tuples_list.append((video_n, start_frame))
+                    
+    return training_tuples_list, test_tuples_list
+
+
+def cal_video_to_optic_power(video_tensor):
+    # (3, frame#, h, w, c)
+    video_count, frame_count, height, width, channels = video_tensor.shape
+    
+    results = []
+    
+    for video_idx in range(video_count):
+        video_results = []
+        for frame_idx in range(frame_count):
+            frame = video_tensor[video_idx, frame_idx]
+            left_optic_flow = frame[:, :, 3]  # ch3: leftward optic flow
+            right_optic_flow = frame[:, :, 4]  # ch4: rightward optic flow
+            
+            # 각 프레임마다 채널 3과 4의 평균 값 계산
+            left_mean = np.mean(left_optic_flow)
+            right_mean = np.mean(right_optic_flow)
+            
+            # 왼쪽 평균에서 오른쪽 평균을 뺀 값 계산
+            difference = left_mean - right_mean
+            video_results.append(difference)
+        
+        results.append(video_results)
+    
+    return results
+
+def get_data_from_batch_v2(video_tensor, optic_power_tensor, batch_set, frame_per_window=1, fps=30):
+    video_data = []
+    optic_data = []
+    for set in batch_set:
+        video_num, start_frame = set
+        video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
+        optic_data.append(optic_power_tensor[video_num, start_frame:start_frame + frame_per_window])
+        
+    return np.array(video_data, dtype=np.float32), np.array(optic_data, dtype=np.float32)
+
+def seq_for_optic_cal(folder_path, downsampling_factor):
+    video_data = LoadVideo(folder_path, downsampling_factor)
+    optic_power_tensor = cal_video_to_optic_power(video_data)           # (video#, frame#, 1)
+    original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
+    total_frame = np.shape(video_data)[1]
+    return original_video, optic_power_tensor, total_frame
     
     
     
@@ -298,13 +354,13 @@ import h5py
 import matplotlib.pyplot as plt
 if __name__ == "__main__":
     mat_file_path = "./naturalistic/experimental_data.mat"
-    wba_data = convert_mat_to_array(mat_file_path)
+    optic_power = convert_mat_to_array(mat_file_path)
     
 #%%
-    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7, 1000)
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(optic_power, 0.7, 1000)
     interpolated_filtered_wba_data, interpolated_filtered_wba_diff_data = interpolate_and_diff_wba_data(wba_data_filtered)
     
-    interpolated_orignal_wba_data, interpolated_orignal_wba_diff_data = interpolate_and_diff_wba_data(wba_data)
+    interpolated_orignal_wba_data, interpolated_orignal_wba_diff_data = interpolate_and_diff_wba_data(optic_power)
     fps = 30
     start = 0 *fps
     end = 35 *fps

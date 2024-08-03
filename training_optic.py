@@ -18,21 +18,21 @@ def load_tuples(filename):
 
 batch_size = 7
 frame_num = 30
-lr = 1e-6
+lr = 1e-3
 epochs = 50
 
 h = 360
 w = 720
 c = 5
 fps = 30
-downsampling_factor = 4
+downsampling_factor = 8
 fc = 0.7
 
-window_size = 1
-sliding_size = 0.5
+window_size = 0.2
+sliding_size = 0.1
 frame_per_sliding = int(fps * sliding_size)
 frame_per_window = int(fps * window_size)
-result_patience = 15
+result_patience = 1
 
 folder_path = "./naturalistic"
 mat_file_name = "experimental_data.mat"
@@ -45,14 +45,17 @@ model = VCL(input_dims=input_dims, video_size=(h//downsampling_factor, w// downs
 trainer = VCL_Trainer(model, lr)
 current_epoch = trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
 
-video_data, optic_power, total_frame = load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc=0.4)
+video_data, optic_power, total_frame = seq_for_optic_cal(folder_path, downsampling_factor)
 
+# Split period and split for training / test data set
+# and save to model folder
+# Load same tuples for performance comparison
 filename = f'{model_name}/tuples_avg_trial.pkl'
 if os.path.exists(filename):
     training_tuples, test_tuples = load_tuples(filename)
     print("Loaded tuples from file.")
 else:
-    training_tuples, test_tuples = generate_tuples(total_frame, frame_per_sliding, int(fps * window_size))
+    training_tuples, test_tuples = generate_tuples_optic(total_frame, frame_per_sliding, int(fps * window_size))
     save_tuples(filename, (training_tuples, test_tuples))
     print("Generated and saved tuples.")
     
