@@ -61,7 +61,6 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
 def LoadVideo(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
-
     appendix = ['','_upward','_downward','_leftward','_rightward']
     video_paths_list = [[f"{folder_path}/{type}{ap}.avi" for ap in appendix] for type in type_list ]
 
@@ -200,7 +199,7 @@ def interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30):
 def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
     training_tuples_list = []
     test_tuples_list = []
-    for video_n in range(2,3):  # n = 0, 1, 2, video#
+    for video_n in range(0,3):  # n = 0, 1, 2, video#
         test_period = list(random.sample(range(10), 3))
         for fly_n in range(fly_num):
             for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
@@ -313,6 +312,7 @@ def cal_video_to_optic_power(video_tensor):
     for video_idx in range(video_count):
         video_results = []
         for frame_idx in range(frame_count):
+            # optic flow
             frame = video_tensor[video_idx, frame_idx]
             left_optic_flow = frame[:, :, 3]  # ch3: leftward optic flow
             right_optic_flow = frame[:, :, 4]  # ch4: rightward optic flow
@@ -324,7 +324,21 @@ def cal_video_to_optic_power(video_tensor):
             # 왼쪽 평균에서 오른쪽 평균을 뺀 값 계산
             difference = left_mean - right_mean
             video_results.append(difference)
-        
+            
+            ## intensity
+            # frame = video_tensor[video_idx, frame_idx]
+            # power = frame[:,:,0]
+            # power_mean = np.mean(power)
+            # video_results.append(power_mean)
+            
+            # if frame_idx == 0:
+            #     intensity_diff = np.zeors(np.shape(video_tensor[video_idx, frame_idx, :, :, 0]))
+            # else:
+            #     intensity_diff = video_tensor[video_idx, frame_idx, :, :, 0] - video_tensor[video_idx, frame_idx-1, :, :, 0]
+            
+            # intensity_mean = np.mean(intensity_diff)
+            # video_results.append(intensity_mean)
+
         results.append(video_results)
     
     return results
@@ -334,8 +348,8 @@ def get_data_from_batch_v2(video_tensor, optic_power_tensor, batch_set, frame_pe
     optic_data = []
     for set in batch_set:
         video_num, start_frame = set
-        video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-        optic_data.append(optic_power_tensor[video_num, start_frame:start_frame + frame_per_window])
+        video_data.append(video_tensor[video_num][start_frame:start_frame + frame_per_window])
+        optic_data.append(optic_power_tensor[video_num][start_frame:start_frame + frame_per_window])
         
     return np.array(video_data, dtype=np.float32), np.array(optic_data, dtype=np.float32)
 

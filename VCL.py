@@ -8,11 +8,11 @@ import os
 
 from convlstm import *
 class VCL(nn.Module):
-    def __init__(self, input_dims, video_size, result_patience):
+    def __init__(self, input_dims, video_size, result_patience, channel_num_list=[64,64,64]):
         super(VCL, self).__init__()
         
         self.latent_dims = 1024
-        channel_num_list = [16, 32, 16]
+        
         num_layers = len(channel_num_list)
         self.result_patience = result_patience
         self.conv_lstm = ConvLSTM(input_dims,
@@ -28,13 +28,11 @@ class VCL(nn.Module):
         
         self.fc = nn.Sequential(
             nn.Linear(flatten_size,2048),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(2048,4096),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(4096, 1),
-            
+            nn.GELU(),
+            nn.Linear(2048,1024),
+            nn.GELU(),
+            nn.Linear(2048,1),
+
         )
 
         
@@ -72,7 +70,7 @@ class VCL_Trainer :
         self.loss_sum = 0
         self.model = self.model.to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr)
-        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=1, threshold=0.1, min_lr=1e-6)
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=100, threshold=0.1, min_lr=1e-6)
     
     def save(self, path, epoch):
         save_state = {
@@ -113,9 +111,6 @@ class VCL_Trainer :
             prev_lr = self.optimizer.param_groups[0]['lr']
             self.scheduler.step(avg_loss)
             post_lr = self.optimizer.param_groups[0]['lr']
-            if not prev_lr == post_lr:
-                print()
-                print(f"lr : {post_lr}")
             self.loss_sum = 0
 
         
