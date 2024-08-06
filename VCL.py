@@ -31,9 +31,10 @@ class VCL(nn.Module):
             nn.GELU(),
             nn.Linear(2048,1024),
             nn.GELU(),
-            nn.Linear(2048,1),
+            nn.Linear(1024,1),
 
         )
+        print("channel list : " + str(channel_num_list))
 
         
     def swap_axis_for_input(self, t):

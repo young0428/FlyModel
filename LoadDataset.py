@@ -312,34 +312,38 @@ def cal_video_to_optic_power(video_tensor):
     for video_idx in range(video_count):
         video_results = []
         for frame_idx in range(frame_count):
-            # optic flow
-            frame = video_tensor[video_idx, frame_idx]
-            left_optic_flow = frame[:, :, 3]  # ch3: leftward optic flow
-            right_optic_flow = frame[:, :, 4]  # ch4: rightward optic flow
-            
-            # 각 프레임마다 채널 3과 4의 평균 값 계산
-            left_mean = np.mean(left_optic_flow)
-            right_mean = np.mean(right_optic_flow)
-            
-            # 왼쪽 평균에서 오른쪽 평균을 뺀 값 계산
-            difference = left_mean - right_mean
-            video_results.append(difference)
-            
-            ## intensity
+            # # optic flow
             # frame = video_tensor[video_idx, frame_idx]
-            # power = frame[:,:,0]
-            # power_mean = np.mean(power)
-            # video_results.append(power_mean)
+            # left_optic_flow = frame[:, :, 3]  # ch3: leftward optic flow
+            # right_optic_flow = frame[:, :, 4]  # ch4: rightward optic flow
+            
+            # # 각 프레임마다 채널 3과 4의 평균 값 계산
+            # left_mean = np.mean(left_optic_flow)
+            # right_mean = np.mean(right_optic_flow)
+            # data_type = "optic_flow"
+            # # 왼쪽 평균에서 오른쪽 평균을 뺀 값 계산
+            # difference = left_mean - right_mean
+            # video_results.append(difference)
+            
+            # intensity
+            frame = video_tensor[video_idx, frame_idx]
+            power = frame[:,:,0]
+            power_mean = np.mean(power)
+            video_results.append(power_mean)
+            data_type = "intensity"
             
             # if frame_idx == 0:
-            #     intensity_diff = np.zeors(np.shape(video_tensor[video_idx, frame_idx, :, :, 0]))
+            #     intensity_diff = np.zeros(np.shape(video_tensor[video_idx, frame_idx, :, :, 0]))
             # else:
             #     intensity_diff = video_tensor[video_idx, frame_idx, :, :, 0] - video_tensor[video_idx, frame_idx-1, :, :, 0]
             
             # intensity_mean = np.mean(intensity_diff)
             # video_results.append(intensity_mean)
+            # data_type = "difference"
 
         results.append(video_results)
+    
+    print("data type : " + str(data_type))
     
     return results
 

@@ -71,7 +71,7 @@ def plot_results(axes, video_num, predictions, target, training_tuples, test_tup
     axes.text(0.95, 0.95, f'Final Test Loss: {final_test_loss:.5f}', transform=axes.transAxes, fontsize=12, verticalalignment='top', horizontalalignment='right')
 
 # Training and evaluation code
-batch_size = 50
+batch_size = 10
 frame_num = 30
 lr = 1e-3
 epochs = 200
@@ -83,7 +83,7 @@ fps = 30
 downsampling_factor = 8
 fc = 0.7
 
-channel_num_list = [128,128,128]
+channel_num_list = [64,64,64]
 
 window_size = 0.067
 sliding_size = window_size/2
