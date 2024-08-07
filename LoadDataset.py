@@ -3,6 +3,7 @@ import numpy as np
 import os
 import random
 import numpy as np
+import pickle
 from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
@@ -228,7 +229,79 @@ def apply_low_pass_filter_to_wba_data(wba_data, cutoff_freq, sample_rate=1000):
             filtered_wba_data[fly, video, :] = low_pass_filter(wba_data[fly, video, :], cutoff_freq, sample_rate)
             
     return filtered_wba_data
+def save_tuples(filename, data):
+    with open(filename, 'wb') as f:
+        pickle.dump(data, f)
 
+def load_tuples(filename):
+    with open(filename, 'rb') as f:
+        return pickle.load(f)
+
+def predict_with_model(model, trainer, video_data, frame_per_window, fps, result_patience, batch_size=10):
+    total_frame = video_data.shape[1]
+    step = int(10 * fps)  # 10 seconds window
+    predictions = []
+
+    print("Starting predictions...")
+
+
+    video_data = torch.tensor(video_data, dtype=torch.float32).to(trainer.device)
+    
+    batch_predictions = []
+
+    with torch.no_grad():
+        for i in range(0, video_data.shape[1] - frame_per_window + 1, frame_per_window - result_patience):
+            batch_input = video_data[:, i:i+frame_per_window]
+            
+            if batch_input.dim() == 6:
+                batch_input = batch_input.squeeze(2)  # Remove the extra dimension
+            
+            pred = trainer.model(batch_input)
+            batch_predictions.extend(pred.squeeze(0).cpu().numpy())
+
+    predictions.extend(batch_predictions)
+
+    print("Predictions complete.")
+    return np.array(predictions)
+
+def plot_results(axes, video_num, predictions, target, training_tuples, test_tuples, total_frame, fps, fpw, result_patience, final_test_loss):
+    # Adjust target and predictions to align with result_patience
+
+    axes.plot(range(total_frame), target, label='Target', color='gray')
+    axes.plot(range(len(predictions)), predictions, label='Prediction', color='black')
+
+    for tup in training_tuples:
+        if tup[0] == video_num:
+            start_frame = max(0, tup[1] - result_patience)
+            end_frame = start_frame + fpw - result_patience
+            axes.axvspan(start_frame, end_frame, color='red', alpha=0.05)
+
+    for tup in test_tuples:
+        if tup[0] == video_num:
+            start_frame = max(0, tup[1] - result_patience)
+            end_frame = start_frame + fpw - result_patience
+            axes.axvspan(start_frame, end_frame, color='blue', alpha=0.05)
+
+    video_name = ['Bird', 'City', 'Forest']
+    axes.set_title(f'Video {video_name[video_num]}')
+    axes.set_xlabel('Frame')
+    axes.set_ylabel('Value')
+    axes.legend(loc='upper right')
+    axes.grid(True)
+    # Add final test loss as text
+    axes.text(0.95, 0.95, f'Final Test Loss: {final_test_loss:.5f}', transform=axes.transAxes, fontsize=12, verticalalignment='top', horizontalalignment='right')
+def save_results(filename, target, predictions):
+
+    with h5py.File(filename, 'w') as f:
+        f.create_dataset('target', data=np.array(target))
+        f.create_dataset('predictions', data=np.array(predictions))
+
+def load_results(filename):
+
+    with h5py.File(filename, 'r') as f:
+        target = list(f['target'])
+        predictions = list(f['predictions'])
+    return target, predictions
 def convert_mat_to_array(mat_file_path):
     with h5py.File(mat_file_path, 'r') as mat_file:
         experimental_data = mat_file['experimental_data']
@@ -325,12 +398,21 @@ def cal_video_to_optic_power(video_tensor):
             # difference = left_mean - right_mean
             # video_results.append(difference)
             
-            # intensity
+            # # intensity
+            # frame = video_tensor[video_idx, frame_idx]
+            # power = frame[:,:,0]
+            # power_mean = np.mean(power)
+            # video_results.append(power_mean)
+            # data_type = "intensity"
+            
+            # square intensity
+            
             frame = video_tensor[video_idx, frame_idx]
-            power = frame[:,:,0]
+            power = np.square(frame[:,:,0])
             power_mean = np.mean(power)
             video_results.append(power_mean)
-            data_type = "intensity"
+            data_type = "square intensity"
+            
             
             # if frame_idx == 0:
             #     intensity_diff = np.zeros(np.shape(video_tensor[video_idx, frame_idx, :, :, 0]))
@@ -364,58 +446,59 @@ def seq_for_optic_cal(folder_path, downsampling_factor):
     total_frame = np.shape(video_data)[1]
     return original_video, optic_power_tensor, total_frame
     
+
+def convert_sac_mat_to_array(sac_mat):
+    mat_file = h5py.File(sac_mat, 'r')
     
+    sac_data = mat_file['saccade_prediction_data']
+    left_sac = sac_data[:,1]
+    right_sac = sac_data[:,2]
+    return left_sac, right_sac
     
+
+def interpolate_data(data, original_freq=1000, target_freq=30):
+
+    duration = data.shape[-1] / original_freq
+    original_time = np.arange(0, data.shape[-1]) / original_freq
+    new_time = np.arange(0, duration, 1 / target_freq)
+
+    new_data_shape = data.shape[:-1] + (new_time.size,)
+    data_interpolated = np.zeros(new_data_shape)
+
+    interpolator = interp1d(original_time, data, kind='linear')
+
+    data_interpolated[:] = interpolator(new_time)
+
+    # 마지막 차원에 대해 차분을 구함
+
+    return data_interpolated
+
+def get_sac_data(mat_file_path):
+    left_sac, right_sac = convert_sac_mat_to_array(mat_file_path)
+    sac_data = []
+    sac_data.append(interpolate_data(left_sac))
+    sac_data.append(interpolate_data(right_sac))
+    sac_data = np.array(sac_data)
+    
+    return sac_data
 
 #%%
 import h5py
 import matplotlib.pyplot as plt
+import numpy as np
 if __name__ == "__main__":
-    mat_file_path = "./naturalistic/experimental_data.mat"
-    optic_power = convert_mat_to_array(mat_file_path)
+    mat_file_path = "./saccade_prediction_data.mat"
+    print(np.shape(get_sac_data(mat_file_path)))
+    
+    
+    
+    
+    
+    
+    
     
 #%%
-    wba_data_filtered = apply_low_pass_filter_to_wba_data(optic_power, 0.7, 1000)
-    interpolated_filtered_wba_data, interpolated_filtered_wba_diff_data = interpolate_and_diff_wba_data(wba_data_filtered)
     
-    interpolated_orignal_wba_data, interpolated_orignal_wba_diff_data = interpolate_and_diff_wba_data(optic_power)
-    fps = 30
-    start = 0 *fps
-    end = 35 *fps
-    interpolated_filtered_wba_data1 = interpolated_filtered_wba_data[0][2][start:end]
-    interpolated_filtered_wba_data2 = interpolated_filtered_wba_data[1][2][start:end]
-    
-    interpolated_filtered_wba_diff_data1 = interpolated_filtered_wba_diff_data[0][2][start:end]
-    interpolated_filtered_wba_diff_data2 = interpolated_filtered_wba_diff_data[1][2][start:end]
-    
-    interpolated_orignal_wba_data = interpolated_orignal_wba_data[0][2][start:end]
-    interpolated_orignal_wba_diff_data = interpolated_orignal_wba_diff_data[0][2][start:end]
-
-    
-    plt.subplot(2, 1, 1)
-    
-    plt.plot(interpolated_filtered_wba_data1)
-    plt.plot(interpolated_filtered_wba_data2)
-    
-    plt.title('Interpolated WBA Data')
-    plt.xlabel('Time')
-    plt.ylabel('WBA')
-    plt.grid(True)
-
-    # 두 번째 서브플롯
-    plt.subplot(2, 1, 2)
-    
-    plt.plot(interpolated_filtered_wba_diff_data1)
-    plt.plot(interpolated_filtered_wba_diff_data2)
-    
-    plt.title('Interpolated and Differenced WBA Data')
-    plt.xlabel('Time')
-    plt.ylabel('Differenced WBA')
-    plt.grid(True)
-
-    # 레이아웃 조정 및 표시
-    plt.tight_layout()
-    plt.show()
 #%%
     
     

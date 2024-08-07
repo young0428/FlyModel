@@ -1,76 +1,13 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from VCL import VCL, VCL_Trainer
+from VCL import *
 from LoadDataset import *
 from tqdm import tqdm
 from collections import deque
 import pickle
 import os
 
-def save_tuples(filename, data):
-    with open(filename, 'wb') as f:
-        pickle.dump(data, f)
-
-def load_tuples(filename):
-    with open(filename, 'rb') as f:
-        return pickle.load(f)
-
-def predict_with_model(model, trainer, video_data, frame_per_window, fps, result_patience, batch_size=10):
-    total_frame = video_data.shape[1]
-    step = int(10 * fps)  # 10 seconds window
-    predictions = []
-
-    print("Starting predictions...")
-
-
-    video_data = torch.tensor(video_data, dtype=torch.float32).to(trainer.device)
-    
-    batch_predictions = []
-
-    with torch.no_grad():
-        for i in range(0, video_data.shape[1] - frame_per_window + 1, frame_per_window - result_patience):
-            batch_input = video_data[:, i:i+frame_per_window]
-            
-            if batch_input.dim() == 6:
-                batch_input = batch_input.squeeze(2)  # Remove the extra dimension
-            
-            pred = trainer.model(batch_input)
-            batch_predictions.extend(pred.squeeze(0).cpu().numpy())
-
-    predictions.extend(batch_predictions)
-
-    print("Predictions complete.")
-    return np.array(predictions)
-
-def plot_results(axes, video_num, predictions, target, training_tuples, test_tuples, total_frame, fps, fpw, result_patience, final_test_loss):
-    # Adjust target and predictions to align with result_patience
-
-    axes.plot(range(total_frame), target, label='Target', color='gray')
-    axes.plot(range(len(predictions)), predictions, label='Prediction', color='black')
-
-    for tup in training_tuples:
-        if tup[0] == video_num:
-            start_frame = max(0, tup[1] - result_patience)
-            end_frame = start_frame + fpw - result_patience
-            axes.axvspan(start_frame, end_frame, color='red', alpha=0.05)
-
-    for tup in test_tuples:
-        if tup[0] == video_num:
-            start_frame = max(0, tup[1] - result_patience)
-            end_frame = start_frame + fpw - result_patience
-            axes.axvspan(start_frame, end_frame, color='blue', alpha=0.05)
-
-    video_name = ['Bird', 'City', 'Forest']
-    axes.set_title(f'Video {video_name[video_num]}')
-    axes.set_xlabel('Frame')
-    axes.set_ylabel('Value')
-    axes.legend(loc='upper right')
-    axes.grid(True)
-    # Add final test loss as text
-    axes.text(0.95, 0.95, f'Final Test Loss: {final_test_loss:.5f}', transform=axes.transAxes, fontsize=12, verticalalignment='top', horizontalalignment='right')
-
-# Training and evaluation code
 batch_size = 10
 frame_num = 30
 lr = 1e-3
@@ -80,18 +17,17 @@ h = 360
 w = 720
 c = 1
 fps = 30
-downsampling_factor = 8
-fc = 0.7
+downsampling_factor = 11
 
-channel_num_list = [64,64,64]
+channel_num_list = [32,32,32]
 
-window_size = 0.067
-sliding_size = window_size/2
+window_size = 0.034
+sliding_size = window_size
 frame_per_sliding = int(fps * sliding_size)
 frame_per_window = int(fps * window_size)
-result_patience = 1
+result_patience = 0
 
-model_string = f"frame_diff_CL{len(channel_num_list)}_"
+model_string = f"square_CL{len(channel_num_list)}_"
 for c in channel_num_list:
     model_string += f"{c}_"
 model_string += f"{frame_per_window}frames"
@@ -99,12 +35,14 @@ model_string += f"{frame_per_window}frames"
 folder_path = "./naturalistic"
 mat_file_name = "experimental_data.mat"
 checkpoint_name = "fly_model"
+
 model_name = f"./model/{model_string}"
 os.makedirs(model_name, exist_ok=True)
+result_save_path = f"./model/{model_string}/result_data.h5"
 
 input_dims = 1  # [origin, up, down, right, left]
 model = VCL(input_dims=input_dims, video_size=(h//downsampling_factor, w//downsampling_factor), result_patience=result_patience, channel_num_list=channel_num_list)
-trainer = VCL_Trainer(model, lr)
+trainer = Trainer(model, lr)
 current_epoch = trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
 
 video_data, optic_power, total_frame = seq_for_optic_cal(folder_path, downsampling_factor)
@@ -239,7 +177,8 @@ os.makedirs(prediction_path, exist_ok=True)
 fig, axes = plt.subplots(3, 1, figsize=(16, 16))  # Adjusted figure size to show all videos in one plot
 
 final_test_loss = test_losses_per_epoch[-1] if test_losses_per_epoch else float('nan')
-
+all_predictions = []
+all_targets = []
 for video_num in range(3):
     print(f"Processing video {video_num} for prediction...")
     predictions = predict_with_model(model, trainer, video_data[video_num:video_num+1], frame_per_window, fps, result_patience)
@@ -250,7 +189,11 @@ for video_num in range(3):
     np.save(f"{prediction_path}/target_video_{video_num}.npy", target)
 
     # Plot results
+    all_predictions.append(predictions)
+    all_targets.append(target)
     plot_results(axes[video_num], video_num, predictions, target, training_tuples, test_tuples, total_frame, fps, frame_per_window, result_patience, final_test_loss)
+
+save_results(result_save_path, all_targets, all_predictions)
 
 plt.tight_layout()
 plt.savefig(f"{prediction_path}/predictions_all_videos.png")

@@ -34,6 +34,23 @@ class VCL(nn.Module):
             nn.Linear(1024,1),
 
         )
+        
+        self.simple_dense_for_t1 = nn.Sequential(
+            nn.Flatten(start_dim=2),
+            nn.Linear(flatten_size, 512),
+        )
+        self.simple_dense_for_t2 = nn.Sequential(
+            nn.Flatten(start_dim=2),
+            nn.Linear(flatten_size, 512),
+        )
+        
+        self.simple_fc = nn.Sequential(
+            nn.Linear(2048, 1024),
+            nn.GELU(),
+            nn.Linear(1024, 1),
+        )
+            
+            
         print("channel list : " + str(channel_num_list))
 
         
@@ -52,8 +69,6 @@ class VCL(nn.Module):
         output = self.fc(cl_output).squeeze(-1)
         
         output = output[:,self.result_patience:]
-
-    
         
         return output
         
@@ -62,7 +77,67 @@ def loss_function(pred, target):
     
     return mse_loss
 
-class VCL_Trainer :
+class SimpleDense(nn.Module):
+    def __init__(self, input_dims, video_size, result_patience, channel_num_list=[64,64,64]):
+        super(VCL, self).__init__()
+        
+        self.latent_dims = 1024
+        h, w = video_size
+        flatten_size =  h * w * channel_num_list[-1]
+        
+        num_layers = len(channel_num_list)
+        self.result_patience = result_patience
+        self.conv_lstm = ConvLSTM(input_dims,
+                                  hidden_dim=channel_num_list, 
+                                  kernel_size=(3, 3), 
+                                  num_layers=num_layers, 
+                                  batch_first=True, 
+                                  return_all_layers=False)
+        
+        
+        self.simple_dense_for_t1 = nn.Sequential(
+            nn.Flatten(start_dim=2),
+            nn.Linear(flatten_size, 512),
+        )
+        self.simple_dense_for_t2 = nn.Sequential(
+            nn.Flatten(start_dim=2),
+            nn.Linear(flatten_size, 512),
+        )
+        
+        self.simple_fc = nn.Sequential(
+            nn.Linear(2048, 1024),
+            nn.GELU(),
+            nn.Linear(1024, 1),
+        )
+            
+            
+        print("channel list : " + str(channel_num_list))
+
+        
+    # def swap_axis_for_input(self, t):
+    #     return t.permute(0, 1, 4, 2, 3)
+    
+
+    
+    def forward(self, x):
+        #x = self.swap_axis_for_input(x) # B, T, C, H, W
+        
+        frame_t1 = x[:,0]
+        frame_t2 = x[:,1]
+        
+        feature_frame_t1 = self.simple_dense_for_t1(frame_t1)
+        feature_frame_t2 = self.simple_dense_for_t2(frame_t2)
+        
+        total_features = torch.concat((feature_frame_t1, feature_frame_t2),dim=-1)
+        
+        output = self.simple_fc(total_features)
+        
+        
+        return output
+        
+
+
+class Trainer :
     def __init__(self, model, lr):
         self.lr = lr
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
