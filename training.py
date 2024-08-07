@@ -1,149 +1,184 @@
+#%%
 import torch
 import numpy as np
-from VCL import VCL, VCL_Trainer
+import matplotlib.pyplot as plt
+from p3d_resnet import p3d_resnet, loss_function
+from trainer_func import Trainer
 from LoadDataset import *
 from tqdm import tqdm
 from collections import deque
 import pickle
 import os
-import matplotlib.pyplot as plt
+from sklearn.model_selection import KFold
 
-def save_tuples(filename, data):
-    with open(filename, 'wb') as f:
-        pickle.dump(data, f)
-
-def load_tuples(filename):
-    with open(filename, 'rb') as f:
-        return pickle.load(f)
-
-batch_size = 7
-frame_num = 30
-lr = 1e-6
-epochs = 50
+torch.autograd.set_detect_anomaly(True)
 
 h = 360
 w = 720
-c = 5
+c = 1
 fps = 30
-downsampling_factor = 4
-fc = 0.7
+downsampling_factor = 5.625
 
-window_size = 1
-sliding_size = 0.5
-frame_per_sliding = int(fps * sliding_size)
-frame_per_window = int(fps * window_size)
-result_patience = 15
+frame_per_window = 10
+frame_per_sliding = 5
+input_ch = 1 
+
+model_string = "p3d"
+model_string += f"{frame_per_window}frames"
 
 folder_path = "./naturalistic"
-mat_file_name = "experimental_data.mat"
+mat_file_name = "saccade_prediction_data.mat"
 checkpoint_name = "fly_model"
-model_name = "./model/noPool_fc0.7_Forest"
-os.makedirs(model_name, exist_ok=True)
 
-input_dims = 5  # [origin, up, down, right, left]
-model = VCL(input_dims=input_dims, video_size=(h//downsampling_factor, w// downsampling_factor), result_patience=result_patience)
-trainer = VCL_Trainer(model, lr)
+model_name = f"./model/{model_string}"
+os.makedirs(model_name, exist_ok=True)
+result_save_path = f"./model/{model_string}/result_data.h5"
+
+
+
+# hyperparameter 
+batch_size = 10
+lr = 1e-3
+epochs = 200
+fold_factor = 8
+
+
+#### p3d renet18 spec ####
+block_list = [[64, 2], [128, 2], [256, 2], [512, 2]]
+feature_output_dims = 400
+##########################
+
+# ### custom parameters ###
+# block_list = [[]]
+# feature_output_dims = 1024
+# ##########################
+
+# create model
+model = p3d_resnet(input_ch, block_list, feature_output_dims)
+trainer = Trainer(model, loss_function, lr)
 current_epoch = trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
 
-video_data, optic_power, total_frame = load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc=0.4)
 
-filename = f'{model_name}/tuples_avg_trial.pkl'
-if os.path.exists(filename):
-    training_tuples, test_tuples = load_tuples(filename)
-    print("Loaded tuples from file.")
-else:
-    training_tuples, test_tuples = generate_tuples(total_frame, frame_per_sliding, int(fps * window_size))
-    save_tuples(filename, (training_tuples, test_tuples))
-    print("Generated and saved tuples.")
-    
-print(f"training_tuples : {np.shape(training_tuples)}")
-print(f"test_tuples : {np.shape(test_tuples)}")
+video_data, sac_data, total_frame = sac_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
+sac_data = sac_data[:,:total_frame]
+
+# %%
+
+# Split period and split for training / test data set
+# and save to model folder
+# Load same tuples for performance comparison
 
 recent_losses = deque(maxlen=100)
-for epoch in range(current_epoch, epochs):
-    batches = list(get_batches(training_tuples, batch_size))
-    print("")
-    print(f"Epoch {epoch + 1}/{epochs}")
+test_losses_per_epoch = []
 
-    progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=150)
-    
-    for batch in progress_bar:
-        batch_input_data, batch_target_data = get_data_from_batch_v2(
-            video_data, optic_power, batch, frame_per_window, fps)
-        
-        batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
-        batch_target_data = torch.tensor(batch_target_data[:,result_patience:], dtype=torch.float32)
-        
-        loss, pred = trainer.step(batch_input_data, batch_target_data)
-        
-        recent_losses.append(loss.item())
+batch_tuples = np.array(generate_tuples_sac(total_frame, frame_per_window, frame_per_sliding, 3))
+kf = KFold(n_splits=fold_factor)
 
-        avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
+for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
+    print(f"Fold {fold+1}")
+    for epoch in range(current_epoch, epochs):
+        training_tuples = batch_tuples[train_index]
+        val_tuples = batch_tuples[val_index]
         
-        progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}")
-        
-        del batch_input_data, batch_target_data, loss, pred
-    
-    trainer.save(f"{model_name}/{checkpoint_name}.ckpt", epoch)
-    
-    # Test phase after each epoch
-    test_batches = list(get_batches(test_tuples, batch_size))
-    total_test_loss = 0.0
-    progress_bar = tqdm(test_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
+        batches = list(get_batches(training_tuples, batch_size))
+        print("")
+        print(f"Epoch {epoch + 1}/{epochs}")
 
-    for batch in progress_bar:
-        batch_input_data, batch_target_data = get_data_from_batch_v2(
-            video_data, optic_power, batch, frame_per_window, fps)
+        progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=150)
         
-        batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
-        batch_target_data = torch.tensor(batch_target_data[:,result_patience:], dtype=torch.float32)
-        
-        loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
-        total_test_loss = total_test_loss + loss.item()
-        progress_bar.set_postfix(loss=f"{loss.item():.5f}")
-        
-        del batch_input_data, batch_target_data, loss, pred
+        for batch in progress_bar:
+            batch_input_data, batch_target_data = get_data_from_batch_sac(
+                video_data, sac_data, batch, frame_per_window
+                )
+            
+            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
+            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32)
+            
+            loss, pred = trainer.step(batch_input_data, batch_target_data)
+            
+            recent_losses.append(loss.item())
 
-    avg_test_loss = total_test_loss / len(test_batches)
-    print(f"Average test loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
-    
-    # Save test results
-    epoch_results_path = f"{model_name}/results"
-    os.makedirs(epoch_results_path, exist_ok=True)
-    
-    selected_tuples = []
-    for video_num in range(3):
-        video_specific_tuples = [t for t in test_tuples if t[1] == video_num]
-        selected_tuples.extend(video_specific_tuples[:3])
-
-    fig, axes = plt.subplots(3, 3, figsize=(15, 15))
-    
-    for i in range(0, len(selected_tuples), batch_size):
-        batch_tuples = selected_tuples[i:min(i + batch_size, 9)]
+            avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
+            
+            progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}")
+            
+            del batch_input_data, batch_target_data, loss, pred
         
-        batch_input_data, batch_target_data = get_data_from_batch_v2(
-            video_data, optic_power, batch_tuples, frame_per_window, fps)
-
-        batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
-        batch_target_data = torch.tensor(batch_target_data[:,result_patience:], dtype=torch.float32)
+        trainer.save(f"{model_name}/{checkpoint_name}.ckpt", epoch)
         
-        _, pred = trainer.evaluate(batch_input_data, batch_target_data)
-        
-        for j in range(len(batch_tuples)):
-            fly_num, video_num, start_frame = batch_tuples[j]
-            ax = axes.flatten()[i + j]
-            ax.plot(batch_target_data[j].cpu().numpy(), label="Target", color="gray", alpha=0.5)
-            ax.plot(pred[j].cpu().numpy(), label="Prediction", color="black")  
-            ax.set_title(f"Tuple: (fly {fly_num}, video {video_num}, frame {start_frame})")
-            ax.legend()
-        
-        del batch_input_data, batch_target_data, pred
+        # validation phase after each epoch
+        val_batches = list(get_batches(val_tuples, batch_size))
+        total_test_loss = 0.0
+        progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
-    plt.tight_layout()
-    plt.savefig(f"{epoch_results_path}/epoch_{epoch + 1}.png")
-    plt.close(fig)
+        for batch in progress_bar:
+            batch_input_data, batch_target_data = get_data_from_batch_v2(
+                video_data, sac_data, batch, frame_per_window, fps)
+            
+            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
+            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32)
+            
+            loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
+            total_test_loss = total_test_loss + loss.item()
+            progress_bar.set_postfix(loss=f"{loss.item():.5f}")
+            
+            del batch_input_data, batch_target_data, loss, pred
 
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
+        avg_test_loss = total_test_loss / len(val_batches)
+        test_losses_per_epoch.append(avg_test_loss)
+        print(f"Average test loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+# Save the test losses to a file
+with open(f"{model_name}/test_losses_per_epoch.pkl", 'wb') as f:
+    pickle.dump(test_losses_per_epoch, f)
+
+
+
+#### result plotting phase ####
+# Plot and save the test losses
+plt.figure(figsize=(10, 5))
+plt.plot(range(1, len(test_losses_per_epoch) + 1), test_losses_per_epoch, marker='o', color='b', label='Test Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Test Loss per Epoch')
+plt.legend()
+plt.grid(True)
+plt.savefig(f"{model_name}/test_loss_per_epoch.png")
+plt.close()
 
 print("Training completed.")
+
+# Prediction phase after training
+print("Starting prediction phase...")
+prediction_path = f"{model_name}"
+os.makedirs(prediction_path, exist_ok=True)
+
+fig, axes = plt.subplots(3, 1, figsize=(16, 16))  # Adjusted figure size to show all videos in one plot
+
+final_test_loss = test_losses_per_epoch[-1] if test_losses_per_epoch else float('nan')
+all_predictions = []
+all_targets = []
+for video_num in range(0):
+    print(f"Processing video {video_num} for prediction...")
+    predictions = predict_with_model(model, trainer, video_data[video_num:video_num+1], frame_per_window, fps)
+    target = optic_power[video_num]
+
+    # Save the predictions
+    np.save(f"{prediction_path}/predictions_video_{video_num}.npy", predictions)
+    np.save(f"{prediction_path}/target_video_{video_num}.npy", target)
+
+    # Plot results
+    all_predictions.append(predictions)
+    all_targets.append(target)
+    plot_results(axes[video_num], video_num, predictions, target, training_tuples, val_tuples, total_frame, fps, frame_per_window, result_patience, final_test_loss)
+
+save_results(result_save_path, all_targets, all_predictions)
+
+plt.tight_layout()
+plt.savefig(f"{prediction_path}/predictions_all_videos.png")
+plt.close()
+
+print("Prediction phase completed.")

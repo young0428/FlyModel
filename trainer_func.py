@@ -46,7 +46,7 @@ class Trainer :
         target = target.to(self.device)
         
         self.optimizer.zero_grad()
-        pred= self.model(input)
+        pred = self.model(input)
         
         loss = self.loss_func(pred, target)
         self.loss_sum += loss.item()
@@ -62,6 +62,7 @@ class Trainer :
         loss.backward()
         self.optimizer.step()
         return loss, pred
+    
     
     def evaluate(self, input, target):
         self.model.eval()

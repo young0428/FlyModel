@@ -29,7 +29,7 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
 
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frame = cv2.resize(frame, (frame.shape[1] // downsampling_factor, frame.shape[0] // downsampling_factor))
+            frame = cv2.resize(frame, (int(frame.shape[1] // downsampling_factor), int(frame.shape[0] // downsampling_factor)))
             frames.append(frame)
 
         cap.release()
@@ -62,7 +62,7 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
 def LoadVideo(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
-    appendix = ['','_upward','_downward','_leftward','_rightward']
+    appendix = [''] #,'_upward','_downward','_leftward','_rightward']
     video_paths_list = [[f"{folder_path}/{type}{ap}.avi" for ap in appendix] for type in type_list ]
 
     combined_video_tensors = combine_videos_to_tensor(video_paths_list, downsampling_factor)
@@ -475,12 +475,47 @@ def interpolate_data(data, original_freq=1000, target_freq=30):
 
 def get_sac_data(mat_file_path):
     left_sac, right_sac = convert_sac_mat_to_array(mat_file_path)
-    sac_data = []
-    sac_data.append(interpolate_data(left_sac))
-    sac_data.append(interpolate_data(right_sac))
-    sac_data = np.array(sac_data)
+    sac_data = np.stack((left_sac, right_sac), axis=-1)
+    
+    # remove if you multi video
+    sac_data = np.expand_dims(sac_data, axis=0)
     
     return sac_data
+
+def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
+    video_data = LoadVideo(folder_path, downsampling_factor)
+    sac_data = get_sac_data(mat_file_path)           # (video#, frame#, 1)
+    original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
+    total_frame = np.shape(video_data)[1]
+    return original_video, sac_data, total_frame
+
+def sac_get_batches(tuples_list, batch_size):
+    random.shuffle(tuples_list)
+    for i in range(0, len(tuples_list), batch_size):
+        yield tuples_list[i:min(len(tuples_list), i + batch_size)]
+        
+def get_data_from_batch_sac(video_tensor, sac_tensor, batch_set, frame_per_window=1):
+    video_data = []
+    sac_data = []
+    for set in batch_set:
+        video_num, start_frame = set
+        video_data.append(video_tensor[video_num][start_frame-frame_per_window:start_frame])
+        sac_data.append(sac_tensor[video_num][start_frame])
+        
+    return np.array(video_data, dtype=np.float32), np.array(sac_data, dtype=np.float32)
+
+def generate_tuples_sac(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
+    tuples = []
+    
+    # 0 = Bird
+    # 1 = City
+    # 2 = forest
+    for video_n in range(0, 1):  # n = 0, 1, 2, video#
+        for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+            tuples.append((video_n, start_frame))
+                    
+    return tuples
+
 
 #%%
 import h5py

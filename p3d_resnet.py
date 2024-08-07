@@ -30,8 +30,7 @@ class P3DBlock(nn.Module):
         if self.downsample is not None:
             identity = self.downsample(x)
 
-        out += identity
-        out = F.relu(out)
+        out = F.relu(out+identity)
 
         return out
 
@@ -42,7 +41,7 @@ class P3DResNet(nn.Module):
 
         self.conv1 = nn.Conv3d(input_ch, 64, kernel_size=7, stride=(1, 2, 2), padding=(3, 3, 3), bias=False)
         self.bn1 = nn.BatchNorm3d(64)
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.ReLU(inplace=False)
         self.maxpool = nn.MaxPool3d(kernel_size=3, stride=2, padding=1)
         
         # 레이어를 동적으로 생성합니다
@@ -56,12 +55,10 @@ class P3DResNet(nn.Module):
         
         
         self.left_fc = nn.Sequential(
-            nn.GELU(),
             nn.Linear(num_classes,1),
             nn.Sigmoid()
         )
         self.right_fc = nn.Sequential(
-            nn.GELU(),
             nn.Linear(num_classes,1),
             nn.Sigmoid()
         )
@@ -81,8 +78,14 @@ class P3DResNet(nn.Module):
             layers.append(block(self.in_planes, planes))
 
         return nn.Sequential(*layers)
+    
+    def swap_axis_for_input(self, t):
+        return t.permute(0,4,1,2,3)
 
-    def forward(self, x):
+    # (b, t, h, w, c)
+    # (b, c, t, h, w)
+    def forward(self, input):
+        x = self.swap_axis_for_input(input)
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -95,25 +98,35 @@ class P3DResNet(nn.Module):
         x = torch.flatten(x, 1)
         x = self.fc(x)
         
-        x = nn.GELU(x)
+        x = F.gelu(x)
 
         left_pred = self.left_fc(x)
-        
         right_pred = self.right_fc(x)
+        total_pred = torch.cat((left_pred, right_pred),dim=-1)
 
-        return [left_pred, right_pred]
+        return total_pred
 
 def loss_function(pred, target):
-    cirterion = nn.BCELoss()
-    left_loss = cirterion(pred[0], target[0])
-    right_loss = cirterion(pred[1], target[1])
-    return left_loss+right_loss
+    criterion = nn.BCELoss()
+    left_loss = criterion(pred[:, 0], target[:, 0])
+    right_loss = criterion(pred[:, 1], target[:, 1])
+    return left_loss + right_loss
 
-def p3d_resnet18(input_ch, num_classes=400):
-    return P3DResNet(P3DBlock, input_ch, [[64, 2], [128, 2], [256, 2], [512, 2]], num_classes=num_classes)
+def p3d_resnet(input_ch, block_list = [[64, 2], [128, 2], [256, 2], [512, 2]], num_classes=400):
+    return P3DResNet(P3DBlock, input_ch, block_list, num_classes=num_classes)
 
-model = p3d_resnet18(1, num_classes=400)
-x = torch.randn(5, 1, 10, 36, 72)  # 임의의 입력 데이터 (배치 크기, 채널, 시간, 높이, 너비)
+if __name__ == '__main__':
+    import numpy as np
+    
+    model = p3d_resnet(1)
+    x = torch.randn(5, 32, 128, 256,1 )  # 임의의 입력 데이터 (배치 크기, 채널, 시간, 높이, 너비)
+    target = torch.zeros(5, 2)
+    output = model(x)
+    print(np.shape(output))
+    loss = loss_function(output,target)
+    loss.backward()
+    print(loss)
+
 
 
 
