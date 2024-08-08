@@ -23,8 +23,8 @@ frame_per_window = 10
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "p3d"
-model_string += f"{frame_per_window}frames"
+model_string = "8fold_p3d_binary"
+model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
 mat_file_name = "saccade_prediction_data.mat"
@@ -34,151 +34,215 @@ model_name = f"./model/{model_string}"
 os.makedirs(model_name, exist_ok=True)
 result_save_path = f"./model/{model_string}/result_data.h5"
 
-
-
 # hyperparameter 
 batch_size = 10
 lr = 1e-3
-epochs = 200
+epochs = 300
 fold_factor = 8
 
-
-#### p3d renet18 spec ####
+# p3d renet18 spec
 block_list = [[64, 2], [128, 2], [256, 2], [512, 2]]
 feature_output_dims = 400
-##########################
-
-# ### custom parameters ###
-# block_list = [[]]
-# feature_output_dims = 1024
-# ##########################
-
-# create model
-model = p3d_resnet(input_ch, block_list, feature_output_dims)
-trainer = Trainer(model, loss_function, lr)
-current_epoch = trainer.load(f"{model_name}/{checkpoint_name}.ckpt")
-
 
 video_data, sac_data, total_frame = sac_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
-sac_data = sac_data[:,:total_frame]
-
-# %%
 
 # Split period and split for training / test data set
-# and save to model folder
-# Load same tuples for performance comparison
-
 recent_losses = deque(maxlen=100)
 test_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_sac(total_frame, frame_per_window, frame_per_sliding, 3))
 kf = KFold(n_splits=fold_factor)
 
+all_fold_losses = []
+#%%
+
+
+#%%
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
+    if fold < 4:
+        continue
+
     print(f"Fold {fold+1}")
-    for epoch in range(current_epoch, epochs):
+    fold_path = f"{model_name}/fold_{fold+1}"
+
+    # create model
+    model = p3d_resnet(input_ch, block_list, feature_output_dims)
+    trainer = Trainer(model, loss_function, lr)
+    current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
+    os.makedirs(fold_path, exist_ok=True)
+
+
+    with open(f"{fold_path}/training_tuples.pkl", "wb") as f:
+        pickle.dump(batch_tuples[train_index], f)
+    with open(f"{fold_path}/validation_tuples.pkl", "wb") as f:
+        pickle.dump(batch_tuples[val_index], f)
+
+    # Load epoch start point if exists
+    epoch_start_file = f"{fold_path}/epoch_start.pkl"
+    if os.path.exists(epoch_start_file):
+        with open(epoch_start_file, "rb") as f:
+            start_epoch = pickle.load(f)
+    else:
+        start_epoch = current_epoch
+
+    for epoch in range(start_epoch, epochs):
         training_tuples = batch_tuples[train_index]
+        training_tuples = training_tuples[4:-4]
         val_tuples = batch_tuples[val_index]
         
         batches = list(get_batches(training_tuples, batch_size))
-        print("")
         print(f"Epoch {epoch + 1}/{epochs}")
 
         progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=150)
+        
+        total_train_loss = 0.0
+        total_train_correct = 0
+        total_train_samples = 0
         
         for batch in progress_bar:
             batch_input_data, batch_target_data = get_data_from_batch_sac(
                 video_data, sac_data, batch, frame_per_window
                 )
             
-            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
-            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32)
+            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
+            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
             loss, pred = trainer.step(batch_input_data, batch_target_data)
             
+            # Calculate training accuracy
+            batch_pred = (pred > 0.5).int().to(trainer.device)
+            correct = (batch_pred == batch_target_data.int()).sum().item()
+            total_train_correct += correct
+            total_train_samples += batch_target_data.size(0)
+            train_accuracy = total_train_correct / total_train_samples
+            
             recent_losses.append(loss.item())
-
             avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
             
-            progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}")
+            progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}", lr=f"{trainer.lr:.7f}", accuracy=f"{train_accuracy:.3f}")
             
             del batch_input_data, batch_target_data, loss, pred
         
-        trainer.save(f"{model_name}/{checkpoint_name}.ckpt", epoch)
+        trainer.save(f"{fold_path}/{checkpoint_name}.ckpt", epoch)
+        
+        # Save the current epoch to resume later if needed
+        with open(epoch_start_file, "wb") as f:
+            pickle.dump(epoch + 1, f)
         
         # validation phase after each epoch
         val_batches = list(get_batches(val_tuples, batch_size))
         total_test_loss = 0.0
+        total_test_correct = 0
+        total_test_samples = 0
         progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
         for batch in progress_bar:
-            batch_input_data, batch_target_data = get_data_from_batch_v2(
-                video_data, sac_data, batch, frame_per_window, fps)
+            batch_input_data, batch_target_data = get_data_from_batch_sac(
+                video_data, sac_data, batch, frame_per_window)
             
-            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32)
-            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32)
+            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
+            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
             loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
+            
+            # Calculate test accuracy
+            batch_pred = (pred > 0.5).int().to(trainer.device)
+            correct = (batch_pred == batch_target_data.int()).sum().item()
+            total_test_correct += correct
+            total_test_samples += batch_target_data.size(0)
+            test_accuracy = total_test_correct / total_test_samples
+            
             total_test_loss = total_test_loss + loss.item()
-            progress_bar.set_postfix(loss=f"{loss.item():.5f}")
+            progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}", accuracy=f"{test_accuracy:.3f}")
             
             del batch_input_data, batch_target_data, loss, pred
 
         avg_test_loss = total_test_loss / len(val_batches)
         test_losses_per_epoch.append(avg_test_loss)
         print(f"Average test loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
+        print(f"Test accuracy after Epoch {epoch + 1}: {test_accuracy:.3f}")
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+        
 
-# Save the test losses to a file
-with open(f"{model_name}/test_losses_per_epoch.pkl", 'wb') as f:
-    pickle.dump(test_losses_per_epoch, f)
+        # Save intermediate results every 10 epochs
+        if (epoch + 1) % 10 == 0:
+            fig = plt.figure(figsize=(16,12))
+            ax = fig.add_subplot(1,1,1)
+            intermediate_path = f"{fold_path}/intermediate_epoch"
+            os.makedirs(intermediate_path, exist_ok=True)
+            all_predictions = []
+            all_targets = []
+            val_tuples = batch_tuples[val_index]
+            val_start_frame = val_tuples[0][1]
+            val_end_frame = val_tuples[-1][1]
+            predictions = predict_with_model_sac(trainer, video_data, val_start_frame, val_end_frame, frame_per_window, fps)
+            target = sac_data[0,val_start_frame:val_end_frame]
+            predictions = (predictions > 0.5).astype(int)
+            
 
+            # Plot results with accuracy
+            correct = (predictions == target).sum().item()
+            total_samples = len(target)
+            accuracy = correct / total_samples
 
+            predictions  = predictions / 2.0
+            ax.plot(range(val_start_frame, val_end_frame), target[:], label='Target', color='red')
+            ax.plot(range(val_start_frame, val_end_frame), predictions[:], label='Prediction', color='blue')
+            ax.legend()
+            plt.title(f"Accuracy: {accuracy:.3f}")
+            plt.tight_layout()
+            plt.savefig(f"{intermediate_path}/results_epoch_{epoch + 1}.png")
+            plt.close()
 
-#### result plotting phase ####
-# Plot and save the test losses
-plt.figure(figsize=(10, 5))
-plt.plot(range(1, len(test_losses_per_epoch) + 1), test_losses_per_epoch, marker='o', color='b', label='Test Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.title('Test Loss per Epoch')
-plt.legend()
-plt.grid(True)
-plt.savefig(f"{model_name}/test_loss_per_epoch.png")
-plt.close()
+    prediction_path = f"{fold_path}/predictions"
+    os.makedirs(prediction_path, exist_ok=True)
 
-print("Training completed.")
+    fig = plt.figure(figsize=(16,12))
+    ax = fig.add_subplot(1,1,1)
 
-# Prediction phase after training
-print("Starting prediction phase...")
-prediction_path = f"{model_name}"
-os.makedirs(prediction_path, exist_ok=True)
+    all_predictions = []
+    all_targets = []
 
-fig, axes = plt.subplots(3, 1, figsize=(16, 16))  # Adjusted figure size to show all videos in one plot
+    val_tuples = batch_tuples[val_index]
+    val_start_frame = val_tuples[0][1]
+    val_end_frame = val_tuples[-1][1]
 
-final_test_loss = test_losses_per_epoch[-1] if test_losses_per_epoch else float('nan')
-all_predictions = []
-all_targets = []
-for video_num in range(0):
-    print(f"Processing video {video_num} for prediction...")
-    predictions = predict_with_model(model, trainer, video_data[video_num:video_num+1], frame_per_window, fps)
-    target = optic_power[video_num]
+    predictions = predict_with_model_sac(trainer, video_data, val_start_frame, val_end_frame, frame_per_window, fps)
+    target = sac_data[0, val_start_frame:val_end_frame]
 
-    # Save the predictions
-    np.save(f"{prediction_path}/predictions_video_{video_num}.npy", predictions)
-    np.save(f"{prediction_path}/target_video_{video_num}.npy", target)
+    predictions = (predictions > 0.5).astype(int)
+    
 
-    # Plot results
-    all_predictions.append(predictions)
-    all_targets.append(target)
-    plot_results(axes[video_num], video_num, predictions, target, training_tuples, val_tuples, total_frame, fps, frame_per_window, result_patience, final_test_loss)
+    # Calculate prediction accuracy
+    correct = (predictions == target).sum().item()
+    total_samples = len(target)
+    prediction_accuracy = correct / total_samples
+    predictions  = predictions / 2.0
+    # Plot final results with accuracy
+    ax.plot(range(val_start_frame, val_end_frame), target[:], label='Target', color='red')
+    ax.plot(range(val_start_frame, val_end_frame), predictions[:], label='Prediction', color='blue')
+    ax.legend()
+    plt.title(f"Prediction Accuracy: {prediction_accuracy:.3f}")
+    plt.tight_layout()
+    plt.savefig(f"{prediction_path}/final_results.png")
+    plt.close()
+    print("Prediction phase completed.")
 
-save_results(result_save_path, all_targets, all_predictions)
+    all_fold_losses.append(avg_test_loss)
 
-plt.tight_layout()
-plt.savefig(f"{prediction_path}/predictions_all_videos.png")
-plt.close()
+# Save and print overall results
+overall_result_path = f"{model_name}/overall_results"
+os.makedirs(overall_result_path, exist_ok=True)
 
-print("Prediction phase completed.")
+with open(f"{overall_result_path}/fold_losses.pkl", "wb") as f:
+    pickle.dump(all_fold_losses, f)
+
+average_loss = np.mean(all_fold_losses)
+print(f"All fold test losses: {all_fold_losses}")
+print(f"Average test loss: {average_loss:.5f}")
+
+with open(f"{overall_result_path}/average_loss.txt", "w") as f:
+    f.write(f"All fold test losses: {all_fold_losses}\n")
+    f.write(f"Average test loss: {average_loss:.5f}\n")

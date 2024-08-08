@@ -54,14 +54,13 @@ class P3DResNet(nn.Module):
         self.fc = nn.Linear(layers[-1][0] * block.expansion, num_classes)
         
         
-        self.left_fc = nn.Sequential(
-            nn.Linear(num_classes,1),
+        self.fc_binary = nn.Sequential(
+            nn.Linear(num_classes,2048),
+            nn.GELU(),
+            nn.Linear(2048,1),
             nn.Sigmoid()
         )
-        self.right_fc = nn.Sequential(
-            nn.Linear(num_classes,1),
-            nn.Sigmoid()
-        )
+
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
@@ -98,19 +97,21 @@ class P3DResNet(nn.Module):
         x = torch.flatten(x, 1)
         x = self.fc(x)
         
-        x = F.gelu(x)
+        x = self.fc_binary(x)
 
-        left_pred = self.left_fc(x)
-        right_pred = self.right_fc(x)
-        total_pred = torch.cat((left_pred, right_pred),dim=-1)
 
-        return total_pred
+
+        # left_pred = self.left_fc(x)
+        # right_pred = self.right_fc(x)
+        # total_pred = torch.cat((left_pred, right_pred),dim=-1)
+
+        return x
 
 def loss_function(pred, target):
     criterion = nn.BCELoss()
-    left_loss = criterion(pred[:, 0], target[:, 0])
-    right_loss = criterion(pred[:, 1], target[:, 1])
-    return left_loss + right_loss
+    loss = criterion(pred, target)
+    #right_loss = criterion(pred[:, 1], target[:, 1])
+    return loss
 
 def p3d_resnet(input_ch, block_list = [[64, 2], [128, 2], [256, 2], [512, 2]], num_classes=400):
     return P3DResNet(P3DBlock, input_ch, block_list, num_classes=num_classes)

@@ -4,6 +4,7 @@ import os
 import random
 import numpy as np
 import pickle
+import torch
 from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
@@ -264,6 +265,29 @@ def predict_with_model(model, trainer, video_data, frame_per_window, fps, result
     print("Predictions complete.")
     return np.array(predictions)
 
+def predict_with_model_sac(trainer, video_data, val_start_frame, val_end_frame, frame_per_window, fps):
+    total_frame = video_data.shape[1]
+    step = int(10 * fps)  # 10 seconds window
+    predictions = []
+
+    print("Starting predictions...")
+
+    video_data = torch.tensor(video_data, dtype=torch.float32).to(trainer.device)
+    
+    batch_predictions = []
+
+    with torch.no_grad():
+        for frame_num in range(val_start_frame, val_end_frame):
+            batch_input = video_data[0:1,frame_num - frame_per_window : frame_num]
+            
+            pred = trainer.model(batch_input)
+            batch_predictions.append(pred.squeeze(0).cpu().numpy())
+
+    predictions.extend(batch_predictions)
+
+    print("Predictions complete.")
+    return np.array(predictions)
+
 def plot_results(axes, video_num, predictions, target, training_tuples, test_tuples, total_frame, fps, fpw, result_patience, final_test_loss):
     # Adjust target and predictions to align with result_patience
 
@@ -458,20 +482,22 @@ def convert_sac_mat_to_array(sac_mat):
 
 def interpolate_data(data, original_freq=1000, target_freq=30):
 
-    duration = data.shape[-1] / original_freq
-    original_time = np.arange(0, data.shape[-1]) / original_freq
-    new_time = np.arange(0, duration, 1 / target_freq)
+    # Get the original time points based on the original frequency
+    original_time_points = np.arange(data.shape[1]) / original_freq
 
-    new_data_shape = data.shape[:-1] + (new_time.size,)
-    data_interpolated = np.zeros(new_data_shape)
+    # Calculate the new number of time points based on the target frequency
+    total_time = data.shape[1] / original_freq
+    new_time_points = np.arange(0, total_time, 1 / target_freq)
 
-    interpolator = interp1d(original_time, data, kind='linear')
+    # Initialize an array to hold the interpolated data
+    interpolated_data = np.zeros((data.shape[0], len(new_time_points), data.shape[2]))
 
-    data_interpolated[:] = interpolator(new_time)
+    # Interpolate each dimension separately
+    for i in range(data.shape[2]):
+        interp_func = interp1d(original_time_points, data[0, :, i], kind='linear')
+        interpolated_data[0, :, i] = interp_func(new_time_points)
 
-    # 마지막 차원에 대해 차분을 구함
-
-    return data_interpolated
+    return interpolated_data
 
 def get_sac_data(mat_file_path):
     left_sac, right_sac = convert_sac_mat_to_array(mat_file_path)
@@ -482,12 +508,7 @@ def get_sac_data(mat_file_path):
     
     return sac_data
 
-def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
-    video_data = LoadVideo(folder_path, downsampling_factor)
-    sac_data = get_sac_data(mat_file_path)           # (video#, frame#, 1)
-    original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
-    total_frame = np.shape(video_data)[1]
-    return original_video, sac_data, total_frame
+
 
 def sac_get_batches(tuples_list, batch_size):
     random.shuffle(tuples_list)
@@ -516,6 +537,26 @@ def generate_tuples_sac(frame_num, frame_per_window, frame_per_sliding, video_nu
                     
     return tuples
 
+def compare_and_create_binary_array(data):
+    
+    # Initialize the output array
+    binary_array = np.zeros((1, data.shape[1], 1))
+    
+    # Perform the comparison and create the binary array
+    binary_array[0, :, 0] = (data[0, :, 0] > data[0, :, 1]).astype(int)
+    
+    return binary_array
+
+def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
+    video_data = LoadVideo(folder_path, downsampling_factor)
+    sac_data = get_sac_data(mat_file_path)           # (video#, frame#, 1)
+    inter_sac_data = interpolate_data(sac_data, 1000, 30)
+    binary_sac_data = compare_and_create_binary_array(inter_sac_data)
+
+    original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
+    total_frame = np.shape(video_data)[1]
+    return original_video, binary_sac_data, total_frame
+
 
 #%%
 import h5py
@@ -523,7 +564,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 if __name__ == "__main__":
     mat_file_path = "./saccade_prediction_data.mat"
-    print(np.shape(get_sac_data(mat_file_path)))
+    sac_data = interpolate_data(get_sac_data(mat_file_path))
+    fig, axes = plt.subplots(2, 1, figsize=(16, 16))
+    sac_binary = compare_and_create_binary_array(sac_data)
+    print(np.shape(sac_binary))
+    axes[0].scatter(range(len(sac_binary[0][: int(len(sac_binary[0])/2) ])),sac_binary[0][:int(len(sac_binary[0])/2)], label='Prediction', color='black', s=3)
+    axes[0].legend()
+
+    print(np.shape(sac_binary))
+    
+    plt.show()
+
+
+    
     
     
     

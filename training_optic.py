@@ -134,6 +134,8 @@ for epoch in range(current_epoch, epochs):
         batch_target_data = torch.tensor(batch_target_data[:,result_patience:], dtype=torch.float32)
         
         _, pred = trainer.evaluate(batch_input_data, batch_target_data)
+        pred = (pred >= 0.5).astype(int)
+        
         
         for j in range(len(batch_tuples)):
             video_num, start_frame = batch_tuples[j]
@@ -171,6 +173,9 @@ print("Training completed.")
 
 # Prediction phase after training
 print("Starting prediction phase...")
+
+
+
 prediction_path = f"{model_name}"
 os.makedirs(prediction_path, exist_ok=True)
 
@@ -189,6 +194,7 @@ for video_num in range(3):
     np.save(f"{prediction_path}/target_video_{video_num}.npy", target)
 
     # Plot results
+    predictions = (predictions >= 0.5).astype(int)
     all_predictions.append(predictions)
     all_targets.append(target)
     plot_results(axes[video_num], video_num, predictions, target, training_tuples, test_tuples, total_frame, fps, frame_per_window, result_patience, final_test_loss)
