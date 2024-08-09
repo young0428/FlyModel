@@ -14,7 +14,7 @@ class Trainer :
         self.loss_sum = 0
         self.loss_func = loss_func
         self.model = self.model.to(self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr)
+        self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr, weight_decay=1e-4)
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=1, threshold=0.1, min_lr=1e-6)
     
     def save(self, path, epoch):
@@ -55,9 +55,6 @@ class Trainer :
             self.loss_sum = 0
             self.scheduler.step(avg_loss)
             self.lr = self.optimizer.param_groups[0]['lr']
-        
-        
-
         
         loss.backward()
         self.optimizer.step()

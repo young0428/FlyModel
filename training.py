@@ -2,7 +2,7 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from p3d_resnet import p3d_resnet, loss_function
+from p3d_resnet import *
 from trainer_func import Trainer
 from LoadDataset import *
 from tqdm import tqdm
@@ -20,10 +20,10 @@ fps = 30
 downsampling_factor = 5.625
 
 frame_per_window = 10
-frame_per_sliding = 5
+frame_per_sliding = 2
 input_ch = 1 
 
-model_string = "8fold_p3d_binary"
+model_string = "8fold_3dresnet_binary"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -66,7 +66,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     fold_path = f"{model_name}/fold_{fold+1}"
 
     # create model
-    model = p3d_resnet(input_ch, block_list, feature_output_dims)
+    #model = p3d_resnet(input_ch, block_list, feature_output_dims)
+    model = resnet3d50()
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
@@ -195,6 +196,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             plt.tight_layout()
             plt.savefig(f"{intermediate_path}/results_epoch_{epoch + 1}.png")
             plt.close()
+            
 
     prediction_path = f"{fold_path}/predictions"
     os.makedirs(prediction_path, exist_ok=True)

@@ -568,7 +568,9 @@ if __name__ == "__main__":
     fig, axes = plt.subplots(2, 1, figsize=(16, 16))
     sac_binary = compare_and_create_binary_array(sac_data)
     print(np.shape(sac_binary))
-    axes[0].scatter(range(len(sac_binary[0][: int(len(sac_binary[0])/2) ])),sac_binary[0][:int(len(sac_binary[0])/2)], label='Prediction', color='black', s=3)
+    axes[0].plot(sac_data[0,:300,0], label='left', color='red')
+    axes[0].plot(sac_data[0,:300,1], label='right', color='blue')
+    axes[0].plot(sac_binary[0,:300]/2, label='sac_dir',color='gray')
     axes[0].legend()
 
     print(np.shape(sac_binary))
