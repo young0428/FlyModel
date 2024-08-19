@@ -633,7 +633,7 @@ def vertical_flip(video):
 
 def zero_quadrant(video, quadrant):
     frames = video.copy()
-    h, w = frames.shape[2:4]
+    h, w = frames.shape[1:3]
     if quadrant == 'LU':
         frames[:, :h//2, :w//2, :] = 0  # Left Upper
     elif quadrant == 'RU':
@@ -646,7 +646,7 @@ def zero_quadrant(video, quadrant):
 
 def crop_and_resize(video, quadrant):
     frames = video.copy()
-    h, w = frames.shape[2:4]
+    h, w = frames.shape[1:3]
     if quadrant == 'LU':
         frames = frames[:, :h//2, :w//2, :]  # Left Upper
     elif quadrant == 'RU':
@@ -660,7 +660,7 @@ def crop_and_resize(video, quadrant):
 
 def central_crop_and_resize(video, crop_size_ratio=0.5):
     frames = video.copy()
-    h, w = frames.shape[2:4]
+    h, w = frames.shape[1:3]
     crop_h, crop_w = int(h * crop_size_ratio), int(w * crop_size_ratio)
     start_h, start_w = (h - crop_h) // 2, (w - crop_w) // 2
     frames = frames[:, start_h:start_h+crop_h, start_w:start_w+crop_w, :]
