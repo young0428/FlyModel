@@ -106,7 +106,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
-            print(batch_target_data.shape)
+            
             
             
             
@@ -168,7 +168,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             all_predictions = []
             all_targets = []
             val_tuples = batch_tuples[val_index]
-            selected_val_tuples = np.random.choice(val_tuples, size=3, replace=False)
+            selected_indices = np.random.choice(val_tuples.shape[0], size=3, replace=False)
+            selected_val_tuples = val_tuples[selected_indices]
             
             batch_input_data, batch_target_data = get_data_from_batch_flow_estimate(
                 video_data, selected_val_tuples, frame_per_window
@@ -177,7 +178,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
-            predictions = trainer.evaluate(batch_input_data, batch_target_data)
+            _, predictions = trainer.evaluate(batch_input_data, batch_target_data)
             batch_input_data[:, ::2, ::2, ::2, 0:1]
             
 
@@ -187,15 +188,16 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             
             # input            
             for j in range(3):
-                img = batch_input_data[j,-1]
+                img = batch_input_data[j,-1].cpu()
                 axes[0, j*2].imshow(img)
                 axes[0, j*2].axis('off')  # 축 숨기기
+                axes[0, j*2+1].axis('off')  
                 axes[0, j*2].set_title(f'{str(val_tuples[j][0])}')  # 제목 설정
             
             # target
             for j in range(3):
-                img_left = batch_target_data[j,-1,:,:,0]
-                img_right = batch_target_data[j,-1,:,:,1]
+                img_left = batch_target_data[j,-1,:,:,0].cpu()
+                img_right = batch_target_data[j,-1,:,:,1].cpu()
                 axes[1, j*2].imshow(img_left)
                 axes[1, j*2+1].imshow(img_right)
                 axes[1, j*2].axis('off')  # 축 숨기기
@@ -203,8 +205,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
                 
             # prediction       
             for j in range(3):
-                img_left = predictions[j,-1,:,:,0]
-                img_right = predictions[j,-1,:,:,1]
+                img_left = predictions[j,-1,:,:,0].cpu()
+                img_right = predictions[j,-1,:,:,1].cpu()
                 axes[2, j*2].imshow(img_left)
                 axes[2, j*2+1].imshow(img_right)
                 axes[2, j*2].axis('off')  # 축 숨기기
