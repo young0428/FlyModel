@@ -63,7 +63,7 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
 def LoadVideo(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
-    appendix = [''] #,'_upward','_downward','_leftward','_rightward']
+    appendix = ['','_upward','_downward','_leftward','_rightward']
     video_paths_list = [[f"{folder_path}/{type}{ap}.avi" for ap in appendix] for type in type_list ]
 
     combined_video_tensors = combine_videos_to_tensor(video_paths_list, downsampling_factor)
@@ -76,7 +76,7 @@ def LoadVideo(folder_path, downsampling_factor = 1):
 def get_batches(tuples_list, batch_size):
     random.shuffle(tuples_list)
     for i in range(0, len(tuples_list), batch_size):
-        yield tuples_list[i:i + batch_size]
+        yield tuples_list[i:min(i + batch_size, len(tuples_list))]
         
 def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
     original_freq = 1000
@@ -403,6 +403,7 @@ def get_data_from_batch_v2(video_tensor, wba_tensor, batch_set, frame_per_window
     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
 
 def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc = 0.4):
+    
     video_data = LoadVideo(folder_path, downsampling_factor)
     wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
     filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc)
@@ -596,6 +597,36 @@ def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_fac
     original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
     total_frame = np.shape(video_data)[1]
     return original_video, binary_sac_data, total_frame
+
+def load_video_data(folder_path, downsampling_factor):
+    video_data = LoadVideo(folder_path, downsampling_factor)
+    total_frame = np.shape(video_data)[1]
+    
+    return video_data, total_frame
+
+def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=1):
+    video_data = []
+    flow_data = []
+    for set in batch_set:
+        video_num, start_frame = set
+        video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
+        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:3])
+
+    return np.array(video_data), np.array(flow_data)
+
+def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
+    tuples = []
+    
+    # 0 = Bird
+    # 1 = City
+    # 2 = forest
+    
+    for video_n in range(0, video_num):  # n = 0, 1, 2, video#
+        for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+            tuples.append((video_n, start_frame))
+                    
+    return tuples
+
 
 # def wba_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
 #     video_data = LoadVideo(folder_path, downsampling_factor)

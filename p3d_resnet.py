@@ -179,8 +179,12 @@ class ResNet3D(nn.Module):
             layers.append(block(self.in_planes, planes))
 
         return nn.Sequential(*layers)
+    
     def swap_axis_for_input(self, t):
         return t.permute(0,4,1,2,3)
+    
+    
+    
     def forward(self, x):
         x= self.swap_axis_for_input(x)
         x = self.conv1(x)

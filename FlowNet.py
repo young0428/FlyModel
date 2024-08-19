@@ -31,8 +31,7 @@ class ResidualBlock(nn.Module):
         if self.downsample is not None:
             identity = self.downsample(x)
         
-        out += identity
-        out = self.relu(out)
+        out = self.relu(out+identity)
         
         return out
 
@@ -41,7 +40,7 @@ class Encoder3D(nn.Module):
         super(Encoder3D, self).__init__()
         self.in_channels = layer_configs[0][0]  # 첫 번째 레이어의 채널 수로 초기화
         
-        self.conv1 = nn.Conv3d(4, self.in_channels, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = nn.Conv3d(1, self.in_channels, kernel_size=7, stride=1, padding=3, bias=False)
         self.bn1 = nn.BatchNorm3d(self.in_channels)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool3d(kernel_size=3, stride=2, padding=1)
@@ -74,6 +73,7 @@ class Encoder3D(nn.Module):
         for layer in self.layers:
             x = layer(x)
             outputs.append(x)
+            
         
         return outputs
 
@@ -93,8 +93,10 @@ class Decoder3D(nn.Module):
     
     def forward(self, encoder_outputs):
         x = encoder_outputs[-1]
+        
         for i in range(len(self.upconvs)):
             x = self.upconvs[i](x)
+
             x = torch.cat([x, encoder_outputs[-(i+2)]], dim=1)
             x = F.relu(self.convs[i](x))
         
@@ -106,21 +108,37 @@ class FlowNet3D(nn.Module):
         super(FlowNet3D, self).__init__()
         self.encoder = Encoder3D(block, layer_configs)
         self.decoder = Decoder3D(layer_configs, num_classes)
+        
+    def swap_axis_for_input(self, t):
+        return t.permute(0, 4, 1, 2, 3)
+    
+    def reswap_axis_for_input(self, t):
+        return t.permute(0, 2, 3, 4, 1)
     
     def forward(self, x):
+
+        x = self.swap_axis_for_input(x)
         encoder_outputs = self.encoder(x)
         out = self.decoder(encoder_outputs)
+        out = self.reswap_axis_for_input(out)
         return out
 
 def flownet3d(layer_configs, num_classes = 2):
     return FlowNet3D(ResidualBlock, layer_configs, num_classes)
 
-# 예시: 다양한 형태의 layer_configs를 입력으로 모델을 구성
-layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
-model = flownet3d(layer_configs)
+def loss_function(pred, target):
+    loss = F.mse_loss(pred, target)
+    return loss
 
-# 테스트용 입력 데이터 생성
-x = torch.randn((1, 4, 32, 128, 128))  # Batch size: 1, Channels: 4, Depth: 32, Height: 128, Width: 128
-output = model(x)
+#예시: 다양한 형태의 layer_configs를 입력으로 모델을 구성
+# layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
+# model = flownet3d(layer_configs, num_classes=2)
 
-print(output.shape)  # 출력 크기 확인
+# # 테스트용 입력 데이터 생성
+# x = torch.randn((2, 32, 128, 128, 1))  # Batch size: 1, Channels: 4, Depth: 32, Height: 128, Width: 128
+# output = model(x)
+
+# loss = loss_function(x, output)
+# print(loss.item())
+
+# print(output.shape)  # 출력 크기 확인
