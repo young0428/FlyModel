@@ -156,12 +156,12 @@ class ResNet3D(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-
+        self.dropout = nn.Dropout(p=0.2)
         self.avgpool = nn.AdaptiveAvgPool3d((1, 1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
-        self.fc_binary = nn.Sequential(
-            nn.Linear(num_classes,1),
-            nn.Sigmoid()
+        self.fc_categorical = nn.Sequential(
+            nn.Linear(num_classes,3),
+            nn.Softmax(dim=-1)
         )
 
     def _make_layer(self, block, planes, blocks, stride=1):
@@ -196,8 +196,9 @@ class ResNet3D(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
-
-        x = self.fc_binary(x)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.fc_categorical(x)
 
         return x
 
@@ -219,7 +220,8 @@ def resnet3d152(num_classes=400):
 
 
 def loss_function(pred, target):
-    criterion = nn.BCELoss()
+    criterion = nn.CrossEntropyLoss()
+
     loss = criterion(pred, target)
     #right_loss = criterion(pred[:, 1], target[:, 1])
     return loss

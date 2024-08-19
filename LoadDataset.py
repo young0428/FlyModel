@@ -78,7 +78,7 @@ def get_batches(tuples_list, batch_size):
     for i in range(0, len(tuples_list), batch_size):
         yield tuples_list[i:i + batch_size]
         
-def interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30):
+def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
     original_freq = 1000
 
     duration = wba_data.shape[-1] / original_freq
@@ -99,9 +99,9 @@ def interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30):
             wba_data_interpolated[fly, video, :] = interpolator(new_time)
 
     # 마지막 차원에 대해 차분을 구함
-    wba_data_diff = np.diff(wba_data_interpolated, axis=-1)
+    
 
-    return wba_data_interpolated, wba_data_diff
+    return wba_data_interpolated
 
 
 ########################### average 안함 ###########################
@@ -288,6 +288,31 @@ def predict_with_model_sac(trainer, video_data, val_start_frame, val_end_frame, 
     print("Predictions complete.")
     return np.array(predictions)
 
+def predict_with_model_wba(trainer, video_data, val_start_frame, val_end_frame, frame_per_window, fps):
+    total_frame = video_data.shape[1]
+    step = int(10 * fps)  # 10 seconds window
+    predictions = []
+
+    print("Starting predictions...")
+
+    video_data = torch.tensor(video_data, dtype=torch.float32).to(trainer.device)
+    
+    batch_predictions = []
+
+    with torch.no_grad():
+        for frame_num in range(val_start_frame, val_end_frame):
+            batch_input = video_data[0:1,frame_num - frame_per_window : frame_num]
+            
+            pred = trainer.model(batch_input)
+            predict_label = np.argmax(pred.cpu(), axis=1)
+            batch_predictions.append(predict_label.squeeze(0).cpu().numpy())
+
+
+    predictions.extend(batch_predictions)
+
+    print("Predictions complete.")
+    return np.array(predictions)
+
 def plot_results(axes, video_num, predictions, target, training_tuples, test_tuples, total_frame, fps, fpw, result_patience, final_test_loss):
     # Adjust target and predictions to align with result_patience
 
@@ -381,10 +406,12 @@ def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc 
     video_data = LoadVideo(folder_path, downsampling_factor)
     wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
     filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc)
-    _, interpolated_diff_wba_data = interpolate_and_diff_wba_data(filtered_wba_data, original_freq=1000, target_freq=30)
+    interpolated_wba_data = np.mean(interpolate_wba_data(filtered_wba_data, original_freq=1000, target_freq=30),axis=0)
+    diff_wba_data = np.diff(interpolated_wba_data,axis=-1)
+    diff_wba_data_cat = np.where(diff_wba_data > 0.05, 0, np.where(diff_wba_data < -0.05, 1, 2))
     total_frame = np.shape(video_data)[1]
     
-    return video_data, interpolated_diff_wba_data, total_frame
+    return video_data, interpolated_wba_data, diff_wba_data_cat, total_frame
 
 def generate_tuples_optic(frame_num, frame_per_sliding, fps=30, video_num = 3):
     training_tuples_list = []
@@ -525,13 +552,26 @@ def get_data_from_batch_sac(video_tensor, sac_tensor, batch_set, frame_per_windo
         
     return np.array(video_data, dtype=np.float32), np.array(sac_data, dtype=np.float32)
 
+def get_data_from_batch_diff_cat(video_tensor, wba_tensor, batch_set, frame_per_window=1):
+    video_data = []
+    wba_data = []
+    for set in batch_set:
+        video_num, start_frame = set
+        video_data.append(video_tensor[video_num][start_frame-frame_per_window:start_frame])
+        
+        one_hot_wba_data = np.eye(3)[wba_tensor[video_num][start_frame]]
+        wba_data.append(one_hot_wba_data)
+
+    return np.array(video_data), np.array(wba_data)
+
+
 def generate_tuples_sac(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
     tuples = []
     
     # 0 = Bird
     # 1 = City
     # 2 = forest
-    for video_n in range(0, 1):  # n = 0, 1, 2, video#
+    for video_n in range(2, 3):  # n = 0, 1, 2, video#
         for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
             tuples.append((video_n, start_frame))
                     
@@ -557,25 +597,45 @@ def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_fac
     total_frame = np.shape(video_data)[1]
     return original_video, binary_sac_data, total_frame
 
+# def wba_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
+#     video_data = LoadVideo(folder_path, downsampling_factor)
+#     original_wba_data = 
+
 
 #%%
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 if __name__ == "__main__":
-    mat_file_path = "./saccade_prediction_data.mat"
-    sac_data = interpolate_data(get_sac_data(mat_file_path))
-    fig, axes = plt.subplots(2, 1, figsize=(16, 16))
-    sac_binary = compare_and_create_binary_array(sac_data)
-    print(np.shape(sac_binary))
-    axes[0].plot(sac_data[0,:300,0], label='left', color='red')
-    axes[0].plot(sac_data[0,:300,1], label='right', color='blue')
-    axes[0].plot(sac_binary[0,:300]/2, label='sac_dir',color='gray')
-    axes[0].legend()
+    # mat_file_path = "./saccade_prediction_data.mat"
+    # sac_data = interpolate_data(get_sac_data(mat_file_path))
+    # fig, axes = plt.subplots(2, 1, figsize=(16, 16))
+    # sac_binary = compare_and_create_binary_array(sac_data)
+    # print(np.shape(sac_binary))
+    # axes[0].plot(sac_data[0,:300,0], label='left', color='red')
+    # axes[0].plot(sac_data[0,:300,1], label='right', color='blue')
+    # axes[0].plot(sac_binary[0,:300]/2, label='sac_dir',color='gray')
+    # axes[0].legend()
 
-    print(np.shape(sac_binary))
+    # print(np.shape(sac_binary))
     
+    # plt.show()
+    folder_path = "./naturalistic"
+    mat_file_name = "experimental_data.mat"
+    ds = 5.625
+    video_data, wba_data, diff_wba_data, total_frame = load_filtered_diff_data(folder_path, mat_file_name, ds)
+    #%%
+    diff_wba_data_cat = np.where(diff_wba_data > 0.05, 0, np.where(diff_wba_data < -0.05, 1, 2))
+    #%%
+    plt.plot(diff_wba_data_cat[0,:]/10, color='red')
+    plt.plot(diff_wba_data[0,:],color='blue')
     plt.show()
+    plt.close()
+    
+#%%
+
+    
+
 
 
     
