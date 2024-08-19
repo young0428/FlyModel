@@ -628,6 +628,71 @@ def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_n
     return tuples
 
 
+def vertical_flip(video):
+    return np.flip(video, axis=2)  # Vertical flip (상하 반전)
+
+def zero_quadrant(video, quadrant):
+    frames = video.copy()
+    h, w = frames.shape[2:4]
+    if quadrant == 'LU':
+        frames[:, :h//2, :w//2, :] = 0  # Left Upper
+    elif quadrant == 'RU':
+        frames[:, :h//2, w//2:, :] = 0  # Right Upper
+    elif quadrant == 'LD':
+        frames[:, h//2:, :w//2, :] = 0  # Left Down
+    elif quadrant == 'RD':
+        frames[:, h//2:, w//2:, :] = 0  # Right Down
+    return frames
+
+def crop_and_resize(video, quadrant):
+    frames = video.copy()
+    h, w = frames.shape[2:4]
+    if quadrant == 'LU':
+        frames = frames[:, :h//2, :w//2, :]  # Left Upper
+    elif quadrant == 'RU':
+        frames = frames[:, :h//2, w//2:, :]  # Right Upper
+    elif quadrant == 'LD':
+        frames = frames[:, h//2:, :w//2, :]  # Left Down
+    elif quadrant == 'RD':
+        frames = frames[:, h//2:, w//2:, :]  # Right Down
+    frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
+    return frames
+
+def central_crop_and_resize(video, crop_size_ratio=0.5):
+    frames = video.copy()
+    h, w = frames.shape[2:4]
+    crop_h, crop_w = int(h * crop_size_ratio), int(w * crop_size_ratio)
+    start_h, start_w = (h - crop_h) // 2, (w - crop_w) // 2
+    frames = frames[:, start_h:start_h+crop_h, start_w:start_w+crop_w, :]
+    frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
+    return frames
+
+def aug_videos(videos):
+    augmented_videos = []
+
+    for video in videos:
+        # 원본 영상 추가
+        augmented_videos.append(video)
+        
+        # Vertical Flip
+        augmented_videos.append(vertical_flip(video))
+        
+        # Zero-out quadrants
+        augmented_videos.append(zero_quadrant(video, 'LU'))
+        augmented_videos.append(zero_quadrant(video, 'RU'))
+        augmented_videos.append(zero_quadrant(video, 'LD'))
+        augmented_videos.append(zero_quadrant(video, 'RD'))
+        
+        # Crop and Resize quadrants
+        augmented_videos.append(crop_and_resize(video, 'LU'))
+        augmented_videos.append(crop_and_resize(video, 'RU'))
+        augmented_videos.append(crop_and_resize(video, 'LD'))
+        augmented_videos.append(crop_and_resize(video, 'RD'))
+        
+        # Central Crop and Resize
+        augmented_videos.append(central_crop_and_resize(video))
+
+    return np.array(augmented_videos)
 # def wba_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
 #     video_data = LoadVideo(folder_path, downsampling_factor)
 #     original_wba_data = 

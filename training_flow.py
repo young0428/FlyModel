@@ -43,12 +43,14 @@ fold_factor = 8
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
 
 video_data, total_frame = load_video_data(folder_path, downsampling_factor)
+video_data = aug_videos(video_data)
+print(f"augmented shape : {video_data.shape}")
 
 # Split period and split for training / test data set
 recent_losses = deque(maxlen=100)
 test_losses_per_epoch = []
 
-batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, 3))
+batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
 kf = KFold(n_splits=fold_factor)
 
 all_fold_losses = []
