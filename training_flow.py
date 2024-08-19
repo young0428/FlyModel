@@ -51,7 +51,7 @@ recent_losses = deque(maxlen=100)
 test_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
-kf = KFold(n_splits=fold_factor)
+kf = KFold(n_splits=fold_factor, shuffle=True, random_state=1)
 
 all_fold_losses = []
 #%%
@@ -64,7 +64,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     fold_path = f"{model_name}/fold_{fold+1}"
 
     # create model
-    model = flownet3d(layer_configs, num_classes=1)
+    model = flownet3d(layer_configs, num_classes=2)
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
@@ -161,7 +161,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             trainer.save(best_model_path, epoch)
             print(f"New best model saved at epoch {best_epoch} with loss {min_test_loss:.5f}")
 
-        # Save intermediate results 
+        # Save intermediate results every 10 epochs
         if (epoch + 1) % 5 == 0:
             fig = plt.figure(figsize=(16,12))
             ax = fig.add_subplot(1,1,1)
