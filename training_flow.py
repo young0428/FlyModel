@@ -198,15 +198,17 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
                 img_right = batch_target_data[j,-1,:,:,1]
                 axes[1, j*2].imshow(img_left)
                 axes[1, j*2+1].imshow(img_right)
-                axes[1, j].axis('off')  # 축 숨기기
+                axes[1, j*2].axis('off')  # 축 숨기기
+                axes[1, j*2+1].axis('off')
                 
             # prediction       
             for j in range(3):
                 img_left = predictions[j,-1,:,:,0]
                 img_right = predictions[j,-1,:,:,1]
-                axes[1, j*2].imshow(img_left)
-                axes[1, j*2+1].imshow(img_right)
-                axes[1, j].axis('off')  # 축 숨기기
+                axes[2, j*2].imshow(img_left)
+                axes[2, j*2+1].imshow(img_right)
+                axes[2, j*2].axis('off')  # 축 숨기기
+                axes[2, j*2+1].axis('off')
                 
             intermediate_path = f"{fold_path}/intermediate_epoch"
             os.makedirs(intermediate_path, exist_ok=True)
