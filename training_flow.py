@@ -20,10 +20,10 @@ fps = 30
 downsampling_factor = 5.625
 
 frame_per_window = 16
-frame_per_sliding = 5
+frame_per_sliding = 16
 input_ch = 1 
 
-model_string = "8fold_opticflow"
+model_string = "64x128_opticflow_64t512"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -35,9 +35,9 @@ os.makedirs(model_name, exist_ok=True)
 result_save_path = f"./model/{model_string}/result_data.h5"
 
 # hyperparameter 
-batch_size = 10
+batch_size = 50
 lr = 1e-3
-epochs = 300
+epochs = 100
 fold_factor = 8
 
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
@@ -51,7 +51,7 @@ recent_losses = deque(maxlen=100)
 test_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
-kf = KFold(n_splits=fold_factor)
+kf = KFold(n_splits=fold_factor, shuffle=True, random_state=1)
 
 all_fold_losses = []
 #%%
@@ -59,19 +59,15 @@ all_fold_losses = []
 
 #%%
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
-    if not fold < 4:
-        continue
 
     print(f"Fold {fold+1}")
     fold_path = f"{model_name}/fold_{fold+1}"
 
     # create model
-    #model = p3d_resnet(input_ch, block_list, feature_output_dims)
     model = flownet3d(layer_configs, num_classes=2)
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
-
 
     with open(f"{fold_path}/training_tuples.pkl", "wb") as f:
         pickle.dump(batch_tuples[train_index], f)
@@ -85,6 +81,10 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             start_epoch = pickle.load(f)
     else:
         start_epoch = current_epoch
+
+    # Initialize minimum loss to a large value
+    min_test_loss = float('inf')
+    best_epoch = 0
 
     for epoch in range(start_epoch, epochs):
         
@@ -109,9 +109,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
-            
-            
-            
+
             loss, pred = trainer.step(batch_input_data, batch_target_data)
             
             
@@ -131,8 +129,6 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         # validation phase after each epoch
         val_batches = list(get_batches(val_tuples, batch_size))
         total_test_loss = 0.0
-        total_test_correct = 0
-        total_test_samples = 0
         
         progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
@@ -144,14 +140,11 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
-            
-            # Calculate test accuracy
+            # Calculate test loss
             loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
             
-            total_test_loss = total_test_loss + loss.item()
+            total_test_loss += loss.item()
             progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}")
-            
-            #del batch_input_data, batch_target_data, loss, pred
 
         avg_test_loss = total_test_loss / len(val_batches)
         test_losses_per_epoch.append(avg_test_loss)
@@ -159,10 +152,17 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-        
+
+        # Save model if this epoch has the lowest test loss
+        if avg_test_loss < min_test_loss:
+            min_test_loss = avg_test_loss
+            best_epoch = epoch + 1
+            best_model_path = f"{fold_path}/best_model.ckpt"
+            trainer.save(best_model_path, epoch)
+            print(f"New best model saved at epoch {best_epoch} with loss {min_test_loss:.5f}")
 
         # Save intermediate results every 10 epochs
-        if (epoch + 1) % 10 == 0:
+        if (epoch + 1) % 5 == 0:
             fig = plt.figure(figsize=(16,12))
             ax = fig.add_subplot(1,1,1)
             intermediate_path = f"{fold_path}/intermediate_epoch"
@@ -171,8 +171,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             all_targets = []
             val_tuples = batch_tuples[val_index]
             selected_indices = np.random.choice(val_tuples.shape[0], size=3, replace=False)
-            selected_val_tuples = val_tuples[selected_indices]
             
+            selected_val_tuples = val_tuples[selected_indices]
             batch_input_data, batch_target_data = get_data_from_batch_flow_estimate(
                 video_data, selected_val_tuples, frame_per_window
                 )
@@ -220,9 +220,9 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             plt.savefig(f"{intermediate_path}/results_epoch_{epoch + 1}.png")
             plt.close()
             
-            
 
-    all_fold_losses.append(avg_test_loss)
+    print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with loss {min_test_loss:.5f}")
+    all_fold_losses.append(min_test_loss)
 
 # Save and print overall results
 overall_result_path = f"{model_name}/overall_results"
