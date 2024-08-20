@@ -64,7 +64,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     fold_path = f"{model_name}/fold_{fold+1}"
 
     # create model
-    model = flownet3d(layer_configs, num_classes=2)
+    model = flownet3d(layer_configs, num_classes=1)
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
@@ -184,35 +184,28 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_input_data[:, ::2, ::2, ::2, 0:1]
             
 
-            fig, axes = plt.subplots(3, 6, figsize=(15, 8))
+            fig, axes = plt.subplots(3, 3, figsize=(15, 9))
 
             # 서브플롯에 이미지를 삽입
             
             # input            
             for j in range(3):
                 img = batch_input_data[j,-1].cpu()
-                axes[0, j*2].imshow(img)
-                axes[0, j*2].axis('off')  # 축 숨기기
-                axes[0, j*2+1].axis('off')  
-                axes[0, j*2].set_title(f'{str(val_tuples[j][0])}')  # 제목 설정
+                axes[0, j].imshow(img)
+                axes[0, j].axis('off')  # 축 숨기기
+                axes[0, j].set_title(f'{str(val_tuples[j][0])}')  # 제목 설정
             
             # target
             for j in range(3):
-                img_left = batch_target_data[j,-1,:,:,0].cpu()
-                img_right = batch_target_data[j,-1,:,:,1].cpu()
-                axes[1, j*2].imshow(img_left)
-                axes[1, j*2+1].imshow(img_right)
-                axes[1, j*2].axis('off')  # 축 숨기기
-                axes[1, j*2+1].axis('off')
+                img = batch_target_data[j,-1,:,:,0].cpu()
+                axes[1, j].imshow(img)
+                axes[1, j].axis('off')  # 축 숨기기
                 
             # prediction       
             for j in range(3):
-                img_left = predictions[j,-1,:,:,0].cpu()
-                img_right = predictions[j,-1,:,:,1].cpu()
-                axes[2, j*2].imshow(img_left)
-                axes[2, j*2+1].imshow(img_right)
-                axes[2, j*2].axis('off')  # 축 숨기기
-                axes[2, j*2+1].axis('off')
+                img = predictions[j,-1,:,:,0].cpu()
+                axes[2, j].imshow(img)
+                axes[2, j].axis('off')
                 
             intermediate_path = f"{fold_path}/intermediate_epoch"
             os.makedirs(intermediate_path, exist_ok=True)

@@ -70,3 +70,11 @@ class Trainer :
             loss = self.loss_func(pred, target)
         self.model.train()
         return loss, pred
+    
+    def pred(self, input):
+        self.model.eval()
+        with torch.no_grad():
+            input = input.to(self.device)
+            pred = self.model(input)
+        self.model.train()
+        return pred
