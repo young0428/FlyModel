@@ -19,11 +19,11 @@ c = 1
 fps = 30
 downsampling_factor = 5.625
 
-frame_per_window = 10
-frame_per_sliding = 5
+frame_per_window = 8
+frame_per_sliding = 4
 input_ch = 1 
 
-model_string = "8fold_3dresnet18_categori"
+model_string = "8fold_3dresnet50_categorical"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -58,6 +58,38 @@ all_fold_losses = []
 
 
 #%%
+train_losses_per_epoch_file = f"{model_name}/train_losses_per_epoch.pkl"
+train_accuracies_per_epoch_file = f"{model_name}/train_accuracies_per_epoch.pkl"
+
+test_losses_per_epoch_file = f"{model_name}/test_losses_per_epoch.pkl"
+test_accuracies_per_epoch_file = f"{model_name}/test_accuracies_per_epoch.pkl"
+
+if os.path.exists(train_losses_per_epoch_file):
+    with open(train_losses_per_epoch_file, "rb") as f:
+        train_losses_per_epoch = pickle.load(f)
+else:
+    train_losses_per_epoch = []
+
+if os.path.exists(train_accuracies_per_epoch_file):
+    with open(train_accuracies_per_epoch_file, "rb") as f:
+        train_accuracies_per_epoch = pickle.load(f)
+else:
+    train_accuracies_per_epoch = []
+
+if os.path.exists(test_losses_per_epoch_file):
+    with open(test_losses_per_epoch_file, "rb") as f:
+        test_losses_per_epoch = pickle.load(f)
+else:
+    test_losses_per_epoch = []
+
+if os.path.exists(test_accuracies_per_epoch_file):
+    with open(test_accuracies_per_epoch_file, "rb") as f:
+        test_accuracies_per_epoch = pickle.load(f)
+else:
+    test_accuracies_per_epoch = []
+
+#%%
+
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     if not fold < 4:
         continue
@@ -67,11 +99,10 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # create model
     #model = p3d_resnet(input_ch, block_list, feature_output_dims)
-    model = resnet3d18(num_classes=3)
+    model = resnet3d50(num_classes=3)
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
-
 
     with open(f"{fold_path}/training_tuples.pkl", "wb") as f:
         pickle.dump(batch_tuples[train_index], f)
@@ -118,6 +149,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             total_train_samples += batch_target_data.size(0)
             train_accuracy = total_train_correct / total_train_samples
             
+            total_train_loss += loss.item()
             recent_losses.append(loss.item())
             avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
             
@@ -125,12 +157,13 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             
             del batch_input_data, batch_target_data, loss, pred
         
-        trainer.save(f"{fold_path}/{checkpoint_name}.ckpt", epoch)
+        # Epoch 끝난 후, 평균 loss와 accuracy 계산
+        avg_train_loss = total_train_loss / len(batches)
+        train_losses_per_epoch.append(avg_train_loss)
         
-        # Save the current epoch to resume later if needed
-        with open(epoch_start_file, "wb") as f:
-            pickle.dump(epoch + 1, f)
-        
+        avg_train_accuracy = total_train_correct / total_train_samples
+        train_accuracies_per_epoch.append(avg_train_accuracy)
+
         # validation phase after each epoch
         val_batches = list(get_batches(val_tuples, batch_size))
         total_test_loss = 0.0
@@ -146,7 +179,6 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
-            
             # Calculate test accuracy
             loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
             batch_target_indices = torch.argmax(batch_target_data, dim=1)
@@ -158,19 +190,77 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             total_test_samples += batch_target_data.size(0)
             test_accuracy = total_test_correct / total_test_samples
             
-            total_test_loss = total_test_loss + loss.item()
+            total_test_loss += loss.item()
             progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}", accuracy=f"{test_accuracy:.3f}")
-            
-            #del batch_input_data, batch_target_data, loss, pred
-
+        
+        # Epoch 끝난 후, test loss와 accuracy 계산
         avg_test_loss = total_test_loss / len(val_batches)
         test_losses_per_epoch.append(avg_test_loss)
         print(f"Average test loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
         print(f"Test accuracy after Epoch {epoch + 1}: {test_accuracy:.3f}")
 
+        avg_test_loss = total_test_loss / len(val_batches)
+        test_losses_per_epoch.append(avg_test_loss)
+        
+        avg_test_accuracy = total_test_correct / total_test_samples
+        test_accuracies_per_epoch.append(avg_test_accuracy)
+
+        # Training 및 Test 결과 플롯 갱신 및 저장
+        plt.figure(figsize=(10,10))
+        
+        # Training Loss
+        plt.subplot(2, 2, 1)
+        plt.plot(train_losses_per_epoch, label='Training Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend()
+
+        # Training Accuracy
+        plt.subplot(2, 2, 2)
+        plt.plot(train_accuracies_per_epoch, label='Training Accuracy')
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy')
+        plt.legend()
+
+        # Test Loss
+        plt.subplot(2, 2, 3)
+        plt.plot(test_losses_per_epoch, label='Test Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend()
+
+        # Test Accuracy
+        plt.subplot(2, 2, 4)
+        plt.plot(test_accuracies_per_epoch, label='Test Accuracy')
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy')
+        plt.legend()
+
+        plt.tight_layout()
+        plt.savefig(f"{fold_path}/training_testing_progress.png")
+        plt.close()
+
+        # Loss와 accuracy 리스트를 파일로 저장
+        with open(train_losses_per_epoch_file, "wb") as f:
+            pickle.dump(train_losses_per_epoch, f)
+
+        with open(train_accuracies_per_epoch_file, "wb") as f:
+            pickle.dump(train_accuracies_per_epoch, f)
+
+        with open(test_losses_per_epoch_file, "wb") as f:
+            pickle.dump(test_losses_per_epoch, f)
+
+        with open(test_accuracies_per_epoch_file, "wb") as f:
+            pickle.dump(test_accuracies_per_epoch, f)
+
+        trainer.save(f"{fold_path}/{checkpoint_name}.ckpt", epoch)
+        
+        # Save the current epoch to resume later if needed
+        with open(epoch_start_file, "wb") as f:
+            pickle.dump(epoch + 1, f)
+        
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-        
 
         # Save intermediate results every 10 epochs
         if (epoch + 1) % 10 == 0:
@@ -202,40 +292,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             plt.savefig(f"{intermediate_path}/results_epoch_{epoch + 1}.png")
             plt.close()
             
-
-    prediction_path = f"{fold_path}/predictions"
-    os.makedirs(prediction_path, exist_ok=True)
-
-    fig = plt.figure(figsize=(16,12))
-    ax = fig.add_subplot(1,1,1)
-
-    all_predictions = []
-    all_targets = []
-
-    val_tuples = batch_tuples[val_index]
-    val_start_frame = val_tuples[0][1]
-    val_end_frame = val_tuples[-1][1]
-
-    predictions = predict_with_model_wba(trainer, video_data, val_start_frame, val_end_frame, frame_per_window, fps)
-    target = wba_data[val_tuples[0][0],val_tuples[0][0], val_start_frame:val_end_frame]
-
-    predictions = np.argmax(predictions, axis=1)
-
-    # 정확도 계산
-    correct = (predictions == target).sum().item()
-    total_samples = len(target)
-    prediction_accuracy = correct / total_samples
-
-    # Plot final results with accuracy
-    ax.plot(range(val_start_frame, val_end_frame), target[:], label='Target', color='red')
-    ax.plot(range(val_start_frame, val_end_frame), predictions[:], label='Prediction', color='blue')
-    ax.legend()
-    plt.title(f"Prediction Accuracy: {prediction_accuracy:.3f}")
-    plt.tight_layout()
-    plt.savefig(f"{prediction_path}/final_results.png")
-    plt.close()
-    print("Prediction phase completed.")
-
+    # End of fold operations
     all_fold_losses.append(avg_test_loss)
 
 # Save and print overall results
