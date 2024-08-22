@@ -51,7 +51,7 @@ recent_losses = deque(maxlen=100)
 test_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
-kf = KFold(n_splits=fold_factor, shuffle=True, random_state=1)
+kf = KFold(n_splits=fold_factor)
 
 all_fold_losses = []
 #%%
@@ -161,7 +161,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             trainer.save(best_model_path, epoch)
             print(f"New best model saved at epoch {best_epoch} with loss {min_test_loss:.5f}")
 
-        # Save intermediate results every 10 epochs
+        # Save intermediate results 
         if (epoch + 1) % 5 == 0:
             fig = plt.figure(figsize=(16,12))
             ax = fig.add_subplot(1,1,1)
@@ -186,20 +186,19 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
             fig, axes = plt.subplots(3, 3, figsize=(15, 9))
 
-            # 서브플롯에 이미지를 삽입
             
             # input            
             for j in range(3):
                 img = batch_input_data[j,-1].cpu()
                 axes[0, j].imshow(img)
-                axes[0, j].axis('off')  # 축 숨기기
-                axes[0, j].set_title(f'{str(val_tuples[j][0])}')  # 제목 설정
+                axes[0, j].axis('off')  
+                axes[0, j].set_title(f'{str(val_tuples[j][0])}')
             
             # target
             for j in range(3):
                 img = batch_target_data[j,-1,:,:,0].cpu()
                 axes[1, j].imshow(img)
-                axes[1, j].axis('off')  # 축 숨기기
+                axes[1, j].axis('off')  
                 
             # prediction       
             for j in range(3):

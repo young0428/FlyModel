@@ -529,8 +529,8 @@ def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_n
     # 1 = City
     # 2 = forest
     
-    for video_n in range(0, video_num):  # n = 0, 1, 2, video#
-        for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+    for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+        for video_n in range(0, video_num):
             tuples.append((video_n, start_frame))
                     
     return tuples
