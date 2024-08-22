@@ -31,7 +31,9 @@ window_size = 1
 sliding_size = 0.5
 frame_per_sliding = int(fps * sliding_size)
 frame_per_window = int(fps * window_size)
-result_patience = 15
+
+
+result_patience = 15 # result_patience 이후 값만 loss 계산에 이용 ( window_size = 1 (30frames), result_patience = 10 일 경우 20)
 
 folder_path = "./naturalistic"
 mat_file_name = "experimental_data.mat"

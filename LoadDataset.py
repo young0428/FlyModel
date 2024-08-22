@@ -58,7 +58,7 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
     return np.array(combined_videos)
 
 
-def LoadVideo(folder_path, downsampling_factor = 1):
+def load_video(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
 
@@ -103,105 +103,12 @@ def interpolate_and_diff_wba_data(wba_data, original_freq=1000, target_freq=30):
     return wba_data_interpolated, wba_data_diff
 
 
-########################### average 안함 ###########################
-# def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
-#     training_tuples_list = []
-#     test_tuples_list = []
-#     for video_n in range(video_num):  # n = 0, 1, 2, video#
-#         for fly_n in range(fly_num):
-#             for trial_n in range(trial_num):
-#                 test_period = list(random.sample(range(10), 3))
-#                 for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
-#                     if (start_frame / (frame_num - fps)) // 0.1 in test_period:
-#                         test_tuples_list.append((fly_n, video_n, trial_n, start_frame))
-#                     else:
-#                         training_tuples_list.append((fly_n, video_n, trial_n, start_frame))
-                    
-#     return training_tuples_list, test_tuples_list
 
-
-# def convert_mat_to_array(mat_file_path):
-#     with h5py.File(mat_file_path, 'r') as mat_file:
-#         experimental_data = mat_file['experimental_data']
-        
-#         num_flies = experimental_data.shape[3]
-#         num_videos = experimental_data.shape[2]
-#         num_trials = experimental_data.shape[1]
-        
-        
-#         wba_data = np.zeros((num_flies, num_videos, num_trials, 120000))
-        
-#         for fly in range(num_flies):
-#             for video in range(num_videos):
-#                 for trial in range(num_trials):
-#                     # LWBA 데이터 (index 3)
-#                     lwba_ref = experimental_data[3][trial][video][fly]
-#                     lwba_data = mat_file[lwba_ref][:]
-                    
-#                     # RWBA 데이터 (index 4)
-#                     rwba_ref = experimental_data[4][trial][video][fly]
-#                     rwba_data = mat_file[rwba_ref][:]
-                    
-#                     wba_data[fly, video, trial, :] = lwba_data - rwba_data
-                    
-#     return wba_data
-
-# def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30, result_delay = 15):
-#     video_data = []
-#     wba_data = []
-#     # batch_set = (fly#, video#, trial#, start_frame)
-#     for set in batch_set:
-#         fly_num, video_num, trial_num, start_frame = set
-#         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-#         #wba_data.append(np.ones(frame_per_window)) # for test
-#         #wba_data.append(get_wba_from_time(video_num, start_frame // fps, frame_per_window / fps))
-#         wba_data.append(wba_tensor[fly_num][video_num][trial_num][start_frame + 1 : start_frame + frame_per_window + 1])
-        
-#     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
-
-# def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
-#     original_freq = 1000 
-
-#     duration = wba_data.shape[-1] / original_freq 
-#     original_time = np.arange(0, wba_data.shape[-1]) / original_freq
-#     new_time = np.arange(0, duration, 1 / target_freq)
-
-
-#     new_data_shape = wba_data.shape[:-1] + (new_time.size,)
-#     wba_data_interpolated = np.zeros(new_data_shape)
-
-#     # 모든 데이터에 대해 인터폴레이션 수행
-#     for fly in range(wba_data.shape[0]):
-#         for video in range(wba_data.shape[1]):
-#             for trial in range(wba_data.shape[2]):
-#                 # 데이터 추출
-#                 wba_diff = wba_data[fly, video, trial, :]
-
-#                 # 인터폴레이션 함수 생성
-#                 interpolator = interp1d(original_time, wba_diff, kind='linear')
-
-#                 wba_data_interpolated[fly, video, trial, :] = interpolator(new_time)
-
-#     return wba_data_interpolated
-# def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30, result_delay = 15):
-#     video_data = []
-#     wba_data = []
-#     # batch_set = (fly#, video#, trial#, start_frame)
-#     for set in batch_set:
-#         #fly_num, video_num, trial_num, start_frame = set
-#         fly_num, video_num, start_frame = set
-#         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-#         wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1 : start_frame + frame_per_window + 1])
-        
-#     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
-#################################################################################
-
-########################### trial average ###########################
 def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
     training_tuples_list = []
     test_tuples_list = []
     for video_n in range(video_num):  # n = 0, 1, 2, video#
-        test_period = list(random.sample(range(10), 3))
+        test_period = list(random.sample(range(10), 3)) # 10개의 구간 중 test로 사용할 3개의 구간 선택
         for fly_n in range(fly_num):
             for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
                 if (start_frame / (frame_num - fps)) // 0.1 in test_period:
@@ -212,6 +119,7 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
     return training_tuples_list, test_tuples_list
 
 def low_pass_filter(data, cutoff_freq, sample_rate=1000):
+    
     nyquist_rate = 0.5 * sample_rate
     normal_cutoff = cutoff_freq / nyquist_rate
     b, a = butter(N=4, Wn=normal_cutoff, btype='low', analog=False)
@@ -280,15 +188,14 @@ def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1,
     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
 
 def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc = 0.4):
-    video_data = LoadVideo(folder_path, downsampling_factor)
-    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
-    filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc)
-    _, interpolated_diff_wba_data = interpolate_and_diff_wba_data(filtered_wba_data, original_freq=1000, target_freq=30)
+    
+    video_data = load_video(folder_path, downsampling_factor)            # shape : ( video#, frame#, h, w, c)
+    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")   # shape : ( 120000, 2)
+    filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc) # shape : ( 120000, 2)
+    _, interpolated_diff_wba_data = interpolate_and_diff_wba_data(filtered_wba_data, original_freq=1000, target_freq=30) # shape : ( 3600, 2 )
     total_frame = np.shape(video_data)[1]
     
     return video_data, interpolated_diff_wba_data, total_frame
-    
-    
     
 
 #%%
