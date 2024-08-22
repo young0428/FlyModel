@@ -103,101 +103,6 @@ def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
 
     return wba_data_interpolated
 
-
-########################### average 안함 ###########################
-# def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
-#     training_tuples_list = []
-#     test_tuples_list = []
-#     for video_n in range(video_num):  # n = 0, 1, 2, video#
-#         for fly_n in range(fly_num):
-#             for trial_n in range(trial_num):
-#                 test_period = list(random.sample(range(10), 3))
-#                 for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
-#                     if (start_frame / (frame_num - fps)) // 0.1 in test_period:
-#                         test_tuples_list.append((fly_n, video_n, trial_n, start_frame))
-#                     else:
-#                         training_tuples_list.append((fly_n, video_n, trial_n, start_frame))
-                    
-#     return training_tuples_list, test_tuples_list
-
-
-# def convert_mat_to_array(mat_file_path):
-#     with h5py.File(mat_file_path, 'r') as mat_file:
-#         experimental_data = mat_file['experimental_data']
-        
-#         num_flies = experimental_data.shape[3]
-#         num_videos = experimental_data.shape[2]
-#         num_trials = experimental_data.shape[1]
-        
-        
-#         wba_data = np.zeros((num_flies, num_videos, num_trials, 120000))
-        
-#         for fly in range(num_flies):
-#             for video in range(num_videos):
-#                 for trial in range(num_trials):
-#                     # LWBA 데이터 (index 3)
-#                     lwba_ref = experimental_data[3][trial][video][fly]
-#                     lwba_data = mat_file[lwba_ref][:]
-                    
-#                     # RWBA 데이터 (index 4)
-#                     rwba_ref = experimental_data[4][trial][video][fly]
-#                     rwba_data = mat_file[rwba_ref][:]
-                    
-#                     wba_data[fly, video, trial, :] = lwba_data - rwba_data
-                    
-#     return wba_data
-
-# def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30, result_delay = 15):
-#     video_data = []
-#     wba_data = []
-#     # batch_set = (fly#, video#, trial#, start_frame)
-#     for set in batch_set:
-#         fly_num, video_num, trial_num, start_frame = set
-#         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-#         #wba_data.append(np.ones(frame_per_window)) # for test
-#         #wba_data.append(get_wba_from_time(video_num, start_frame // fps, frame_per_window / fps))
-#         wba_data.append(wba_tensor[fly_num][video_num][trial_num][start_frame + 1 : start_frame + frame_per_window + 1])
-        
-#     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
-
-# def interpolate_wba_data(wba_data, original_freq=1000, target_freq=30):
-#     original_freq = 1000 
-
-#     duration = wba_data.shape[-1] / original_freq 
-#     original_time = np.arange(0, wba_data.shape[-1]) / original_freq
-#     new_time = np.arange(0, duration, 1 / target_freq)
-
-
-#     new_data_shape = wba_data.shape[:-1] + (new_time.size,)
-#     wba_data_interpolated = np.zeros(new_data_shape)
-
-#     # 모든 데이터에 대해 인터폴레이션 수행
-#     for fly in range(wba_data.shape[0]):
-#         for video in range(wba_data.shape[1]):
-#             for trial in range(wba_data.shape[2]):
-#                 # 데이터 추출
-#                 wba_diff = wba_data[fly, video, trial, :]
-
-#                 # 인터폴레이션 함수 생성
-#                 interpolator = interp1d(original_time, wba_diff, kind='linear')
-
-#                 wba_data_interpolated[fly, video, trial, :] = interpolator(new_time)
-
-#     return wba_data_interpolated
-# def get_data_from_batch(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30, result_delay = 15):
-#     video_data = []
-#     wba_data = []
-#     # batch_set = (fly#, video#, trial#, start_frame)
-#     for set in batch_set:
-#         #fly_num, video_num, trial_num, start_frame = set
-#         fly_num, video_num, start_frame = set
-#         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-#         wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1 : start_frame + frame_per_window + 1])
-        
-#     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
-#################################################################################
-
-########################### trial average ###########################
 def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_num = 3, trial_num = 4):
     training_tuples_list = []
     test_tuples_list = []
@@ -391,212 +296,214 @@ def convert_mat_to_array(mat_file_path):
                     
     return wba_data
 
-def get_data_from_batch_v2(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
-    video_data = []
-    wba_data = []
-    # batch_set = (fly#, video#, start_frame)
-    for set in batch_set:
-        fly_num, video_num, start_frame = set
-        video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
-        wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1: start_frame + frame_per_window + 1])
+# def get_data_from_batch_v2(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
+#     video_data = []
+#     wba_data = []
+#     # batch_set = (fly#, video#, start_frame)
+#     for set in batch_set:
+#         fly_num, video_num, start_frame = set
+#         video_data.append(video_tensor[video_num, start_frame:start_frame + frame_per_window])
+#         wba_data.append(wba_tensor[fly_num][video_num][start_frame + 1: start_frame + frame_per_window + 1])
         
-    return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
+#     return np.array(video_data, dtype=np.float32), np.array(wba_data, dtype=np.float32)
 
-def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc = 0.4):
+# def load_filtered_diff_data(folder_path, mat_file_name, downsampling_factor, fc = 0.4):
     
-    video_data = LoadVideo(folder_path, downsampling_factor)
-    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
-    filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc)
-    interpolated_wba_data = np.mean(interpolate_wba_data(filtered_wba_data, original_freq=1000, target_freq=30),axis=0)
-    diff_wba_data = np.diff(interpolated_wba_data,axis=-1)
-    diff_wba_data_cat = np.where(diff_wba_data > 0.05, 0, np.where(diff_wba_data < -0.05, 1, 2))
-    total_frame = np.shape(video_data)[1]
+#     video_data = LoadVideo(folder_path, downsampling_factor)
+#     wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_name}")
+#     filtered_wba_data = apply_low_pass_filter_to_wba_data(wba_data, fc)
+#     interpolated_wba_data = np.mean(interpolate_wba_data(filtered_wba_data, original_freq=1000, target_freq=30),axis=0)
+#     diff_wba_data = np.diff(interpolated_wba_data,axis=-1)
+#     diff_wba_data_cat = np.where(diff_wba_data > 0.05, 0, np.where(diff_wba_data < -0.05, 1, 2))
+#     total_frame = np.shape(video_data)[1]
     
-    return video_data, interpolated_wba_data, diff_wba_data_cat, total_frame
+#     return video_data, interpolated_wba_data, diff_wba_data_cat, total_frame
 
-def generate_tuples_optic(frame_num, frame_per_sliding, fps=30, video_num = 3):
-    training_tuples_list = []
-    test_tuples_list = []
-    for video_n in range(video_num):  # n = 0, 1, 2, video#
-        test_period = list(random.sample(range(10), 3))
-        for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
-            if (start_frame / (frame_num - fps)) // 0.1 in test_period:
-                test_tuples_list.append((video_n, start_frame))
-            else:
-                training_tuples_list.append((video_n, start_frame))
+# def generate_tuples_optic(frame_num, frame_per_sliding, fps=30, video_num = 3):
+#     training_tuples_list = []
+#     test_tuples_list = []
+#     for video_n in range(video_num):  # n = 0, 1, 2, video#
+#         test_period = list(random.sample(range(10), 3))
+#         for start_frame in range(0, frame_num - fps, frame_per_sliding): # start_frame
+#             if (start_frame / (frame_num - fps)) // 0.1 in test_period:
+#                 test_tuples_list.append((video_n, start_frame))
+#             else:
+#                 training_tuples_list.append((video_n, start_frame))
                     
-    return training_tuples_list, test_tuples_list
+#     return training_tuples_list, test_tuples_list
 
 
-def cal_video_to_optic_power(video_tensor):
-    # (3, frame#, h, w, c)
-    video_count, frame_count, height, width, channels = video_tensor.shape
+# def cal_video_to_optic_power(video_tensor):
+#     # (3, frame#, h, w, c)
+#     video_count, frame_count, height, width, channels = video_tensor.shape
     
-    results = []
+#     results = []
     
-    for video_idx in range(video_count):
-        video_results = []
-        for frame_idx in range(frame_count):
-            # # optic flow
-            # frame = video_tensor[video_idx, frame_idx]
-            # left_optic_flow = frame[:, :, 3]  # ch3: leftward optic flow
-            # right_optic_flow = frame[:, :, 4]  # ch4: rightward optic flow
+#     for video_idx in range(video_count):
+#         video_results = []
+#         for frame_idx in range(frame_count):
+#             # # optic flow
+#             # frame = video_tensor[video_idx, frame_idx]
+#             # left_optic_flow = frame[:, :, 3]  # ch3: leftward optic flow
+#             # right_optic_flow = frame[:, :, 4]  # ch4: rightward optic flow
             
-            # # 각 프레임마다 채널 3과 4의 평균 값 계산
-            # left_mean = np.mean(left_optic_flow)
-            # right_mean = np.mean(right_optic_flow)
-            # data_type = "optic_flow"
-            # # 왼쪽 평균에서 오른쪽 평균을 뺀 값 계산
-            # difference = left_mean - right_mean
-            # video_results.append(difference)
+#             # # 각 프레임마다 채널 3과 4의 평균 값 계산
+#             # left_mean = np.mean(left_optic_flow)
+#             # right_mean = np.mean(right_optic_flow)
+#             # data_type = "optic_flow"
+#             # # 왼쪽 평균에서 오른쪽 평균을 뺀 값 계산
+#             # difference = left_mean - right_mean
+#             # video_results.append(difference)
             
-            # # intensity
-            # frame = video_tensor[video_idx, frame_idx]
-            # power = frame[:,:,0]
-            # power_mean = np.mean(power)
-            # video_results.append(power_mean)
-            # data_type = "intensity"
+#             # # intensity
+#             # frame = video_tensor[video_idx, frame_idx]
+#             # power = frame[:,:,0]
+#             # power_mean = np.mean(power)
+#             # video_results.append(power_mean)
+#             # data_type = "intensity"
             
-            # square intensity
+#             # square intensity
             
-            frame = video_tensor[video_idx, frame_idx]
-            power = np.square(frame[:,:,0])
-            power_mean = np.mean(power)
-            video_results.append(power_mean)
-            data_type = "square intensity"
+#             frame = video_tensor[video_idx, frame_idx]
+#             power = np.square(frame[:,:,0])
+#             power_mean = np.mean(power)
+#             video_results.append(power_mean)
+#             data_type = "square intensity"
             
             
-            # if frame_idx == 0:
-            #     intensity_diff = np.zeros(np.shape(video_tensor[video_idx, frame_idx, :, :, 0]))
-            # else:
-            #     intensity_diff = video_tensor[video_idx, frame_idx, :, :, 0] - video_tensor[video_idx, frame_idx-1, :, :, 0]
+#             # if frame_idx == 0:
+#             #     intensity_diff = np.zeros(np.shape(video_tensor[video_idx, frame_idx, :, :, 0]))
+#             # else:
+#             #     intensity_diff = video_tensor[video_idx, frame_idx, :, :, 0] - video_tensor[video_idx, frame_idx-1, :, :, 0]
             
-            # intensity_mean = np.mean(intensity_diff)
-            # video_results.append(intensity_mean)
-            # data_type = "difference"
+#             # intensity_mean = np.mean(intensity_diff)
+#             # video_results.append(intensity_mean)
+#             # data_type = "difference"
 
-        results.append(video_results)
+#         results.append(video_results)
     
-    print("data type : " + str(data_type))
+#     print("data type : " + str(data_type))
     
-    return results
+#     return results
 
-def get_data_from_batch_v2(video_tensor, optic_power_tensor, batch_set, frame_per_window=1, fps=30):
-    video_data = []
-    optic_data = []
-    for set in batch_set:
-        video_num, start_frame = set
-        video_data.append(video_tensor[video_num][start_frame:start_frame + frame_per_window])
-        optic_data.append(optic_power_tensor[video_num][start_frame:start_frame + frame_per_window])
+# def get_data_from_batch_v2(video_tensor, optic_power_tensor, batch_set, frame_per_window=1, fps=30):
+#     video_data = []
+#     optic_data = []
+#     for set in batch_set:
+#         video_num, start_frame = set
+#         video_data.append(video_tensor[video_num][start_frame:start_frame + frame_per_window])
+#         optic_data.append(optic_power_tensor[video_num][start_frame:start_frame + frame_per_window])
         
-    return np.array(video_data, dtype=np.float32), np.array(optic_data, dtype=np.float32)
+#     return np.array(video_data, dtype=np.float32), np.array(optic_data, dtype=np.float32)
 
-def seq_for_optic_cal(folder_path, downsampling_factor):
-    video_data = LoadVideo(folder_path, downsampling_factor)
-    optic_power_tensor = cal_video_to_optic_power(video_data)           # (video#, frame#, 1)
-    original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
-    total_frame = np.shape(video_data)[1]
-    return original_video, optic_power_tensor, total_frame
+# def seq_for_optic_cal(folder_path, downsampling_factor):
+#     video_data = LoadVideo(folder_path, downsampling_factor)
+#     optic_power_tensor = cal_video_to_optic_power(video_data)           # (video#, frame#, 1)
+#     original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
+#     total_frame = np.shape(video_data)[1]
+#     return original_video, optic_power_tensor, total_frame
     
 
-def convert_sac_mat_to_array(sac_mat):
-    mat_file = h5py.File(sac_mat, 'r')
+# def convert_sac_mat_to_array(sac_mat):
+#     mat_file = h5py.File(sac_mat, 'r')
     
-    sac_data = mat_file['saccade_prediction_data']
-    left_sac = sac_data[:,1]
-    right_sac = sac_data[:,2]
-    return left_sac, right_sac
+#     sac_data = mat_file['saccade_prediction_data']
+#     left_sac = sac_data[:,1]
+#     right_sac = sac_data[:,2]
+#     return left_sac, right_sac
     
 
-def interpolate_data(data, original_freq=1000, target_freq=30):
+# def interpolate_data(data, original_freq=1000, target_freq=30):
 
-    # Get the original time points based on the original frequency
-    original_time_points = np.arange(data.shape[1]) / original_freq
+#     # Get the original time points based on the original frequency
+#     original_time_points = np.arange(data.shape[1]) / original_freq
 
-    # Calculate the new number of time points based on the target frequency
-    total_time = data.shape[1] / original_freq
-    new_time_points = np.arange(0, total_time, 1 / target_freq)
+#     # Calculate the new number of time points based on the target frequency
+#     total_time = data.shape[1] / original_freq
+#     new_time_points = np.arange(0, total_time, 1 / target_freq)
 
-    # Initialize an array to hold the interpolated data
-    interpolated_data = np.zeros((data.shape[0], len(new_time_points), data.shape[2]))
+#     # Initialize an array to hold the interpolated data
+#     interpolated_data = np.zeros((data.shape[0], len(new_time_points), data.shape[2]))
 
-    # Interpolate each dimension separately
-    for i in range(data.shape[2]):
-        interp_func = interp1d(original_time_points, data[0, :, i], kind='linear')
-        interpolated_data[0, :, i] = interp_func(new_time_points)
+#     # Interpolate each dimension separately
+#     for i in range(data.shape[2]):
+#         interp_func = interp1d(original_time_points, data[0, :, i], kind='linear')
+#         interpolated_data[0, :, i] = interp_func(new_time_points)
 
-    return interpolated_data
+#     return interpolated_data
 
-def get_sac_data(mat_file_path):
-    left_sac, right_sac = convert_sac_mat_to_array(mat_file_path)
-    sac_data = np.stack((left_sac, right_sac), axis=-1)
+# def get_sac_data(mat_file_path):
+#     left_sac, right_sac = convert_sac_mat_to_array(mat_file_path)
+#     sac_data = np.stack((left_sac, right_sac), axis=-1)
     
-    # remove if you multi video
-    sac_data = np.expand_dims(sac_data, axis=0)
+#     # remove if you multi video
+#     sac_data = np.expand_dims(sac_data, axis=0)
     
-    return sac_data
+#     return sac_data
 
 
 
-def sac_get_batches(tuples_list, batch_size):
-    random.shuffle(tuples_list)
-    for i in range(0, len(tuples_list), batch_size):
-        yield tuples_list[i:min(len(tuples_list), i + batch_size)]
+# def sac_get_batches(tuples_list, batch_size):
+#     random.shuffle(tuples_list)
+#     for i in range(0, len(tuples_list), batch_size):
+#         yield tuples_list[i:min(len(tuples_list), i + batch_size)]
         
-def get_data_from_batch_sac(video_tensor, sac_tensor, batch_set, frame_per_window=1):
-    video_data = []
-    sac_data = []
-    for set in batch_set:
-        video_num, start_frame = set
-        video_data.append(video_tensor[video_num][start_frame-frame_per_window:start_frame])
-        sac_data.append(sac_tensor[video_num][start_frame])
+# def get_data_from_batch_sac(video_tensor, sac_tensor, batch_set, frame_per_window=1):
+#     video_data = []
+#     sac_data = []
+#     for set in batch_set:
+#         video_num, start_frame = set
+#         video_data.append(video_tensor[video_num][start_frame-frame_per_window:start_frame])
+#         sac_data.append(sac_tensor[video_num][start_frame])
         
-    return np.array(video_data, dtype=np.float32), np.array(sac_data, dtype=np.float32)
+#     return np.array(video_data, dtype=np.float32), np.array(sac_data, dtype=np.float32)
 
-def get_data_from_batch_diff_cat(video_tensor, wba_tensor, batch_set, frame_per_window=1):
-    video_data = []
-    wba_data = []
-    for set in batch_set:
-        video_num, start_frame = set
-        video_data.append(video_tensor[video_num][start_frame-frame_per_window:start_frame])
+# def get_data_from_batch_diff_cat(video_tensor, wba_tensor, batch_set, frame_per_window=1):
+#     video_data = []
+#     wba_data = []
+#     for set in batch_set:
+#         video_num, start_frame = set
+#         video_data.append(video_tensor[video_num][start_frame-frame_per_window:start_frame])
         
-        one_hot_wba_data = np.eye(3)[wba_tensor[video_num][start_frame]]
-        wba_data.append(one_hot_wba_data)
+#         one_hot_wba_data = np.eye(3)[wba_tensor[video_num][start_frame]]
+#         wba_data.append(one_hot_wba_data)
 
-    return np.array(video_data), np.array(wba_data)
+#     return np.array(video_data), np.array(wba_data)
 
 
-def generate_tuples_sac(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
-    tuples = []
+# def generate_tuples_sac(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
+#     tuples = []
     
-    # 0 = Bird
-    # 1 = City
-    # 2 = forest
-    for video_n in range(2, 3):  # n = 0, 1, 2, video#
-        for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
-            tuples.append((video_n, start_frame))
+#     # 0 = Bird
+#     # 1 = City
+#     # 2 = forest
+#     for video_n in range(2, 3):  # n = 0, 1, 2, video#
+#         for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+#             tuples.append((video_n, start_frame))
                     
-    return tuples
+#     return tuples
 
-def compare_and_create_binary_array(data):
+# def compare_and_create_binary_array(data):
     
-    # Initialize the output array
-    binary_array = np.zeros((1, data.shape[1], 1))
+#     # Initialize the output array
+#     binary_array = np.zeros((1, data.shape[1], 1))
     
-    # Perform the comparison and create the binary array
-    binary_array[0, :, 0] = (data[0, :, 0] > data[0, :, 1]).astype(int)
+#     # Perform the comparison and create the binary array
+#     binary_array[0, :, 0] = (data[0, :, 0] > data[0, :, 1]).astype(int)
     
-    return binary_array
+#     return binary_array
 
-def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
-    video_data = LoadVideo(folder_path, downsampling_factor)
-    sac_data = get_sac_data(mat_file_path)           # (video#, frame#, 1)
-    inter_sac_data = interpolate_data(sac_data, 1000, 30)
-    binary_sac_data = compare_and_create_binary_array(inter_sac_data)
+# def sac_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
+#     video_data = LoadVideo(folder_path, downsampling_factor)
+#     sac_data = get_sac_data(mat_file_path)           # (video#, frame#, 1)
+#     inter_sac_data = interpolate_data(sac_data, 1000, 30)
+#     binary_sac_data = compare_and_create_binary_array(inter_sac_data)
 
-    original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
-    total_frame = np.shape(video_data)[1]
-    return original_video, binary_sac_data, total_frame
+#     original_video = np.expand_dims(video_data[:,:,:,:,0] , axis=-1)    # (video#, frame#, h, w, 1)
+#     total_frame = np.shape(video_data)[1]
+#     return original_video, binary_sac_data, total_frame
+
+###################### for flow estimation #########################
 
 def load_video_data(folder_path, downsampling_factor):
     video_data = LoadVideo(folder_path, downsampling_factor)
@@ -631,6 +538,14 @@ def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_n
 
 def vertical_flip(video):
     return np.flip(video, axis=2)  # Vertical flip (상하 반전)
+
+def horizontal_flip(video):
+    return np.flip(video, axis=2)  # Horizontal flip (좌우 반전)
+
+def swap_channels(video, index1=1, index2=2):
+    frames = video.copy()
+    frames[:, :, :, [index1, index2]] = frames[:, :, :, [index2, index1]]
+    return frames
 
 def zero_quadrant(video, quadrant):
     frames = video.copy()
@@ -668,6 +583,32 @@ def central_crop_and_resize(video, crop_size_ratio=0.5):
     frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
     return frames
 
+def apply_gaussian_blur(video, kernel_size=(5, 5), sigma=1.0):
+    frames = video.copy()
+    blurred_frames = np.array([cv2.GaussianBlur(frame, kernel_size, sigma) for frame in frames])
+    return blurred_frames
+
+def apply_salt_and_pepper(video, salt_prob=0.01, pepper_prob=0.01):
+    frames = video.copy()
+    h, w, _ = frames.shape[1:4]
+    
+    salt_threshold = salt_prob * (h * w)
+    pepper_threshold = pepper_prob * (h * w)
+
+    for i in range(frames.shape[0]):
+        # Salt noise for the first channel only
+        num_salt = np.ceil(salt_threshold)
+        coords = [np.random.randint(0, i - 1, int(num_salt)) for i in frames[i, :, :, 0].shape]
+        frames[i, coords[0], coords[1], 0] = 1
+
+        # Pepper noise for the first channel only
+        num_pepper = np.ceil(pepper_threshold)
+        coords = [np.random.randint(0, i - 1, int(num_pepper)) for i in frames[i, :, :, 0].shape]
+        frames[i, coords[0], coords[1], 0] = 0
+
+    return frames
+
+
 def aug_videos(videos):
     augmented_videos = []
 
@@ -692,11 +633,16 @@ def aug_videos(videos):
         
         # Central Crop and Resize
         augmented_videos.append(central_crop_and_resize(video))
+        
+        augmented_videos.append(apply_gaussian_blur(video))
+        augmented_videos.append(apply_salt_and_pepper(video))
+        augmented_videos.append(swap_channels(horizontal_flip(video)))
+        
 
     return np.array(augmented_videos)
-# def wba_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
-#     video_data = LoadVideo(folder_path, downsampling_factor)
-#     original_wba_data = 
+
+
+############################    flow estimation part end    ##############################################
 
 
 #%%
