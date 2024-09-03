@@ -145,10 +145,12 @@ class SpatialAttention(nn.Module):
         return self.sigmoid(x)
 
 class FlowNet3DWithFeatureExtraction(nn.Module):
-    def __init__(self, flownet3d, feature_dim=128, input_size=(16, 64, 128)):
+    def __init__(self, flownet3d, feature_dim=128, input_size = (16,64,128,1)):
         super(FlowNet3DWithFeatureExtraction, self).__init__()
-        self.flownet3d = flownet3d
-        depth, height, width = input_size
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.flownet3d = flownet3d.to(self.device)
+        self.feature_dim = feature_dim
+        
         
         # Encoder와 Decoder의 파라미터를 고정 (freeze)
         for param in self.flownet3d.encoder.parameters():
@@ -156,56 +158,99 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         for param in self.flownet3d.decoder.parameters():
             param.requires_grad = False
         
-        # Decoder 각 단계에서 나오는 feature를 변환하는 FC layer 정의
+        # Decoder 각 단계에서 나오는 feature를 변환하는 layer들을 초기화
+        self.spatial_attentions = nn.ModuleList()
+        self.feature_conv_layers = nn.ModuleList()
         self.fc_layers = nn.ModuleList()
-        for i in range(len(self.flownet3d.decoder.upconvs)):
-            in_channels = flownet3d.decoder.convs[i].out_channels
-            
-            # 각 레이어에서 Conv와 UpConv가 적용된 후의 출력 크기를 계산
-            depth = self._calculate_conv_output_size(depth, kernel_size=3, padding=1, stride=1)
-            height = self._calculate_conv_output_size(height, kernel_size=3, padding=1, stride=1)
-            width = self._calculate_conv_output_size(width, kernel_size=3, padding=1, stride=1)
-            
-            # 그 결과에 따라 Linear 레이어의 입력 크기를 동적으로 결정
-            linear_input_size = feature_dim * depth * height * width
-            
-            self.fc_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, feature_dim, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv3d(feature_dim, feature_dim, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Flatten(),
-                nn.Linear(linear_input_size, feature_dim),  # Adjusted dynamically based on input size
-                nn.ReLU(inplace=True)
-            ))
-        
-        # 최종 스칼라 값을 출력하는 FC layer
-        self.final_fc = nn.Linear(feature_dim * len(self.fc_layers), 1)
-        
 
-    def _calculate_conv_output_size(self, size, kernel_size, padding, stride):
-        """Convolution 레이어가 적용된 후의 크기를 계산하는 함수"""
-        return (size - kernel_size + 2 * padding) // stride + 1
-    
-    def forward(self, x):
+        # 레이어 초기화는 forward pass에서 수행
+
+        # 최종 스칼라 값을 출력하는 FC layer
+        # 실제 크기는 forward pass에서 결정됨
+        self.final_fc = None
+        D, H, W, C = input_size
+        
+        x = torch.randn((1,16,64,128,1)).to(self.device)
+        
         x = self.flownet3d.swap_axis_for_input(x)
         encoder_outputs = self.flownet3d.encoder(x)
         
-        features = []
+        decoder_outputs = []
         decoder_output = encoder_outputs[-1]
         for i in range(len(self.flownet3d.decoder.upconvs)):
             decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
             decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
             decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
+            decoder_outputs.append(decoder_output)
+
+        # 첫 번째 forward pass에서 레이어 초기화
+        if not self.feature_conv_layers:
+            self._initialize_layers(decoder_outputs)
+        
+
+    def _initialize_layers(self, decoder_outputs):
+        for i, decoder_output in enumerate(decoder_outputs):
+            _, C, D, H, W = decoder_output.shape
             
+            self.spatial_attentions.append(SpatialAttention())
+            
+            self.feature_conv_layers.append(nn.Sequential(
+                nn.Conv3d(C, self.feature_dim, kernel_size=3, padding=1, stride=2),
+                nn.ReLU(inplace=True),
+                nn.Conv3d(self.feature_dim, self.feature_dim, kernel_size=3, padding=1, stride=2),
+                nn.ReLU(inplace=True),
+                nn.Conv3d(self.feature_dim, self.feature_dim, kernel_size=3, padding=1, stride=2),
+                nn.ReLU(inplace=True),
+            ))
+            
+            # Conv3D 레이어 통과 후 크기 계산 (각 레이어마다 크기가 절반으로 줄어듦)
+            D_out = max(D // 8, 1)
+            H_out = max(H // 8, 1)
+            W_out = max(W // 8, 1)
+            
+            linear_input_size = D_out * H_out * W_out * self.feature_dim
+            
+            self.fc_layers.append(nn.Sequential(
+                nn.Flatten(),
+                nn.Linear(linear_input_size, self.feature_dim),
+                nn.ReLU(inplace=True)
+            ))
+        
+        # 최종 FC 레이어 초기화
+        self.final_fc = nn.Linear(self.feature_dim * len(self.feature_conv_layers), 1)
+        
+        self.spatial_attentions = self.spatial_attentions.to(self.device)
+        self.feature_conv_layers = self.feature_conv_layers.to(self.device)
+        self.fc_layers = self.fc_layers.to(self.device)
+        self.final_fc = self.final_fc.to(self.device)
+
+    def forward(self, x):
+        x = self.flownet3d.swap_axis_for_input(x)
+        encoder_outputs = self.flownet3d.encoder(x)
+        
+        decoder_outputs = []
+        decoder_output = encoder_outputs[-1]
+        for i in range(len(self.flownet3d.decoder.upconvs)):
+            decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
+            decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
+            decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
+            decoder_outputs.append(decoder_output)
+
+        # # 첫 번째 forward pass에서 레이어 초기화
+        # if not self.feature_conv_layers:
+        #     self._initialize_layers(decoder_outputs)
+
+        features = []
+        for i, decoder_output in enumerate(decoder_outputs):
             # 각 단계에서의 feature 추출
-            feature = self.fc_layers[i](decoder_output)
+            attention = self.spatial_attentions[i](decoder_output)
+            feature = self.feature_conv_layers[i](attention * decoder_output)
+            feature = self.fc_layers[i](feature)
             features.append(feature)
         
         # 모든 feature를 종합하여 최종 스칼라 값 출력
         combined_features = torch.cat(features, dim=1)
         output = self.final_fc(combined_features)
-        
         
         return output
 

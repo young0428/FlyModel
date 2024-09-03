@@ -343,12 +343,12 @@ def central_crop_and_resize(video, crop_size_ratio=0.5):
     frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
     return frames
 
-def apply_gaussian_blur(video, kernel_size=(5, 5), sigma=1.0):
+def apply_gaussian_blur(video, kernel_size=(5, 5), sigma=0.1):
     frames = video.copy()
     blurred_frames = np.array([cv2.GaussianBlur(frame, kernel_size, sigma) for frame in frames])
     return blurred_frames
 
-def apply_salt_and_pepper(video, salt_prob=0.01, pepper_prob=0.01):
+def apply_salt_and_pepper(video, salt_prob=0.001, pepper_prob=0.001):
     frames = video.copy()
     h, w, _ = frames.shape[1:4]
     
@@ -369,37 +369,37 @@ def apply_salt_and_pepper(video, salt_prob=0.01, pepper_prob=0.01):
     return frames
 
 
-def aug_videos(videos):
-    augmented_videos = []
+# def aug_videos(videos):
+#     augmented_videos = []
 
-    for video in videos:
-        # 원본 영상 추가
-        augmented_videos.append(video)
+#     for video in videos:
+#         # 원본 영상 추가
+#         augmented_videos.append(video)
         
-        # Vertical Flip
-        augmented_videos.append(vertical_flip(video))
+#         # Vertical Flip
+#         augmented_videos.append(vertical_flip(video))
         
-        # Zero-out quadrants
-        augmented_videos.append(zero_quadrant(video, 'LU'))
-        augmented_videos.append(zero_quadrant(video, 'RU'))
-        augmented_videos.append(zero_quadrant(video, 'LD'))
-        augmented_videos.append(zero_quadrant(video, 'RD'))
+#         # Zero-out quadrants
+#         augmented_videos.append(zero_quadrant(video, 'LU'))
+#         augmented_videos.append(zero_quadrant(video, 'RU'))
+#         augmented_videos.append(zero_quadrant(video, 'LD'))
+#         augmented_videos.append(zero_quadrant(video, 'RD'))
         
-        # Crop and Resize quadrants
-        augmented_videos.append(crop_and_resize(video, 'LU'))
-        augmented_videos.append(crop_and_resize(video, 'RU'))
-        augmented_videos.append(crop_and_resize(video, 'LD'))
-        augmented_videos.append(crop_and_resize(video, 'RD'))
+#         # Crop and Resize quadrants
+#         augmented_videos.append(crop_and_resize(video, 'LU'))
+#         augmented_videos.append(crop_and_resize(video, 'RU'))
+#         augmented_videos.append(crop_and_resize(video, 'LD'))
+#         augmented_videos.append(crop_and_resize(video, 'RD'))
         
-        # Central Crop and Resize
-        augmented_videos.append(central_crop_and_resize(video))
+#         # Central Crop and Resize
+#         augmented_videos.append(central_crop_and_resize(video))
         
-        augmented_videos.append(apply_gaussian_blur(video))
-        augmented_videos.append(apply_salt_and_pepper(video))
-        augmented_videos.append(swap_channels(horizontal_flip(video)))
+#         augmented_videos.append(apply_gaussian_blur(video))
+#         augmented_videos.append(apply_salt_and_pepper(video))
+#         augmented_videos.append(swap_channels(horizontal_flip(video)))
         
 
-    return np.array(augmented_videos)
+#     return np.array(augmented_videos)
 
 # def get_data_from_batch_v2(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
 #     video_data = []
@@ -648,6 +648,20 @@ def aug_videos(videos):
 
 ###################### for flow estimation #########################
 
+def aug_videos(videos):
+    augmented_videos = []
+
+    for video in videos:
+        # 원본 영상 추가
+        augmented_videos.append(video)
+
+        
+        augmented_videos.append(apply_gaussian_blur(video))
+        augmented_videos.append(apply_salt_and_pepper(video))
+        
+
+    return np.array(augmented_videos)
+
 def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
     video_data = LoadVideo(folder_path, downsampling_factor)
@@ -665,7 +679,6 @@ def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_slidin
     # 0 = Bird
     # 1 = City
     # 2 = forest
-    
     for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
         for video_n in range(0, video_num):
             tuples.append((video_n, start_frame))
@@ -678,7 +691,7 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append(1 if wba_tensor[video_num, start_frame]>= wba_tensor[video_num, start_frame-frame_per_window] else 0)
+        direction_data.append([1] if wba_tensor[video_num%3, start_frame] >= wba_tensor[video_num%3, start_frame-frame_per_window] else [0])
 
     return np.array(video_data), np.array(direction_data)
 

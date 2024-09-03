@@ -11,11 +11,10 @@ class Trainer :
     def __init__(self, model, loss_func, lr):
         self.lr = lr
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = model
         self.step_counter = 0
         self.loss_sum = 0
         self.loss_func = loss_func
-        self.model = self.model.to(self.device)
+        self.model = model.to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr, weight_decay=1e-4)
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=1, threshold=0.1, min_lr=1e-6)
     
@@ -94,24 +93,27 @@ def load_model(model, path):
         return None
 
     
-def save_test_result(batch_input_data, predictions, epoch, fold_path ):
-    fig, axes = plt.subplots(1, 3, figsize=(15, 9))
+def save_test_result(batch_input_data, batch_target_data, predictions, accuracy, epoch, fold_path ):
+    fig, axes = plt.subplots(3, 3, figsize=(15, 9))
     
+    accuracy_value = accuracy.item() * 100
+    fig.suptitle(f'Accuracy: {accuracy_value:.2f}%', fontsize=16)
     def update(frame_idx):
-        for i in range(3):
-            axes[i].clear()
+        for i in range(9):
+            axes[i//3,i%3].clear()
             # Extract the frame for the current batch
             frame = batch_input_data[i, frame_idx, :, :, 0].cpu().numpy()
             
             # Plot the frame
-            axes[i].imshow(frame, cmap='gray')
-            axes[i].axis('off')
+            axes[i//3,i%3].imshow(frame, cmap='gray')
+            axes[i//3,i%3].axis('off')
             
             # Add the prediction label
-            prediction_label = '왼쪽' if predictions[i].item() > 0 else '오른쪽'
-            axes[i].set_title(f"Batch {i}: {prediction_label}")
+            prediction_label = 'left' if predictions[i].item() > 0 else 'right'
+            target_label = 'left' if batch_target_data[i].item() > 0 else 'right'
+            axes[i//3,i%3].set_title(f"Batch {i}: \npred : {prediction_label}\ntarget : {target_label}")
         
     ani = animation.FuncAnimation(fig, update, frames=16, interval=200)    
     intermediate_path = f"{fold_path}/intermediate_epoch"
-    ani.save(f'{intermediate_path}/{epoch+1}.gif', writer='imagemagick')
+    ani.save(f'{intermediate_path}/{epoch+1}.gif', writer='Pillow')
     plt.close()
