@@ -16,7 +16,7 @@ class Trainer :
         self.loss_func = loss_func
         self.model = model.to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr, weight_decay=1e-4)
-        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=1, threshold=0.1, min_lr=1e-6)
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=1, threshold=0.005, min_lr=1e-6)
     
     def save(self, path, epoch):
         save_state = {
@@ -51,7 +51,7 @@ class Trainer :
         
         loss = self.loss_func(pred, target)
         self.loss_sum += loss.item()
-        if self.step_counter % 100 == 0:
+        if self.step_counter % 500 == 0:
             avg_loss = self.loss_sum / 100
             self.loss_sum = 0
             self.scheduler.step(avg_loss)
@@ -96,7 +96,7 @@ def load_model(model, path):
 def save_test_result(batch_input_data, batch_target_data, predictions, accuracy, epoch, fold_path ):
     fig, axes = plt.subplots(3, 3, figsize=(15, 9))
     
-    accuracy_value = accuracy.item() * 100
+    accuracy_value = accuracy * 100
     fig.suptitle(f'Accuracy: {accuracy_value:.2f}%', fontsize=16)
     def update(frame_idx):
         for i in range(9):
@@ -115,5 +115,5 @@ def save_test_result(batch_input_data, batch_target_data, predictions, accuracy,
         
     ani = animation.FuncAnimation(fig, update, frames=16, interval=200)    
     intermediate_path = f"{fold_path}/intermediate_epoch"
-    ani.save(f'{intermediate_path}/{epoch+1}.gif', writer='Pillow')
+    ani.save(f'{intermediate_path}/{epoch+1}.gif', writer='PillowWriter')
     plt.close()

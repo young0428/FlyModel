@@ -1,4 +1,3 @@
-#%%
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +18,7 @@ c = 1
 fps = 30
 downsampling_factor = 5.625
 
-frame_per_window = 16
+frame_per_window = 32
 frame_per_sliding = 4
 input_ch = 1 
 
@@ -39,7 +38,7 @@ pretrained_model_path = "./pretrained_model/64x128_opticflow_64t51216frames.ckpt
 # hyperparameter 
 batch_size = 10
 lr = 1e-3
-epochs = 100
+epochs = 200
 fold_factor = 8
 
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
@@ -50,22 +49,41 @@ print(f"augmented shape : {video_data.shape}")
 
 # Split period and split for training / test data set
 recent_losses = deque(maxlen=100)
+recent_accuracies = deque(maxlen=100)
 test_losses_per_epoch = []
-
 
 flownet_model = flownet3d(layer_configs, num_classes=1)
 flownet_model = load_model(flownet_model, pretrained_model_path)
 
 batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
+print(np.shape(batch_tuples))
 kf = KFold(n_splits=fold_factor)
 
 all_fold_losses = []
-#%%
 
+def update_metrics_plot(fold_path, epoch, train_losses, train_accuracies, test_losses, test_accuracies):
+    plt.figure(figsize=(12, 8))
+    plt.subplot(2, 1, 1)
+    plt.plot(train_losses, label='Training Loss')
+    plt.plot(test_losses, label='Test Loss')
+    plt.title('Training and Test Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
 
-#%%
+    plt.subplot(2, 1, 2)
+    plt.plot(train_accuracies, label='Training Accuracy')
+    plt.plot(test_accuracies, label='Test Accuracy')
+    plt.title('Training and Test Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(f'{fold_path}/metrics_plot.png')
+    plt.close()
+
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
-
     print(f"Fold {fold+1}")
     fold_path = f"{model_name}/fold_{fold+1}"
 
@@ -92,8 +110,13 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     min_test_loss = float('inf')
     best_epoch = 0
 
+    # Initialize lists to store metrics
+    train_losses = []
+    train_accuracies = []
+    test_losses = []
+    test_accuracies = []
+
     for epoch in range(start_epoch, epochs):
-        
         training_tuples = batch_tuples[train_index]
         training_tuples = training_tuples[4:-4]
         val_tuples = batch_tuples[val_index]
@@ -115,17 +138,42 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
-
             loss, pred = trainer.step(batch_input_data, batch_target_data)
-            
             
             recent_losses.append(loss.item())
             avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
             
-            progress_bar.set_postfix(loss=f"{loss.item():.5f}", avg_recent_loss=f"{avg_recent_loss:.5f}", lr=f"{trainer.lr:.7f}")
+            batch_target_data_cpu = batch_target_data.cpu()
+            predictions_cpu = pred.cpu()
+
+            predicted_labels = (predictions_cpu >= 0).int()
+            true_labels = batch_target_data_cpu.int()
+
+            correct_predictions = (predicted_labels == true_labels).float()
+            accuracy = correct_predictions.sum() / correct_predictions.numel()
             
+            recent_accuracies.append(accuracy.item())
+
+            avg_recent_accuracy = sum(recent_accuracies) / len(recent_accuracies) if recent_accuracies else 0
+            
+            progress_bar.set_postfix(
+                        loss=f"{loss.item():.5f}", 
+                        avg_recent_loss=f"{avg_recent_loss:.5f}", 
+                        lr=f"{trainer.lr:.7f}", 
+                        avg_accuracy=f"{avg_recent_accuracy:.5f}"
+                        )
+            
+            total_train_loss += loss.item()
+            total_train_correct += correct_predictions.sum().item()
+            total_train_samples += correct_predictions.numel()
+
             del batch_input_data, batch_target_data, loss, pred
         
+        avg_train_loss = total_train_loss / len(batches)
+        avg_train_accuracy = total_train_correct / total_train_samples
+        train_losses.append(avg_train_loss)
+        train_accuracies.append(avg_train_accuracy)
+
         trainer.save(f"{fold_path}/{checkpoint_name}.ckpt", epoch)
         
         # Save the current epoch to resume later if needed
@@ -135,6 +183,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         # validation phase after each epoch
         val_batches = list(get_batches(val_tuples, batch_size))
         total_test_loss = 0.0
+        total_test_acc = 0.0
+        it = 0
         
         progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
@@ -149,24 +199,32 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # Calculate test loss
             loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
             
-            total_test_loss += loss.item()
             progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}")
+            
+            batch_target_data_cpu = batch_target_data.cpu()
+            predictions_cpu = pred.cpu()
 
-        avg_test_loss = total_test_loss / len(val_batches)
-        test_losses_per_epoch.append(avg_test_loss)
-        print(f"Average test loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
-        batch_target_data_cpu = batch_target_data.cpu()
-        predictions_cpu = pred.cpu()
+            predicted_labels = (predictions_cpu >= 0).int()
+            true_labels = batch_target_data_cpu.int()
 
-        # 2. logits 값을 기준으로 0 이상은 1, 0 이하는 0으로 변환
-        predicted_labels = (predictions_cpu >= 0).float()
-        true_labels = (batch_target_data_cpu >= 0).float()
+            correct_predictions = (predicted_labels == true_labels).float()
+            accuracy = correct_predictions.sum() / correct_predictions.numel()
+            total_test_loss += loss.item()
+            total_test_acc += accuracy.item()
+            
+            it += 1
 
-        # 3. 정확도 계산
-        correct_predictions = (predicted_labels == true_labels).float()
-        accuracy = correct_predictions.sum() / correct_predictions.numel()
+        avg_test_loss = total_test_loss / it
+        avg_total_acc = total_test_acc / it
+        
+        test_losses.append(avg_test_loss)
+        test_accuracies.append(avg_total_acc)
+        
+        print(f"Average validation loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
+        print(f"Validation Accuracy: {avg_total_acc * 100:.2f}%")
 
-        print(f"Test Accuracy: {accuracy.item() * 100:.2f}%")
+        # Update metrics plot
+        update_metrics_plot(fold_path, epoch, train_losses, train_accuracies, test_losses, test_accuracies)
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -199,27 +257,15 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             
             _, predictions = trainer.evaluate(batch_input_data, batch_target_data)
             
-            # 1. 데이터를 CPU로 이동
-            batch_target_data_cpu = batch_target_data.cpu()
-            predictions_cpu = predictions.cpu()
-
-            # 2. logits 값을 기준으로 0 이상은 1, 0 이하는 0으로 변환
-            predicted_labels = (predictions_cpu >= 0).float()
-            true_labels = (batch_target_data_cpu >= 0).float()
-
-            # 3. 정확도 계산
-            correct_predictions = (predicted_labels == true_labels).float()
-            accuracy = correct_predictions.sum() / correct_predictions.numel()
-
-            print(f"Accuracy: {accuracy.item() * 100:.2f}%")
-            
-            save_test_result(batch_input_data, batch_target_data, predictions, accuracy, epoch, fold_path)
-                
-            
-            
+            save_test_result(batch_input_data, batch_target_data, predictions, avg_total_acc, epoch, fold_path)
 
     print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with loss {min_test_loss:.5f}")
     all_fold_losses.append(min_test_loss)
+
+    print(f"Final training loss: {train_losses[-1]:.5f}")
+    print(f"Final training accuracy: {train_accuracies[-1]:.5f}")
+    print(f"Final test loss: {test_losses[-1]:.5f}")
+    print(f"Final test accuracy: {test_accuracies[-1]:.5f}")
 
 # Save and print overall results
 overall_result_path = f"{model_name}/overall_results"
