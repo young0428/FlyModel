@@ -296,6 +296,111 @@ def convert_mat_to_array(mat_file_path):
                     
     return wba_data
 
+def vertical_flip(video):
+    return np.flip(video, axis=2)  # Vertical flip (상하 반전)
+
+def horizontal_flip(video):
+    return np.flip(video, axis=2)  # Horizontal flip (좌우 반전)
+
+def swap_channels(video, index1=1, index2=2):
+    frames = video.copy()
+    frames[:, :, :, [index1, index2]] = frames[:, :, :, [index2, index1]]
+    return frames
+
+def zero_quadrant(video, quadrant):
+    frames = video.copy()
+    h, w = frames.shape[1:3]
+    if quadrant == 'LU':
+        frames[:, :h//2, :w//2, :] = 0  # Left Upper
+    elif quadrant == 'RU':
+        frames[:, :h//2, w//2:, :] = 0  # Right Upper
+    elif quadrant == 'LD':
+        frames[:, h//2:, :w//2, :] = 0  # Left Down
+    elif quadrant == 'RD':
+        frames[:, h//2:, w//2:, :] = 0  # Right Down
+    return frames
+
+def crop_and_resize(video, quadrant):
+    frames = video.copy()
+    h, w = frames.shape[1:3]
+    if quadrant == 'LU':
+        frames = frames[:, :h//2, :w//2, :]  # Left Upper
+    elif quadrant == 'RU':
+        frames = frames[:, :h//2, w//2:, :]  # Right Upper
+    elif quadrant == 'LD':
+        frames = frames[:, h//2:, :w//2, :]  # Left Down
+    elif quadrant == 'RD':
+        frames = frames[:, h//2:, w//2:, :]  # Right Down
+    frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
+    return frames
+
+def central_crop_and_resize(video, crop_size_ratio=0.5):
+    frames = video.copy()
+    h, w = frames.shape[1:3]
+    crop_h, crop_w = int(h * crop_size_ratio), int(w * crop_size_ratio)
+    start_h, start_w = (h - crop_h) // 2, (w - crop_w) // 2
+    frames = frames[:, start_h:start_h+crop_h, start_w:start_w+crop_w, :]
+    frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
+    return frames
+
+def apply_gaussian_blur(video, kernel_size=(5, 5), sigma=1.0):
+    frames = video.copy()
+    blurred_frames = np.array([cv2.GaussianBlur(frame, kernel_size, sigma) for frame in frames])
+    return blurred_frames
+
+def apply_salt_and_pepper(video, salt_prob=0.01, pepper_prob=0.01):
+    frames = video.copy()
+    h, w, _ = frames.shape[1:4]
+    
+    salt_threshold = salt_prob * (h * w)
+    pepper_threshold = pepper_prob * (h * w)
+
+    for i in range(frames.shape[0]):
+        # Salt noise for the first channel only
+        num_salt = np.ceil(salt_threshold)
+        coords = [np.random.randint(0, i - 1, int(num_salt)) for i in frames[i, :, :, 0].shape]
+        frames[i, coords[0], coords[1], 0] = 1
+
+        # Pepper noise for the first channel only
+        num_pepper = np.ceil(pepper_threshold)
+        coords = [np.random.randint(0, i - 1, int(num_pepper)) for i in frames[i, :, :, 0].shape]
+        frames[i, coords[0], coords[1], 0] = 0
+
+    return frames
+
+
+def aug_videos(videos):
+    augmented_videos = []
+
+    for video in videos:
+        # 원본 영상 추가
+        augmented_videos.append(video)
+        
+        # Vertical Flip
+        augmented_videos.append(vertical_flip(video))
+        
+        # Zero-out quadrants
+        augmented_videos.append(zero_quadrant(video, 'LU'))
+        augmented_videos.append(zero_quadrant(video, 'RU'))
+        augmented_videos.append(zero_quadrant(video, 'LD'))
+        augmented_videos.append(zero_quadrant(video, 'RD'))
+        
+        # Crop and Resize quadrants
+        augmented_videos.append(crop_and_resize(video, 'LU'))
+        augmented_videos.append(crop_and_resize(video, 'RU'))
+        augmented_videos.append(crop_and_resize(video, 'LD'))
+        augmented_videos.append(crop_and_resize(video, 'RD'))
+        
+        # Central Crop and Resize
+        augmented_videos.append(central_crop_and_resize(video))
+        
+        augmented_videos.append(apply_gaussian_blur(video))
+        augmented_videos.append(apply_salt_and_pepper(video))
+        augmented_videos.append(swap_channels(horizontal_flip(video)))
+        
+
+    return np.array(augmented_videos)
+
 # def get_data_from_batch_v2(video_tensor, wba_tensor, batch_set, frame_per_window=1, fps=30):
 #     video_data = []
 #     wba_data = []
@@ -503,26 +608,58 @@ def convert_mat_to_array(mat_file_path):
 #     total_frame = np.shape(video_data)[1]
 #     return original_video, binary_sac_data, total_frame
 
+# ###################### for flow estimation #########################
+
+# def load_video_data(folder_path, downsampling_factor):
+#     video_data = LoadVideo(folder_path, downsampling_factor)
+#     total_frame = np.shape(video_data)[1]
+    
+#     return video_data, total_frame
+
+# def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=1):
+#     video_data = []
+#     flow_data = []
+#     for set in batch_set:
+#         video_num, start_frame = set
+#         video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
+#         flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:2] +
+#                          video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 2:3])
+
+#     return np.array(video_data), np.array(flow_data)
+
+# def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
+#     tuples = []
+    
+#     # 0 = Bird
+#     # 1 = City
+#     # 2 = forest
+    
+#     for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+#         for video_n in range(0, video_num):
+#             tuples.append((video_n, start_frame))
+                    
+#     return tuples
+
+
+
+
+
+# ############################    flow estimation part end    ##############################################
+
 ###################### for flow estimation #########################
 
-def load_video_data(folder_path, downsampling_factor):
-    video_data = LoadVideo(folder_path, downsampling_factor)
-    total_frame = np.shape(video_data)[1]
+def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
-    return video_data, total_frame
+    video_data = LoadVideo(folder_path, downsampling_factor)
+    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.4)
+    wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
+    diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
+    total_frame = np.shape(video_data)[1]
 
-def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=1):
-    video_data = []
-    flow_data = []
-    for set in batch_set:
-        video_num, start_frame = set
-        video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
-        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:2] +
-                         video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 2:3])
+    return video_data, wba_data_interpolated, total_frame
 
-    return np.array(video_data), np.array(flow_data)
-
-def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
+def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
     tuples = []
     
     # 0 = Bird
@@ -535,114 +672,18 @@ def generate_tuples_flow(frame_num, frame_per_window, frame_per_sliding, video_n
                     
     return tuples
 
+def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, frame_per_window=1):
+    video_data = []
+    direction_data = []
+    for set in batch_set:
+        video_num, start_frame = set
+        video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
+        direction_data.append(1 if wba_tensor[video_num, start_frame]>= wba_tensor[video_num, start_frame-frame_per_window] else 0)
 
-def vertical_flip(video):
-    return np.flip(video, axis=2)  # Vertical flip (상하 반전)
-
-def horizontal_flip(video):
-    return np.flip(video, axis=2)  # Horizontal flip (좌우 반전)
-
-def swap_channels(video, index1=1, index2=2):
-    frames = video.copy()
-    frames[:, :, :, [index1, index2]] = frames[:, :, :, [index2, index1]]
-    return frames
-
-def zero_quadrant(video, quadrant):
-    frames = video.copy()
-    h, w = frames.shape[1:3]
-    if quadrant == 'LU':
-        frames[:, :h//2, :w//2, :] = 0  # Left Upper
-    elif quadrant == 'RU':
-        frames[:, :h//2, w//2:, :] = 0  # Right Upper
-    elif quadrant == 'LD':
-        frames[:, h//2:, :w//2, :] = 0  # Left Down
-    elif quadrant == 'RD':
-        frames[:, h//2:, w//2:, :] = 0  # Right Down
-    return frames
-
-def crop_and_resize(video, quadrant):
-    frames = video.copy()
-    h, w = frames.shape[1:3]
-    if quadrant == 'LU':
-        frames = frames[:, :h//2, :w//2, :]  # Left Upper
-    elif quadrant == 'RU':
-        frames = frames[:, :h//2, w//2:, :]  # Right Upper
-    elif quadrant == 'LD':
-        frames = frames[:, h//2:, :w//2, :]  # Left Down
-    elif quadrant == 'RD':
-        frames = frames[:, h//2:, w//2:, :]  # Right Down
-    frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
-    return frames
-
-def central_crop_and_resize(video, crop_size_ratio=0.5):
-    frames = video.copy()
-    h, w = frames.shape[1:3]
-    crop_h, crop_w = int(h * crop_size_ratio), int(w * crop_size_ratio)
-    start_h, start_w = (h - crop_h) // 2, (w - crop_w) // 2
-    frames = frames[:, start_h:start_h+crop_h, start_w:start_w+crop_w, :]
-    frames = np.array([cv2.resize(frame, (w, h)) for frame in frames])
-    return frames
-
-def apply_gaussian_blur(video, kernel_size=(5, 5), sigma=1.0):
-    frames = video.copy()
-    blurred_frames = np.array([cv2.GaussianBlur(frame, kernel_size, sigma) for frame in frames])
-    return blurred_frames
-
-def apply_salt_and_pepper(video, salt_prob=0.01, pepper_prob=0.01):
-    frames = video.copy()
-    h, w, _ = frames.shape[1:4]
-    
-    salt_threshold = salt_prob * (h * w)
-    pepper_threshold = pepper_prob * (h * w)
-
-    for i in range(frames.shape[0]):
-        # Salt noise for the first channel only
-        num_salt = np.ceil(salt_threshold)
-        coords = [np.random.randint(0, i - 1, int(num_salt)) for i in frames[i, :, :, 0].shape]
-        frames[i, coords[0], coords[1], 0] = 1
-
-        # Pepper noise for the first channel only
-        num_pepper = np.ceil(pepper_threshold)
-        coords = [np.random.randint(0, i - 1, int(num_pepper)) for i in frames[i, :, :, 0].shape]
-        frames[i, coords[0], coords[1], 0] = 0
-
-    return frames
-
-
-def aug_videos(videos):
-    augmented_videos = []
-
-    for video in videos:
-        # 원본 영상 추가
-        augmented_videos.append(video)
-        
-        # Vertical Flip
-        augmented_videos.append(vertical_flip(video))
-        
-        # Zero-out quadrants
-        augmented_videos.append(zero_quadrant(video, 'LU'))
-        augmented_videos.append(zero_quadrant(video, 'RU'))
-        augmented_videos.append(zero_quadrant(video, 'LD'))
-        augmented_videos.append(zero_quadrant(video, 'RD'))
-        
-        # Crop and Resize quadrants
-        augmented_videos.append(crop_and_resize(video, 'LU'))
-        augmented_videos.append(crop_and_resize(video, 'RU'))
-        augmented_videos.append(crop_and_resize(video, 'LD'))
-        augmented_videos.append(crop_and_resize(video, 'RD'))
-        
-        # Central Crop and Resize
-        augmented_videos.append(central_crop_and_resize(video))
-        
-        augmented_videos.append(apply_gaussian_blur(video))
-        augmented_videos.append(apply_salt_and_pepper(video))
-        augmented_videos.append(swap_channels(horizontal_flip(video)))
-        
-
-    return np.array(augmented_videos)
-
+    return np.array(video_data), np.array(direction_data)
 
 ############################    flow estimation part end    ##############################################
+
 
 
 #%%
@@ -666,14 +707,18 @@ if __name__ == "__main__":
     folder_path = "./naturalistic"
     mat_file_name = "experimental_data.mat"
     ds = 5.625
-    video_data, wba_data, diff_wba_data, total_frame = load_filtered_diff_data(folder_path, mat_file_name, ds)
+    video_data, wba_data_filtered, wba_data_interpolated, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, ds)
     #%%
-    diff_wba_data_cat = np.where(diff_wba_data > 0.05, 0, np.where(diff_wba_data < -0.05, 1, 2))
     #%%
-    plt.plot(diff_wba_data_cat[0,:]/10, color='red')
-    plt.plot(diff_wba_data[0,:],color='blue')
-    plt.show()
-    plt.close()
+    for i in range(10):
+        plt.plot(wba_data_filtered[i, 2,::1000//30], color='red')
+        
+    
+        plt.plot(wba_data_interpolated[2,:], color='blue')
+        
+        #plt.plot(mean_wba[2,:3000],color='blue')
+        plt.show()
+        plt.close()
     
 #%%
 

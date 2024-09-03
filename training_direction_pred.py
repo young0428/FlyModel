@@ -23,8 +23,8 @@ frame_per_window = 16
 frame_per_sliding = 16
 input_ch = 1 
 
-model_string = "64x128_opticflow_64t512"
-model_string += f"{frame_per_window}frames_"
+model_string = "direction_pred"
+model_string += f"_{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
 mat_file_name = "experimental_data.mat"
@@ -44,7 +44,7 @@ fold_factor = 8
 
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
 
-video_data, total_frame = load_video_data(folder_path, downsampling_factor)
+video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, downsampling_factor)
 video_data = aug_videos(video_data)
 print(f"augmented shape : {video_data.shape}")
 
@@ -57,7 +57,7 @@ flownet_model = flownet3d(layer_configs, num_classes=1)
 flownet_model = load_model(flownet_model, pretrained_model_path)
 
 
-batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
+batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
 kf = KFold(n_splits=fold_factor)
 
 all_fold_losses = []
@@ -72,7 +72,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # create model
     model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim = 128, input_size=(frame_per_window, h, w))
-    trainer = Trainer(model, loss_function_mse, lr)
+    trainer = Trainer(model, loss_function_bce, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
 
@@ -109,8 +109,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         total_train_samples = 0
         
         for batch in progress_bar:
-            batch_input_data, batch_target_data = get_data_from_batch_flow_estimate(
-                video_data, batch, frame_per_window
+            batch_input_data, batch_target_data = get_data_from_batch_direction_pred(
+                video_data, wba_data, batch, frame_per_window
                 )
             
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
@@ -140,8 +140,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
         for batch in progress_bar:
-            batch_input_data, batch_target_data = get_data_from_batch_flow_estimate(
-                video_data, batch, frame_per_window
+            batch_input_data, batch_target_data = get_data_from_batch_direction_pred(
+                video_data, wba_data, batch, frame_per_window
                 )
             
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
@@ -180,44 +180,18 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             selected_indices = np.random.choice(val_tuples.shape[0], size=3, replace=False)
             
             selected_val_tuples = val_tuples[selected_indices]
-            batch_input_data, batch_target_data = get_data_from_batch_flow_estimate(
-                video_data, selected_val_tuples, frame_per_window
+            batch_input_data, batch_target_data = get_data_from_batch_direction_pred(
+                video_data, wba_data, batch, frame_per_window
                 )
             
             batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
             _, predictions = trainer.evaluate(batch_input_data, batch_target_data)
-            batch_input_data[:, ::2, ::2, ::2, 0:1]
             
-
-            fig, axes = plt.subplots(3, 3, figsize=(15, 9))
-
-            
-            # input            
-            for j in range(3):
-                img = batch_input_data[j,-1].cpu()
-                axes[0, j].imshow(img)
-                axes[0, j].axis('off')  
-                axes[0, j].set_title(f'{str(val_tuples[j][0])}')
-            
-            # target
-            for j in range(3):
-                img = batch_target_data[j,-1,:,:,0].cpu()
-                axes[1, j].imshow(img)
-                axes[1, j].axis('off')  
+            save_test_result(batch_input_data, predictions, epoch, fold_path)
                 
-            # prediction       
-            for j in range(3):
-                img = predictions[j,-1,:,:,0].cpu()
-                axes[2, j].imshow(img)
-                axes[2, j].axis('off')
-                
-            intermediate_path = f"{fold_path}/intermediate_epoch"
-            os.makedirs(intermediate_path, exist_ok=True)
-            plt.tight_layout()
-            plt.savefig(f"{intermediate_path}/results_epoch_{epoch + 1}.png")
-            plt.close()
+            
             
 
     print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with loss {min_test_loss:.5f}")

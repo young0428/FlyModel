@@ -126,9 +126,7 @@ class FlowNet3D(nn.Module):
 def flownet3d(layer_configs, num_classes = 2):
     return FlowNet3D(ResidualBlock, layer_configs, num_classes)
 
-def loss_function(pred, target):
-    loss = F.mse_loss(pred, target)
-    return loss
+
 
 class SpatialAttention(nn.Module):
     def __init__(self, kernel_size=7):
@@ -183,6 +181,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         
         # 최종 스칼라 값을 출력하는 FC layer
         self.final_fc = nn.Linear(feature_dim * len(self.fc_layers), 1)
+        
 
     def _calculate_conv_output_size(self, size, kernel_size, padding, stride):
         """Convolution 레이어가 적용된 후의 크기를 계산하는 함수"""
@@ -205,10 +204,18 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         
         # 모든 feature를 종합하여 최종 스칼라 값 출력
         combined_features = torch.cat(features, dim=1)
-        scalar_output = self.final_fc(combined_features)
+        output = self.final_fc(combined_features)
         
-        return scalar_output
+        
+        return output
 
+
+def loss_function_mse(pred, target):
+    loss = F.mse_loss(pred, target)
+    return loss
+
+def loss_function_bce(pred, target):
+    return F.binary_cross_entropy_with_logits(pred, target)
  
 
 

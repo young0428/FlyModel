@@ -4,6 +4,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import os
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class Trainer :
     def __init__(self, model, loss_func, lr):
@@ -78,3 +80,38 @@ class Trainer :
             pred = self.model(input)
         self.model.train()
         return pred
+
+# 모델 로드 함수 정의
+def load_model(model, path):
+    if os.path.exists(path):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        checkpoint = torch.load(path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        print(f"Model loaded successfully from {path}")
+        return model
+    else:
+        print(f"Model not found at {path}")
+        return None
+
+    
+def save_test_result(batch_input_data, predictions, epoch, fold_path ):
+    fig, axes = plt.subplots(1, 3, figsize=(15, 9))
+    
+    def update(frame_idx):
+        for i in range(3):
+            axes[i].clear()
+            # Extract the frame for the current batch
+            frame = batch_input_data[i, frame_idx, :, :, 0].cpu().numpy()
+            
+            # Plot the frame
+            axes[i].imshow(frame, cmap='gray')
+            axes[i].axis('off')
+            
+            # Add the prediction label
+            prediction_label = '왼쪽' if predictions[i].item() > 0 else '오른쪽'
+            axes[i].set_title(f"Batch {i}: {prediction_label}")
+        
+    ani = animation.FuncAnimation(fig, update, frames=16, interval=200)    
+    intermediate_path = f"{fold_path}/intermediate_epoch"
+    ani.save(f'{intermediate_path}/{epoch+1}.gif', writer='imagemagick')
+    plt.close()
