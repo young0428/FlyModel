@@ -657,7 +657,7 @@ def aug_videos(videos):
 
         
         augmented_videos.append(apply_gaussian_blur(video))
-        #augmented_videos.append(apply_salt_and_pepper(video))
+        augmented_videos.append(apply_salt_and_pepper(video))
         
 
     return np.array(augmented_videos)
@@ -680,12 +680,12 @@ def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_slidin
     # 1 = City
     # 2 = forest
     for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
-        for video_n in range(2, 6, 3):
+        for video_n in range(3, 9):
             tuples.append((video_n, start_frame))
             
-    for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
-        for video_n in range(1, 6, 3):
-            tuples.append((video_n, start_frame))
+    # for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
+    #     for video_n in range(1, 6, 3):
+    #         tuples.append((video_n, start_frame))
                     
     return tuples
 
@@ -695,8 +695,8 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append([1] if wba_tensor[video_num%3, start_frame] >= 0 else [0])
-        #direction_data.append([1] if wba_tensor[video_num%3, start_frame] >= wba_tensor[video_num%3, start_frame-frame_per_window] else [0])
+        direction_data.append([1] if wba_tensor[video_num//3, start_frame] >= 0 else [0])
+        #direction_data.append([1] if wba_tensor[video_num//3, start_frame] >= wba_tensor[video_num//3, start_frame-frame_per_window] else [0])
         
     return np.array(video_data), np.array(direction_data)
 

@@ -176,14 +176,14 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             self.fc_layers.append(nn.Sequential(
                 nn.Conv3d(in_channels, feature_dim, kernel_size=1),
                 nn.ReLU(inplace=True),
-                nn.AdaptiveAvgPool3d(1),  # Global average pooling
+                nn.AdaptiveAvgPool3d(4),  # Global average pooling
                 nn.Flatten(),
-                nn.Linear(feature_dim, feature_dim),
+                nn.Linear(feature_dim*4*4*4, feature_dim*4),
                 nn.ReLU(inplace=True)
             ))
         
         # 최종 스칼라 값을 출력하는 FC layer
-        self.final_fc = nn.Linear(feature_dim * len(self.fc_layers), 1)
+        self.final_fc = nn.Linear(feature_dim*4 * len(self.fc_layers), 1)
         
         self.spatial_attentions = self.spatial_attentions.to(self.device)
         self.fc_layers = self.fc_layers.to(self.device)

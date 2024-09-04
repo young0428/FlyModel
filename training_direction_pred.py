@@ -18,7 +18,7 @@ c = 1
 fps = 30
 downsampling_factor = 5.625
 
-frame_per_window = 32
+frame_per_window = 16
 frame_per_sliding = 4
 input_ch = 1 
 
