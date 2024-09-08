@@ -11,6 +11,7 @@ class Trainer :
     def __init__(self, model, loss_func, lr):
         self.lr = lr
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(self.device)
         self.step_counter = 0
         self.loss_sum = 0
         self.loss_func = loss_func

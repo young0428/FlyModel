@@ -150,13 +150,13 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.flownet3d = flownet3d.to(self.device)
         self.feature_dim = feature_dim
+        self.input_dropout = nn.Dropout2d(p=0.1)
         
-        
-        # Encoder와 Decoder의 파라미터를 고정 (freeze)
-        for param in self.flownet3d.encoder.parameters():
-            param.requires_grad = False
-        for param in self.flownet3d.decoder.parameters():
-            param.requires_grad = False
+        #Encoder와 Decoder의 파라미터를 고정 (freeze)
+        # for param in self.flownet3d.encoder.parameters():
+        #     param.requires_grad = False
+        # for param in self.flownet3d.decoder.parameters():
+        #     param.requires_grad = False
         
         # Decoder 각 단계에서 나오는 feature를 변환하는 layer들을 초기화
         self.spatial_attentions = nn.ModuleList()
@@ -168,6 +168,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         # 실제 크기는 forward pass에서 결정됨
         self.final_fc = None
         D, H, W, C = input_size
+        adaptive_size = 4
         
         self.fc_layers = nn.ModuleList()
         for i in range(len(self.flownet3d.decoder.upconvs)):
@@ -176,10 +177,11 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             self.fc_layers.append(nn.Sequential(
                 nn.Conv3d(in_channels, feature_dim, kernel_size=1),
                 nn.ReLU(inplace=True),
-                nn.AdaptiveAvgPool3d(4),  # Global average pooling
+                nn.AdaptiveAvgPool3d((1, adaptive_size, adaptive_size)),  # Global average pooling
                 nn.Flatten(),
-                nn.Linear(feature_dim*4*4*4, feature_dim*4),
-                nn.ReLU(inplace=True)
+                nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
+                nn.ReLU(inplace=True),
+                nn.Dropout(0.3),
             ))
         
         # 최종 스칼라 값을 출력하는 FC layer
@@ -193,7 +195,9 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             
 
     def forward(self, x):
+        
         x = self.flownet3d.swap_axis_for_input(x)
+        x = self.input_dropout(x)
         encoder_outputs = self.flownet3d.encoder(x)
         
         decoder_output = encoder_outputs[-1]
