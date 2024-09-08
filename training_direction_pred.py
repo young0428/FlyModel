@@ -11,6 +11,7 @@ import os
 from sklearn.model_selection import KFold
 import time
 from datetime import datetime, timedelta
+import pytz
 
 torch.autograd.set_detect_anomaly(True)
 
@@ -84,7 +85,7 @@ def update_metrics_plot(fold_path, epoch, train_losses, train_accuracies, test_l
     plt.tight_layout()
     plt.savefig(f'{fold_path}/metrics_plot.png')
     plt.close()
-
+KST = pytz.timezone('Asia/Seoul')
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     print(f"Fold {fold+1}")
     fold_path = f"{model_name}/fold_{fold+1}"
@@ -271,7 +272,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
             # 전체 epoch와 fold의 예상 종료 시간 계산
             total_duration = first_epoch_duration * (epochs * fold_factor)
-            estimated_end_time = datetime.now() + timedelta(seconds=total_duration)
+            estimated_end_time = datetime.now(KST) + timedelta(seconds=total_duration)
+            print(f"Estimated time duration : {total_duration} seconds")
             print(f"Estimated end time: {estimated_end_time.strftime('%Y/%m/%d %H:%M')}")
 
     print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with loss {min_test_loss:.5f}")
