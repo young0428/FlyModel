@@ -168,7 +168,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         # 실제 크기는 forward pass에서 결정됨
         self.final_fc = None
         D, H, W, C = input_size
-        adaptive_size = 4
+        adaptive_size = 8
         
         self.fc_layers = nn.ModuleList()
         for i in range(len(self.flownet3d.decoder.upconvs)):
@@ -181,7 +181,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 nn.Flatten(),
                 nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
                 nn.ReLU(inplace=True),
-                nn.Dropout(0.3),
+                nn.Dropout(0.5),
             ))
         
         # 최종 스칼라 값을 출력하는 FC layer
@@ -208,8 +208,8 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
             decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
             
-            #attention_map = self.spatial_attentions[i](decoder_output)
-            #decoder_output = decoder_output * attention_map
+            attention_map = self.spatial_attentions[i](decoder_output)
+            decoder_output = decoder_output * attention_map
             
             # 각 단계에서의 feature 추출
             feature = self.fc_layers[i](decoder_output)

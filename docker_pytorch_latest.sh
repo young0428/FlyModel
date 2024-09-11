@@ -9,5 +9,5 @@ CT_NAME=$1
 HOME_DIR="/home/$USER"
 
 # 도커 실행 명령어
-sudo docker run -it --name ${CT_NAME} -v ${HOME_DIR}:/myhome --gpus all pytorch/pytorch:latest
+sudo nohup docker run -it --name ${CT_NAME} -v ${HOME_DIR}:/myhome --gpus all pytorch/pytorch:latest
 

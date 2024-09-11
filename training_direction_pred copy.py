@@ -24,11 +24,11 @@ c = 1
 fps = 30
 downsampling_factor = 5.625
 
-frame_per_window = 32
-frame_per_sliding = 8
+frame_per_window = 16
+frame_per_sliding = 4
 input_ch = 1
 
-model_string = "only_forest_ud_nf_SA"
+model_string = "only_forest_ud_f1_score"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -59,6 +59,9 @@ recent_losses = deque(maxlen=100)
 recent_f1_scores = deque(maxlen=100)
 val_losses_per_epoch = []
 
+flownet_model = flownet3d(layer_configs, num_classes=1)
+flownet_model = load_model(flownet_model, pretrained_model_path)
+
 batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
 print(np.shape(batch_tuples))
 kf = KFold(n_splits=fold_factor)
@@ -83,8 +86,6 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     
 
     # create model
-    flownet_model = flownet3d(layer_configs, num_classes=1)
-    flownet_model = load_model(flownet_model, pretrained_model_path)
     model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128)
     trainer = Trainer(model, loss_function_bce, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
@@ -182,7 +183,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         # 누적된 값을 사용하여 최종적으로 F1 점수, 민감도, 특이도를 계산
         sensitivity_train = tp_train / (tp_train + fn_train)
         specificity_train = tn_train / (tn_train + fp_train)
-        f1_train = 2 * (sensitivity_train * specificity_train) / (sensitivity_train + specificity_train)
+        f1_train = 2 * tp_train / (2 * tp_train + fp_train + fn_train)
 
         print(f"Training Sensitivity: {sensitivity_train:.5f}, Specificity: {specificity_train:.5f}, F1 Score: {f1_train:.5f}")
 
@@ -240,7 +241,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         # 누적된 값을 사용하여 최종적으로 F1 점수, 민감도, 특이도를 계산
         sensitivity_val = tp_val / (tp_val + fn_val)
         specificity_val = tn_val / (tn_val + fp_val)
-        f1_val = 2 * (sensitivity_val * specificity_val)/ (sensitivity_val + specificity_val)
+        f1_val = 2 * tp_val / (2 * tp_val + fp_val + fn_val)
 
         print(f"Validation Sensitivity: {sensitivity_val:.5f}, Specificity: {specificity_val:.5f}, F1 Score: {f1_val:.5f}")
 
