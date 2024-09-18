@@ -127,8 +127,9 @@ def flownet3d(layer_configs, num_classes = 2):
     return FlowNet3D(ResidualBlock, layer_configs, num_classes)
 
 def loss_function(pred, target):
-    loss = F.mse_loss(pred, target)
-    return loss
+    loss_ch1 = F.mse_loss(pred[:,:,:,:,0], target[:,:,:,:,0])
+    loss_ch2 = F.mse_loss(pred[:,:,:,:,1], target[:,:,:,:,1])
+    return loss_ch1 + loss_ch2
 
 #예시: 다양한 형태의 layer_configs를 입력으로 모델을 구성
 # layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
