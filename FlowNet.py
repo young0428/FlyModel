@@ -181,7 +181,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 nn.Flatten(),
                 nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
                 nn.ReLU(inplace=True),
-                nn.Dropout(0.5),
+                nn.Dropout(0.3),
             ))
         
         # 최종 스칼라 값을 출력하는 FC layer

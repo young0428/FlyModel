@@ -105,6 +105,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # Initialize minimum loss to a large value
     min_val_loss = float('inf')
+    best_f1_score = 0
     best_epoch = 0
 
     # Initialize lists to store metrics
@@ -114,6 +115,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     val_losses = []
     val_f1_scores = []
     val_matrices = []
+    
     
 
     # 타이머 시작
@@ -201,6 +203,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         # Validation Phase
         val_batches = list(get_batches(val_tuples, batch_size))
         total_val_loss = 0.0
+        
         tp_val, tn_val, fp_val, fn_val = 0, 0, 0, 0  # 누적할 변수 초기화
         
         progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
@@ -252,8 +255,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             'loss': avg_val_loss
         }
         val_f1_scores.append(f1_val)
-        val_matrices.append(conf_matrix)
-        with open(f"{fold_path}/val_metrics_epoch_{epoch + 1}.pkl", "wb") as f:
+        val_matrices.append([tp_val, tn_val, fp_val, fn_val])
+        with open(f"{fold_path}/val_metrics_epoch.pkl", "wb") as f:
             pickle.dump(val_metrics, f)
 
         # print(f"Average validation loss after Epoch {epoch + 1}: {avg_test_loss:.5f}")
@@ -266,12 +269,12 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             torch.cuda.empty_cache()
 
         # Save model if this epoch has the lowest test loss
-        if avg_val_loss < min_val_loss:
-            min_val_loss = avg_val_loss
+        if f1_val > best_f1_score:
+            best_f1_score = f1_val
             best_epoch = epoch + 1
             best_model_path = f"{fold_path}/best_model.ckpt"
             trainer.save(best_model_path, epoch)
-            print(f"New best model saved at epoch {best_epoch} with loss {min_val_loss:.5f}")
+            print(f"New best model saved at epoch {best_epoch} with f1 {f1_val:.5f}")
 
             
         if epoch == start_epoch:
