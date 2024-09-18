@@ -16,7 +16,7 @@ class Trainer :
         self.model = self.model.to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters() , lr=lr, weight_decay=1e-4)
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=1, threshold=0.1, min_lr=1e-6)
-    
+        print(f"device : {self.device}")
     def save(self, path, epoch):
         save_state = {
             'epoch': epoch,

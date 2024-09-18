@@ -23,7 +23,7 @@ frame_per_window = 16
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "8fold_opticflow"
+model_string = "8fold_opticflow_2ch_"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
