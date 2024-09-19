@@ -28,7 +28,7 @@ frame_per_window = 32
 frame_per_sliding = 8
 input_ch = 1
 
-model_string = "only_forest_ud_nf_SA"
+model_string = "only_forest_ud_nf_preX"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -45,7 +45,7 @@ pretrained_model_path = "./pretrained_model/64x128_opticflow_64t51216frames.ckpt
 batch_size = 20
 lr = 1e-3
 epochs = 100
-fold_factor = 8
+fold_factor = 5
 
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
 
@@ -84,7 +84,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # create model
     flownet_model = flownet3d(layer_configs, num_classes=1)
-    flownet_model = load_model(flownet_model, pretrained_model_path)
+    #flownet_model = load_model(flownet_model, pretrained_model_path)
     model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128)
     trainer = Trainer(model, loss_function_bce, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
@@ -312,7 +312,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
             save_test_result(batch_input_data, batch_target_data, predictions, f1_val, epoch, fold_path)
 
-    print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with loss {min_val_loss:.5f}")
+    print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with f1 {best_f1_score:.5f}")
     all_fold_losses.append(min_val_loss)
 
     print(f"Final training loss: {train_losses[-1]:.5f}")

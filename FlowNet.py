@@ -208,8 +208,8 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
             decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
             
-            attention_map = self.spatial_attentions[i](decoder_output)
-            decoder_output = decoder_output * attention_map
+            #attention_map = self.spatial_attentions[i](decoder_output)
+            #decoder_output = decoder_output * attention_map
             
             # 각 단계에서의 feature 추출
             feature = self.fc_layers[i](decoder_output)
