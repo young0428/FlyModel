@@ -23,7 +23,7 @@ frame_per_window = 16
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "8fold_opticflow_2ch_"
+model_string = "8fold_opticflow_4ch_"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -38,7 +38,7 @@ result_save_path = f"./model/{model_string}/result_data.h5"
 batch_size = 10
 lr = 1e-3
 epochs = 300
-fold_factor = 8
+fold_factor = 5
 
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
 
@@ -59,15 +59,12 @@ all_fold_losses = []
 
 #%%
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
-    if not fold < 4:
-        continue
-
     print(f"Fold {fold+1}")
     fold_path = f"{model_name}/fold_{fold+1}"
 
     # create model
     #model = p3d_resnet(input_ch, block_list, feature_output_dims)
-    model = flownet3d(layer_configs, num_classes=2)
+    model = flownet3d(layer_configs, num_classes=4)
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
@@ -199,7 +196,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # target
             for j in range(3):
                 img_left = batch_target_data[j,-1,:,:,0].cpu()
-                img_right = batch_target_data[j,-1,:,:,1].cpu()
+                img_right = batch_target_data[j,-1,:,:,2].cpu()
                 axes[1, j*2].imshow(img_left)
                 axes[1, j*2+1].imshow(img_right)
                 axes[1, j*2].axis('off')  # 축 숨기기
@@ -208,7 +205,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # prediction       
             for j in range(3):
                 img_left = predictions[j,-1,:,:,0].cpu()
-                img_right = predictions[j,-1,:,:,1].cpu()
+                img_right = predictions[j,-1,:,:,2].cpu()
                 axes[2, j*2].imshow(img_left)
                 axes[2, j*2+1].imshow(img_right)
                 axes[2, j*2].axis('off')  # 축 숨기기

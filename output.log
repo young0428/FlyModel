@@ -6,788 +6,1279 @@ Shape : (3, 3596, 64, 128, 5)
 augmented shape : (33, 3596, 64, 128, 5)
 Fold 1
 device : cuda
-Model not found at ./model/8fold_opticflow_2ch_16frames_/fold_1/fly_model.ckpt
+Model not found at ./model/8fold_opticflow_4ch_16frames_/fold_1/fly_model.ckpt
 Epoch 1/300
-Average test loss after Epoch 1: 106.96167
+Average test loss after Epoch 1: 644.73437
 Epoch 2/300
-Average test loss after Epoch 2: 105.65219
+Average test loss after Epoch 2: 606.24650
 Epoch 3/300
-Average test loss after Epoch 3: 105.14914
+Average test loss after Epoch 3: 590.62613
 Epoch 4/300
-Average test loss after Epoch 4: 105.32176
+Average test loss after Epoch 4: 590.12704
 Epoch 5/300
-Average test loss after Epoch 5: 104.34895
+Average test loss after Epoch 5: 584.75100
 Epoch 6/300
-Average test loss after Epoch 6: 105.15604
+Average test loss after Epoch 6: 582.95625
 Epoch 7/300
-Average test loss after Epoch 7: 105.70851
+Average test loss after Epoch 7: 583.20998
 Epoch 8/300
-Average test loss after Epoch 8: 103.65877
+Average test loss after Epoch 8: 582.52722
 Epoch 9/300
-Average test loss after Epoch 9: 104.13618
+Average test loss after Epoch 9: 581.72045
 Epoch 10/300
-Average test loss after Epoch 10: 103.43233
+Average test loss after Epoch 10: 569.52398
 Epoch 11/300
-Average test loss after Epoch 11: 104.44865
+Average test loss after Epoch 11: 576.49014
 Epoch 12/300
-Average test loss after Epoch 12: 105.04873
+Average test loss after Epoch 12: 588.44380
 Epoch 13/300
-Average test loss after Epoch 13: 104.52310
+Average test loss after Epoch 13: 569.03598
 Epoch 14/300
-Average test loss after Epoch 14: 104.31366
+Average test loss after Epoch 14: 577.65078
 Epoch 15/300
-Average test loss after Epoch 15: 105.26652
+Average test loss after Epoch 15: 581.74240
 Epoch 16/300
-Average test loss after Epoch 16: 103.10040
+Average test loss after Epoch 16: 576.88243
 Epoch 17/300
-Average test loss after Epoch 17: 103.44063
+Average test loss after Epoch 17: 575.18442
 Epoch 18/300
-Average test loss after Epoch 18: 104.60830
+Average test loss after Epoch 18: 579.38236
 Epoch 19/300
-Average test loss after Epoch 19: 105.11511
+Average test loss after Epoch 19: 580.23418
 Epoch 20/300
-Average test loss after Epoch 20: 103.44188
+Average test loss after Epoch 20: 582.88677
 Epoch 21/300
-Average test loss after Epoch 21: 103.94381
+Average test loss after Epoch 21: 572.74976
 Epoch 22/300
-Average test loss after Epoch 22: 104.52029
+Average test loss after Epoch 22: 579.61541
 Epoch 23/300
-Average test loss after Epoch 23: 103.02533
+Average test loss after Epoch 23: 566.91066
 Epoch 24/300
-Average test loss after Epoch 24: 105.80484
+Average test loss after Epoch 24: 575.80914
 Epoch 25/300
-Average test loss after Epoch 25: 104.12244
+Average test loss after Epoch 25: 571.72192
 Epoch 26/300
-Average test loss after Epoch 26: 104.66229
+Average test loss after Epoch 26: 564.77552
 Epoch 27/300
-Average test loss after Epoch 27: 103.33859
+Average test loss after Epoch 27: 585.95873
 Epoch 28/300
-Average test loss after Epoch 28: 102.91536
+Average test loss after Epoch 28: 565.25991
 Epoch 29/300
-Average test loss after Epoch 29: 102.77257
+Average test loss after Epoch 29: 578.44774
 Epoch 30/300
-Average test loss after Epoch 30: 104.01662
+Average test loss after Epoch 30: 572.07707
 Epoch 31/300
-Average test loss after Epoch 31: 103.28349
+Average test loss after Epoch 31: 571.87982
 Epoch 32/300
-Average test loss after Epoch 32: 102.53201
+Average test loss after Epoch 32: 565.27024
 Epoch 33/300
-Average test loss after Epoch 33: 103.53906
+Average test loss after Epoch 33: 579.35535
 Epoch 34/300
-Average test loss after Epoch 34: 103.66192
+Average test loss after Epoch 34: 581.40919
 Epoch 35/300
-Average test loss after Epoch 35: 103.79794
+Average test loss after Epoch 35: 562.97567
 Epoch 36/300
-Average test loss after Epoch 36: 102.86735
+Average test loss after Epoch 36: 556.11961
 Epoch 37/300
-Average test loss after Epoch 37: 102.66794
+Average test loss after Epoch 37: 562.14604
 Epoch 38/300
-Average test loss after Epoch 38: 101.44825
+Average test loss after Epoch 38: 567.62374
 Epoch 39/300
-Average test loss after Epoch 39: 101.84877
+Average test loss after Epoch 39: 569.13312
 Epoch 40/300
-Average test loss after Epoch 40: 101.46086
+Average test loss after Epoch 40: 578.98124
 Epoch 41/300
-Average test loss after Epoch 41: 103.75762
+Average test loss after Epoch 41: 576.33630
 Epoch 42/300
-Average test loss after Epoch 42: 102.49372
+Average test loss after Epoch 42: 572.49668
 Epoch 43/300
-Average test loss after Epoch 43: 100.81963
+Average test loss after Epoch 43: 572.64168
 Epoch 44/300
-Average test loss after Epoch 44: 102.42507
+Average test loss after Epoch 44: 569.44765
 Epoch 45/300
-Average test loss after Epoch 45: 102.77920
+Average test loss after Epoch 45: 572.26048
 Epoch 46/300
-Average test loss after Epoch 46: 103.17556
+Average test loss after Epoch 46: 570.12321
 Epoch 47/300
-Average test loss after Epoch 47: 101.55739
+Average test loss after Epoch 47: 567.84900
 Epoch 48/300
-Average test loss after Epoch 48: 101.89458
+Average test loss after Epoch 48: 556.17749
 Epoch 49/300
-Average test loss after Epoch 49: 100.42675
+Average test loss after Epoch 49: 563.66659
 Epoch 50/300
-Average test loss after Epoch 50: 103.34039
+Average test loss after Epoch 50: 555.94817
 Epoch 51/300
-Average test loss after Epoch 51: 103.85654
+Average test loss after Epoch 51: 568.28714
 Epoch 52/300
-Average test loss after Epoch 52: 100.56855
+Average test loss after Epoch 52: 566.59420
 Epoch 53/300
-Average test loss after Epoch 53: 101.59745
+Average test loss after Epoch 53: 568.36870
 Epoch 54/300
-Average test loss after Epoch 54: 101.39978
+Average test loss after Epoch 54: 571.59119
 Epoch 55/300
-Average test loss after Epoch 55: 101.87106
+Average test loss after Epoch 55: 563.07921
 Epoch 56/300
-Average test loss after Epoch 56: 102.11092
+Average test loss after Epoch 56: 570.38899
 Epoch 57/300
-Average test loss after Epoch 57: 101.74469
+Average test loss after Epoch 57: 559.58139
 Epoch 58/300
-Average test loss after Epoch 58: 101.02679
+Average test loss after Epoch 58: 557.93679
 Epoch 59/300
-Average test loss after Epoch 59: 102.47707
+Average test loss after Epoch 59: 562.95173
 Epoch 60/300
-Average test loss after Epoch 60: 100.97310
+Average test loss after Epoch 60: 564.29231
 Epoch 61/300
-Average test loss after Epoch 61: 100.96786
+Average test loss after Epoch 61: 565.53108
 Epoch 62/300
-Average test loss after Epoch 62: 101.26822
+Average test loss after Epoch 62: 558.46634
 Epoch 63/300
-Average test loss after Epoch 63: 102.79031
+Average test loss after Epoch 63: 557.31751
 Epoch 64/300
-Average test loss after Epoch 64: 101.03833
+Average test loss after Epoch 64: 581.20547
 Epoch 65/300
-Average test loss after Epoch 65: 102.28235
+Average test loss after Epoch 65: 556.31227
 Epoch 66/300
-Average test loss after Epoch 66: 100.71437
+Average test loss after Epoch 66: 557.57240
 Epoch 67/300
-Average test loss after Epoch 67: 99.88175
+Average test loss after Epoch 67: 564.63903
 Epoch 68/300
-Average test loss after Epoch 68: 101.60082
+Average test loss after Epoch 68: 559.69389
 Epoch 69/300
-Average test loss after Epoch 69: 103.01856
+Average test loss after Epoch 69: 565.73230
 Epoch 70/300
-Average test loss after Epoch 70: 100.58966
+Average test loss after Epoch 70: 577.64833
 Epoch 71/300
-Average test loss after Epoch 71: 100.04941
+Average test loss after Epoch 71: 563.34276
 Epoch 72/300
-Average test loss after Epoch 72: 100.25612
+Average test loss after Epoch 72: 562.22439
 Epoch 73/300
-Average test loss after Epoch 73: 101.17241
+Average test loss after Epoch 73: 553.06090
 Epoch 74/300
-Average test loss after Epoch 74: 101.23824
+Average test loss after Epoch 74: 558.12137
 Epoch 75/300
-Average test loss after Epoch 75: 101.06282
+Average test loss after Epoch 75: 556.87701
 Epoch 76/300
-Average test loss after Epoch 76: 100.83718
+Average test loss after Epoch 76: 559.89787
 Epoch 77/300
-Average test loss after Epoch 77: 101.99381
+Average test loss after Epoch 77: 562.51833
 Epoch 78/300
-Average test loss after Epoch 78: 101.94937
+Average test loss after Epoch 78: 554.88266
 Epoch 79/300
-Average test loss after Epoch 79: 100.97799
+Average test loss after Epoch 79: 563.14313
 Epoch 80/300
-Average test loss after Epoch 80: 102.15773
+Average test loss after Epoch 80: 563.80785
 Epoch 81/300
-Average test loss after Epoch 81: 101.25457
+Average test loss after Epoch 81: 550.54443
 Epoch 82/300
-Average test loss after Epoch 82: 100.80530
+Average test loss after Epoch 82: 548.16483
 Epoch 83/300
-Average test loss after Epoch 83: 101.05273
+Average test loss after Epoch 83: 564.08367
 Epoch 84/300
-Average test loss after Epoch 84: 99.37049
+Average test loss after Epoch 84: 557.47291
 Epoch 85/300
-Average test loss after Epoch 85: 100.46881
+Average test loss after Epoch 85: 552.95043
 Epoch 86/300
-Average test loss after Epoch 86: 100.39430
+Average test loss after Epoch 86: 561.16209
 Epoch 87/300
-Average test loss after Epoch 87: 100.92424
+Average test loss after Epoch 87: 554.76275
 Epoch 88/300
-Average test loss after Epoch 88: 99.49911
+Average test loss after Epoch 88: 550.06760
 Epoch 89/300
-Average test loss after Epoch 89: 100.25795
+Average test loss after Epoch 89: 563.44993
 Epoch 90/300
-Average test loss after Epoch 90: 101.24079
+Average test loss after Epoch 90: 557.98692
 Epoch 91/300
-Average test loss after Epoch 91: 99.64059
+Average test loss after Epoch 91: 549.77992
 Epoch 92/300
-Average test loss after Epoch 92: 100.34707
+Average test loss after Epoch 92: 558.43842
 Epoch 93/300
-Average test loss after Epoch 93: 99.57251
+Average test loss after Epoch 93: 568.36800
 Epoch 94/300
-Average test loss after Epoch 94: 99.27594
+Average test loss after Epoch 94: 549.81684
 Epoch 95/300
-Average test loss after Epoch 95: 99.51245
+Average test loss after Epoch 95: 552.30317
 Epoch 96/300
-Average test loss after Epoch 96: 99.11523
+Average test loss after Epoch 96: 556.26805
 Epoch 97/300
-Average test loss after Epoch 97: 100.51516
+Average test loss after Epoch 97: 539.27149
 Epoch 98/300
-Average test loss after Epoch 98: 101.21256
+Average test loss after Epoch 98: 561.42707
 Epoch 99/300
-Average test loss after Epoch 99: 99.33829
+Average test loss after Epoch 99: 554.81587
 Epoch 100/300
-Average test loss after Epoch 100: 101.04869
+Average test loss after Epoch 100: 555.37046
 Epoch 101/300
-Average test loss after Epoch 101: 100.36125
+Average test loss after Epoch 101: 557.19144
 Epoch 102/300
-Average test loss after Epoch 102: 98.56701
+Average test loss after Epoch 102: 555.11060
 Epoch 103/300
-Average test loss after Epoch 103: 100.50539
+Average test loss after Epoch 103: 563.95638
 Epoch 104/300
-Average test loss after Epoch 104: 100.40541
+Average test loss after Epoch 104: 559.88214
 Epoch 105/300
-Average test loss after Epoch 105: 99.08295
+Average test loss after Epoch 105: 558.59848
 Epoch 106/300
-Average test loss after Epoch 106: 100.65868
+Average test loss after Epoch 106: 552.47636
 Epoch 107/300
-Average test loss after Epoch 107: 99.37399
+Average test loss after Epoch 107: 556.91283
 Epoch 108/300
-Average test loss after Epoch 108: 99.54555
+Average test loss after Epoch 108: 557.74252
 Epoch 109/300
-Average test loss after Epoch 109: 99.93784
+Average test loss after Epoch 109: 551.84927
 Epoch 110/300
-Average test loss after Epoch 110: 99.46567
+Average test loss after Epoch 110: 552.54450
 Epoch 111/300
-Average test loss after Epoch 111: 101.45442
+Average test loss after Epoch 111: 562.63287
 Epoch 112/300
-Average test loss after Epoch 112: 100.55711
+Average test loss after Epoch 112: 558.90458
 Epoch 113/300
-Average test loss after Epoch 113: 99.36308
+Average test loss after Epoch 113: 557.87865
 Epoch 114/300
-Average test loss after Epoch 114: 98.83297
+Average test loss after Epoch 114: 544.14804
 Epoch 115/300
-Average test loss after Epoch 115: 97.85490
+Average test loss after Epoch 115: 543.30611
 Epoch 116/300
-Average test loss after Epoch 116: 100.37468
+Average test loss after Epoch 116: 549.83899
 Epoch 117/300
-Average test loss after Epoch 117: 99.30050
+Average test loss after Epoch 117: 557.26758
 Epoch 118/300
-Average test loss after Epoch 118: 99.63145
+Average test loss after Epoch 118: 543.44301
 Epoch 119/300
-Average test loss after Epoch 119: 99.24463
+Average test loss after Epoch 119: 551.30714
 Epoch 120/300
-Average test loss after Epoch 120: 99.15171
+Average test loss after Epoch 120: 543.45737
 Epoch 121/300
-Average test loss after Epoch 121: 99.66238
+Average test loss after Epoch 121: 550.95027
 Epoch 122/300
-Average test loss after Epoch 122: 99.06008
+Average test loss after Epoch 122: 558.39813
 Epoch 123/300
-Average test loss after Epoch 123: 97.87663
+Average test loss after Epoch 123: 548.44845
 Epoch 124/300
-Average test loss after Epoch 124: 99.49597
+Average test loss after Epoch 124: 559.63967
 Epoch 125/300
-Average test loss after Epoch 125: 98.10587
+Average test loss after Epoch 125: 555.64141
 Epoch 126/300
-Average test loss after Epoch 126: 99.08459
+Average test loss after Epoch 126: 549.01341
 Epoch 127/300
-Average test loss after Epoch 127: 100.53852
+Average test loss after Epoch 127: 555.21459
 Epoch 128/300
-Average test loss after Epoch 128: 98.62502
+Average test loss after Epoch 128: 544.92484
 Epoch 129/300
-Average test loss after Epoch 129: 99.60807
+Average test loss after Epoch 129: 543.04109
 Epoch 130/300
-Average test loss after Epoch 130: 98.50037
+Average test loss after Epoch 130: 546.07876
 Epoch 131/300
-Average test loss after Epoch 131: 98.00322
+Average test loss after Epoch 131: 547.58418
 Epoch 132/300
-Average test loss after Epoch 132: 101.29247
+Average test loss after Epoch 132: 549.14387
 Epoch 133/300
-Average test loss after Epoch 133: 100.04033
+Average test loss after Epoch 133: 548.25939
 Epoch 134/300
-Average test loss after Epoch 134: 99.84274
+Average test loss after Epoch 134: 545.26857
 Epoch 135/300
-Average test loss after Epoch 135: 99.09501
+Average test loss after Epoch 135: 559.23472
 Epoch 136/300
-Average test loss after Epoch 136: 100.60667
+Average test loss after Epoch 136: 547.65689
 Epoch 137/300
-Average test loss after Epoch 137: 98.48875
+Average test loss after Epoch 137: 540.63500
 Epoch 138/300
-Average test loss after Epoch 138: 96.73634
+Average test loss after Epoch 138: 551.18656
 Epoch 139/300
-Average test loss after Epoch 139: 98.28719
+Average test loss after Epoch 139: 550.00886
 Epoch 140/300
-Average test loss after Epoch 140: 98.22993
+Average test loss after Epoch 140: 544.43471
 Epoch 141/300
-Average test loss after Epoch 141: 96.75660
+Average test loss after Epoch 141: 554.75410
 Epoch 142/300
-Average test loss after Epoch 142: 96.55681
+Average test loss after Epoch 142: 554.87509
 Epoch 143/300
-Average test loss after Epoch 143: 98.35744
+Average test loss after Epoch 143: 549.04886
 Epoch 144/300
-Average test loss after Epoch 144: 98.44852
+Average test loss after Epoch 144: 550.62038
 Epoch 145/300
-Average test loss after Epoch 145: 99.76524
+Average test loss after Epoch 145: 543.11502
 Epoch 146/300
-Average test loss after Epoch 146: 96.85082
+Average test loss after Epoch 146: 540.38841
 Epoch 147/300
-Average test loss after Epoch 147: 97.69537
+Average test loss after Epoch 147: 538.29880
 Epoch 148/300
-Average test loss after Epoch 148: 98.66155
+Average test loss after Epoch 148: 550.99680
 Epoch 149/300
-Average test loss after Epoch 149: 98.60961
+Average test loss after Epoch 149: 555.60746
 Epoch 150/300
-Average test loss after Epoch 150: 98.39716
+Average test loss after Epoch 150: 559.16093
 Epoch 151/300
-Average test loss after Epoch 151: 99.63718
+Average test loss after Epoch 151: 544.06840
 Epoch 152/300
-Average test loss after Epoch 152: 97.39641
+Average test loss after Epoch 152: 544.42269
 Epoch 153/300
-Average test loss after Epoch 153: 98.50858
+Average test loss after Epoch 153: 546.93128
 Epoch 154/300
-Average test loss after Epoch 154: 98.35204
+Average test loss after Epoch 154: 546.34555
 Epoch 155/300
-Average test loss after Epoch 155: 97.48081
+Average test loss after Epoch 155: 543.87323
 Epoch 156/300
-Average test loss after Epoch 156: 98.63755
+Average test loss after Epoch 156: 551.55474
 Epoch 157/300
-Average test loss after Epoch 157: 98.32136
+Average test loss after Epoch 157: 547.26791
 Epoch 158/300
-Average test loss after Epoch 158: 98.16523
+Average test loss after Epoch 158: 546.17516
 Epoch 159/300
-Average test loss after Epoch 159: 99.44186
+Average test loss after Epoch 159: 548.33696
 Epoch 160/300
-Average test loss after Epoch 160: 96.77395
+Average test loss after Epoch 160: 546.70617
 Epoch 161/300
-Average test loss after Epoch 161: 97.88651
+Average test loss after Epoch 161: 552.98651
 Epoch 162/300
-Average test loss after Epoch 162: 95.96137
+Average test loss after Epoch 162: 541.21559
 Epoch 163/300
-Average test loss after Epoch 163: 96.64872
+Average test loss after Epoch 163: 540.52935
 Epoch 164/300
-Average test loss after Epoch 164: 97.54353
+Average test loss after Epoch 164: 534.30497
 Epoch 165/300
-Average test loss after Epoch 165: 99.27313
+Average test loss after Epoch 165: 547.13656
 Epoch 166/300
-Average test loss after Epoch 166: 95.93026
+Average test loss after Epoch 166: 545.60602
 Epoch 167/300
-Average test loss after Epoch 167: 97.20625
+Average test loss after Epoch 167: 546.08335
 Epoch 168/300
-Average test loss after Epoch 168: 97.01114
+Average test loss after Epoch 168: 547.62525
 Epoch 169/300
-Average test loss after Epoch 169: 97.20882
+Average test loss after Epoch 169: 551.74169
 Epoch 170/300
-Average test loss after Epoch 170: 97.44706
+Average test loss after Epoch 170: 539.27534
 Epoch 171/300
-Average test loss after Epoch 171: 97.11122
+Average test loss after Epoch 171: 553.11910
 Epoch 172/300
-Average test loss after Epoch 172: 97.37894
+Average test loss after Epoch 172: 543.61267
 Epoch 173/300
-Average test loss after Epoch 173: 96.68942
+Average test loss after Epoch 173: 553.34907
 Epoch 174/300
-Average test loss after Epoch 174: 97.30196
+Average test loss after Epoch 174: 550.83848
 Epoch 175/300
-Average test loss after Epoch 175: 96.90179
+Average test loss after Epoch 175: 545.02931
 Epoch 176/300
-Average test loss after Epoch 176: 97.68609
+Average test loss after Epoch 176: 550.10021
 Epoch 177/300
-Average test loss after Epoch 177: 97.19589
+Average test loss after Epoch 177: 552.15760
 Epoch 178/300
-Average test loss after Epoch 178: 97.03087
+Average test loss after Epoch 178: 546.78666
 Epoch 179/300
-Average test loss after Epoch 179: 96.84180
+Average test loss after Epoch 179: 547.96530
 Epoch 180/300
-Average test loss after Epoch 180: 96.31709
+Average test loss after Epoch 180: 542.32955
 Epoch 181/300
-Average test loss after Epoch 181: 96.03549
+Average test loss after Epoch 181: 544.61583
 Epoch 182/300
-Average test loss after Epoch 182: 97.25247
+Average test loss after Epoch 182: 544.93231
 Epoch 183/300
-Average test loss after Epoch 183: 97.29500
+Average test loss after Epoch 183: 537.38423
 Epoch 184/300
-Average test loss after Epoch 184: 95.06891
+Average test loss after Epoch 184: 541.93487
 Epoch 185/300
-Average test loss after Epoch 185: 95.92652
+Average test loss after Epoch 185: 544.50421
 Epoch 186/300
-Average test loss after Epoch 186: 95.17304
+Average test loss after Epoch 186: 543.12819
 Epoch 187/300
-Average test loss after Epoch 187: 96.87514
+Average test loss after Epoch 187: 542.53759
 Epoch 188/300
-Average test loss after Epoch 188: 96.30486
+Average test loss after Epoch 188: 542.84388
 Epoch 189/300
-Average test loss after Epoch 189: 95.19748
+Average test loss after Epoch 189: 544.98012
 Epoch 190/300
-Average test loss after Epoch 190: 94.86743
+Average test loss after Epoch 190: 534.75099
 Epoch 191/300
-Average test loss after Epoch 191: 97.40538
+Average test loss after Epoch 191: 543.54540
 Epoch 192/300
-Average test loss after Epoch 192: 97.29796
+Average test loss after Epoch 192: 546.35820
 Epoch 193/300
-Average test loss after Epoch 193: 97.08190
+Average test loss after Epoch 193: 554.30906
 Epoch 194/300
-Average test loss after Epoch 194: 96.80784
+Average test loss after Epoch 194: 530.90036
 Epoch 195/300
-Average test loss after Epoch 195: 95.84721
+Average test loss after Epoch 195: 543.39765
 Epoch 196/300
-Average test loss after Epoch 196: 96.29878
+Average test loss after Epoch 196: 530.95280
 Epoch 197/300
-Average test loss after Epoch 197: 96.13173
+Average test loss after Epoch 197: 552.76319
 Epoch 198/300
-Average test loss after Epoch 198: 97.05937
+Average test loss after Epoch 198: 541.92504
 Epoch 199/300
-Average test loss after Epoch 199: 94.81741
+Average test loss after Epoch 199: 540.61164
 Epoch 200/300
-Average test loss after Epoch 200: 95.43999
+Average test loss after Epoch 200: 539.43502
 Epoch 201/300
-Average test loss after Epoch 201: 94.98335
+Average test loss after Epoch 201: 549.50588
 Epoch 202/300
-Average test loss after Epoch 202: 97.08754
+Average test loss after Epoch 202: 533.35896
 Epoch 203/300
-Average test loss after Epoch 203: 94.56749
+Average test loss after Epoch 203: 542.93282
 Epoch 204/300
-Average test loss after Epoch 204: 95.97875
+Average test loss after Epoch 204: 539.64863
 Epoch 205/300
-Average test loss after Epoch 205: 94.52657
+Average test loss after Epoch 205: 547.23966
 Epoch 206/300
-Average test loss after Epoch 206: 94.77597
+Average test loss after Epoch 206: 540.41950
 Epoch 207/300
-Average test loss after Epoch 207: 96.22430
+Average test loss after Epoch 207: 544.08227
 Epoch 208/300
-Average test loss after Epoch 208: 95.58832
+Average test loss after Epoch 208: 542.54371
 Epoch 209/300
-Average test loss after Epoch 209: 96.12827
+Average test loss after Epoch 209: 540.75771
 Epoch 210/300
-Average test loss after Epoch 210: 93.76529
+Average test loss after Epoch 210: 536.35732
 Epoch 211/300
-Average test loss after Epoch 211: 95.35445
+Average test loss after Epoch 211: 552.48908
 Epoch 212/300
-Average test loss after Epoch 212: 94.86289
+Average test loss after Epoch 212: 545.92195
 Epoch 213/300
-Average test loss after Epoch 213: 94.80679
+Average test loss after Epoch 213: 542.28510
 Epoch 214/300
-Average test loss after Epoch 214: 94.13198
+Average test loss after Epoch 214: 542.91916
 Epoch 215/300
-Average test loss after Epoch 215: 96.28242
+Average test loss after Epoch 215: 541.48001
 Epoch 216/300
-Average test loss after Epoch 216: 94.91300
+Average test loss after Epoch 216: 543.37887
 Epoch 217/300
-Average test loss after Epoch 217: 95.61173
+Average test loss after Epoch 217: 545.28119
 Epoch 218/300
-Average test loss after Epoch 218: 95.22179
+Average test loss after Epoch 218: 541.19565
 Epoch 219/300
-Average test loss after Epoch 219: 94.32660
+Average test loss after Epoch 219: 540.62728
 Epoch 220/300
-Average test loss after Epoch 220: 93.82097
+Average test loss after Epoch 220: 543.71929
 Epoch 221/300
-Average test loss after Epoch 221: 95.27893
+Average test loss after Epoch 221: 550.33955
 Epoch 222/300
-Average test loss after Epoch 222: 94.93155
+Average test loss after Epoch 222: 536.67590
 Epoch 223/300
-Average test loss after Epoch 223: 95.30392
+Average test loss after Epoch 223: 544.28581
 Epoch 224/300
-Average test loss after Epoch 224: 94.79417
+Average test loss after Epoch 224: 539.49888
 Epoch 225/300
-Average test loss after Epoch 225: 95.09214
+Average test loss after Epoch 225: 540.84331
 Epoch 226/300
-Average test loss after Epoch 226: 94.70562
+Average test loss after Epoch 226: 542.33626
 Epoch 227/300
-Average test loss after Epoch 227: 95.60487
+Average test loss after Epoch 227: 550.60852
 Epoch 228/300
-Average test loss after Epoch 228: 93.99393
+Average test loss after Epoch 228: 543.33570
 Epoch 229/300
-Average test loss after Epoch 229: 95.02663
+Average test loss after Epoch 229: 551.81183
 Epoch 230/300
-Average test loss after Epoch 230: 95.71463
+Average test loss after Epoch 230: 536.73216
 Epoch 231/300
-Average test loss after Epoch 231: 93.61171
+Average test loss after Epoch 231: 534.40375
 Epoch 232/300
-Average test loss after Epoch 232: 94.65125
+Average test loss after Epoch 232: 536.36329
 Epoch 233/300
-Average test loss after Epoch 233: 93.80412
+Average test loss after Epoch 233: 537.79181
 Epoch 234/300
-Average test loss after Epoch 234: 94.34607
+Average test loss after Epoch 234: 543.19584
 Epoch 235/300
-Average test loss after Epoch 235: 94.46307
+Average test loss after Epoch 235: 538.16950
 Epoch 236/300
-Average test loss after Epoch 236: 95.13014
+Average test loss after Epoch 236: 540.91860
 Epoch 237/300
-Average test loss after Epoch 237: 94.59677
+Average test loss after Epoch 237: 538.89752
 Epoch 238/300
-Average test loss after Epoch 238: 94.12924
+Average test loss after Epoch 238: 539.03809
 Epoch 239/300
-Average test loss after Epoch 239: 95.06930
+Average test loss after Epoch 239: 535.80604
 Epoch 240/300
-Average test loss after Epoch 240: 93.96837
+Average test loss after Epoch 240: 538.53831
 Epoch 241/300
-Average test loss after Epoch 241: 93.97523
+Average test loss after Epoch 241: 549.93122
 Epoch 242/300
-Average test loss after Epoch 242: 94.81474
+Average test loss after Epoch 242: 535.98273
 Epoch 243/300
-Average test loss after Epoch 243: 93.48988
+Average test loss after Epoch 243: 540.99697
 Epoch 244/300
-Average test loss after Epoch 244: 94.25126
+Average test loss after Epoch 244: 541.42243
 Epoch 245/300
-Average test loss after Epoch 245: 93.41429
+Average test loss after Epoch 245: 539.75573
 Epoch 246/300
-Average test loss after Epoch 246: 92.78207
+Average test loss after Epoch 246: 537.79881
 Epoch 247/300
-Average test loss after Epoch 247: 94.93895
+Average test loss after Epoch 247: 541.75813
 Epoch 248/300
-Average test loss after Epoch 248: 94.28944
+Average test loss after Epoch 248: 542.89575
 Epoch 249/300
-Average test loss after Epoch 249: 93.92365
+Average test loss after Epoch 249: 537.12568
 Epoch 250/300
-Average test loss after Epoch 250: 93.28314
+Average test loss after Epoch 250: 534.78470
 Epoch 251/300
-Average test loss after Epoch 251: 91.13244
+Average test loss after Epoch 251: 538.28206
 Epoch 252/300
-Average test loss after Epoch 252: 93.61259
+Average test loss after Epoch 252: 545.63018
 Epoch 253/300
-Average test loss after Epoch 253: 93.36429
+Average test loss after Epoch 253: 538.73732
 Epoch 254/300
-Average test loss after Epoch 254: 92.88124
+Average test loss after Epoch 254: 544.56204
 Epoch 255/300
-Average test loss after Epoch 255: 92.86367
+Average test loss after Epoch 255: 535.20867
 Epoch 256/300
-Average test loss after Epoch 256: 93.55032
+Average test loss after Epoch 256: 548.73344
 Epoch 257/300
-Average test loss after Epoch 257: 93.45772
+Average test loss after Epoch 257: 534.10557
 Epoch 258/300
-Average test loss after Epoch 258: 95.35740
+Average test loss after Epoch 258: 539.83939
 Epoch 259/300
-Average test loss after Epoch 259: 93.82372
+Average test loss after Epoch 259: 543.35605
 Epoch 260/300
-Average test loss after Epoch 260: 94.36183
+Average test loss after Epoch 260: 537.63377
 Epoch 261/300
-Average test loss after Epoch 261: 93.20172
+Average test loss after Epoch 261: 543.20400
 Epoch 262/300
-Average test loss after Epoch 262: 92.71085
+Average test loss after Epoch 262: 546.28694
 Epoch 263/300
-Average test loss after Epoch 263: 92.94905
+Average test loss after Epoch 263: 543.88484
 Epoch 264/300
-Average test loss after Epoch 264: 93.89140
+Average test loss after Epoch 264: 545.69043
 Epoch 265/300
-Average test loss after Epoch 265: 92.17317
+Average test loss after Epoch 265: 552.10255
 Epoch 266/300
-Average test loss after Epoch 266: 93.19685
+Average test loss after Epoch 266: 537.89280
 Epoch 267/300
-Average test loss after Epoch 267: 93.37600
+Average test loss after Epoch 267: 539.40909
 Epoch 268/300
-Average test loss after Epoch 268: 92.61745
+Average test loss after Epoch 268: 546.62854
 Epoch 269/300
-Average test loss after Epoch 269: 92.61735
+Average test loss after Epoch 269: 535.17519
 Epoch 270/300
-Average test loss after Epoch 270: 91.99613
+Average test loss after Epoch 270: 541.72345
 Epoch 271/300
-Average test loss after Epoch 271: 93.03483
+Average test loss after Epoch 271: 545.55323
 Epoch 272/300
-Average test loss after Epoch 272: 91.76992
+Average test loss after Epoch 272: 536.76819
 Epoch 273/300
-Average test loss after Epoch 273: 92.49553
+Average test loss after Epoch 273: 545.06194
 Epoch 274/300
-Average test loss after Epoch 274: 90.89378
+Average test loss after Epoch 274: 542.55978
 Epoch 275/300
-Average test loss after Epoch 275: 90.96353
+Average test loss after Epoch 275: 535.45609
 Epoch 276/300
-Average test loss after Epoch 276: 91.53442
+Average test loss after Epoch 276: 539.61760
 Epoch 277/300
-Average test loss after Epoch 277: 92.86765
+Average test loss after Epoch 277: 537.93905
 Epoch 278/300
-Average test loss after Epoch 278: 91.97278
+Average test loss after Epoch 278: 534.07699
 Epoch 279/300
-Average test loss after Epoch 279: 91.36862
+Average test loss after Epoch 279: 543.01383
 Epoch 280/300
-Average test loss after Epoch 280: 92.45266
+Average test loss after Epoch 280: 538.58020
 Epoch 281/300
-Average test loss after Epoch 281: 92.42944
+Average test loss after Epoch 281: 542.01601
 Epoch 282/300
-Average test loss after Epoch 282: 92.12087
+Average test loss after Epoch 282: 537.06409
 Epoch 283/300
-Average test loss after Epoch 283: 92.77470
+Average test loss after Epoch 283: 541.31904
 Epoch 284/300
-Average test loss after Epoch 284: 92.19262
+Average test loss after Epoch 284: 542.49434
 Epoch 285/300
-Average test loss after Epoch 285: 91.86549
+Average test loss after Epoch 285: 542.53563
 Epoch 286/300
-Average test loss after Epoch 286: 93.07772
+Average test loss after Epoch 286: 547.74228
 Epoch 287/300
-Average test loss after Epoch 287: 92.67554
+Average test loss after Epoch 287: 543.02743
 Epoch 288/300
-Average test loss after Epoch 288: 93.40711
+Average test loss after Epoch 288: 537.15711
 Epoch 289/300
-Average test loss after Epoch 289: 92.97811
+Average test loss after Epoch 289: 541.17334
 Epoch 290/300
-Average test loss after Epoch 290: 91.88891
+Average test loss after Epoch 290: 535.01103
 Epoch 291/300
-Average test loss after Epoch 291: 90.44320
+Average test loss after Epoch 291: 540.92434
 Epoch 292/300
-Average test loss after Epoch 292: 92.39738
+Average test loss after Epoch 292: 544.52304
 Epoch 293/300
-Average test loss after Epoch 293: 93.56064
+Average test loss after Epoch 293: 537.02259
 Epoch 294/300
-Average test loss after Epoch 294: 91.96342
+Average test loss after Epoch 294: 531.60143
 Epoch 295/300
-Average test loss after Epoch 295: 92.43709
+Average test loss after Epoch 295: 531.83885
 Epoch 296/300
-Average test loss after Epoch 296: 93.09150
+Average test loss after Epoch 296: 538.68058
 Epoch 297/300
-Average test loss after Epoch 297: 92.76791
+Average test loss after Epoch 297: 544.85855
 Epoch 298/300
-Average test loss after Epoch 298: 92.29951
+Average test loss after Epoch 298: 542.27223
 Epoch 299/300
-Average test loss after Epoch 299: 93.35784
+Average test loss after Epoch 299: 544.15591
 Epoch 300/300
-Average test loss after Epoch 300: 91.43129
+Average test loss after Epoch 300: 540.44271
 Fold 2
 device : cuda
-Model not found at ./model/8fold_opticflow_2ch_16frames_/fold_2/fly_model.ckpt
+Model not found at ./model/8fold_opticflow_4ch_16frames_/fold_2/fly_model.ckpt
 Epoch 1/300
-Average test loss after Epoch 1: 74.67369
+Average test loss after Epoch 1: 519.25034
 Epoch 2/300
-Average test loss after Epoch 2: 73.20173
+Average test loss after Epoch 2: 492.29284
 Epoch 3/300
-Average test loss after Epoch 3: 72.05775
+Average test loss after Epoch 3: 498.49389
 Epoch 4/300
-Average test loss after Epoch 4: 71.39101
+Average test loss after Epoch 4: 498.45708
 Epoch 5/300
-Average test loss after Epoch 5: 71.25162
+Average test loss after Epoch 5: 483.83212
 Epoch 6/300
-Average test loss after Epoch 6: 72.90672
+Average test loss after Epoch 6: 494.70840
 Epoch 7/300
-Average test loss after Epoch 7: 71.09029
+Average test loss after Epoch 7: 500.67352
 Epoch 8/300
-Average test loss after Epoch 8: 73.04074
+Average test loss after Epoch 8: 488.94975
 Epoch 9/300
-Average test loss after Epoch 9: 72.35539
+Average test loss after Epoch 9: 496.34070
 Epoch 10/300
-Average test loss after Epoch 10: 71.15769
+Average test loss after Epoch 10: 483.55311
 Epoch 11/300
-Average test loss after Epoch 11: 72.75130
+Average test loss after Epoch 11: 483.80635
 Epoch 12/300
-Average test loss after Epoch 12: 72.15317
+Average test loss after Epoch 12: 493.22923
 Epoch 13/300
-Average test loss after Epoch 13: 71.56655
+Average test loss after Epoch 13: 488.32356
 Epoch 14/300
-Average test loss after Epoch 14: 72.55635
+Average test loss after Epoch 14: 490.71776
 Epoch 15/300
-Average test loss after Epoch 15: 72.47568
+Average test loss after Epoch 15: 506.43650
 Epoch 16/300
-Average test loss after Epoch 16: 71.79736
+Average test loss after Epoch 16: 504.31308
 Epoch 17/300
-Average test loss after Epoch 17: 71.68448
+Average test loss after Epoch 17: 494.15991
 Epoch 18/300
-Average test loss after Epoch 18: 71.48551
+Average test loss after Epoch 18: 483.70063
 Epoch 19/300
-Average test loss after Epoch 19: 72.35181
+Average test loss after Epoch 19: 499.97576
 Epoch 20/300
-Average test loss after Epoch 20: 71.49895
+Average test loss after Epoch 20: 491.95142
 Epoch 21/300
-Average test loss after Epoch 21: 71.80818
+Average test loss after Epoch 21: 492.38892
 Epoch 22/300
-Average test loss after Epoch 22: 70.72082
+Average test loss after Epoch 22: 474.54849
 Epoch 23/300
-Average test loss after Epoch 23: 71.67456
+Average test loss after Epoch 23: 481.91867
 Epoch 24/300
-Average test loss after Epoch 24: 70.79883
+Average test loss after Epoch 24: 504.87298
 Epoch 25/300
-Average test loss after Epoch 25: 70.57447
+Average test loss after Epoch 25: 490.55004
 Epoch 26/300
-Average test loss after Epoch 26: 70.93387
+Average test loss after Epoch 26: 489.01857
 Epoch 27/300
-Average test loss after Epoch 27: 72.57068
+Average test loss after Epoch 27: 494.42317
 Epoch 28/300
-Average test loss after Epoch 28: 70.94248
+Average test loss after Epoch 28: 502.41560
 Epoch 29/300
-Average test loss after Epoch 29: 70.42913
+Average test loss after Epoch 29: 493.09095
 Epoch 30/300
-Average test loss after Epoch 30: 69.86909
+Average test loss after Epoch 30: 485.84675
 Epoch 31/300
-Average test loss after Epoch 31: 70.88675
+Average test loss after Epoch 31: 490.25394
 Epoch 32/300
-Average test loss after Epoch 32: 70.08997
+Average test loss after Epoch 32: 478.13249
 Epoch 33/300
-Average test loss after Epoch 33: 71.05271
+Average test loss after Epoch 33: 480.36207
 Epoch 34/300
-Average test loss after Epoch 34: 70.54627
+Average test loss after Epoch 34: 504.66925
 Epoch 35/300
-Average test loss after Epoch 35: 71.12591
+Average test loss after Epoch 35: 489.06509
 Epoch 36/300
-Average test loss after Epoch 36: 70.71552
+Average test loss after Epoch 36: 499.72103
 Epoch 37/300
-Average test loss after Epoch 37: 71.06165
+Average test loss after Epoch 37: 491.13832
 Epoch 38/300
-Average test loss after Epoch 38: 72.10051
+Average test loss after Epoch 38: 497.49848
 Epoch 39/300
-Average test loss after Epoch 39: 71.27429
+Average test loss after Epoch 39: 491.31727
 Epoch 40/300
-Average test loss after Epoch 40: 72.12760
+Average test loss after Epoch 40: 480.77015
 Epoch 41/300
-Average test loss after Epoch 41: 71.00703
+Average test loss after Epoch 41: 499.26658
 Epoch 42/300
-Average test loss after Epoch 42: 69.44339
+Average test loss after Epoch 42: 508.87297
 Epoch 43/300
-Average test loss after Epoch 43: 69.75923
+Average test loss after Epoch 43: 502.27022
 Epoch 44/300
-Average test loss after Epoch 44: 69.90365
+Average test loss after Epoch 44: 486.10146
 Epoch 45/300
-Average test loss after Epoch 45: 71.26149
+Average test loss after Epoch 45: 473.48920
 Epoch 46/300
-Average test loss after Epoch 46: 70.20643
+Average test loss after Epoch 46: 494.51963
 Epoch 47/300
-Average test loss after Epoch 47: 71.60638
+Average test loss after Epoch 47: 505.37778
 Epoch 48/300
-Average test loss after Epoch 48: 69.63548
+Average test loss after Epoch 48: 502.63579
 Epoch 49/300
-Average test loss after Epoch 49: 71.27494
+Average test loss after Epoch 49: 497.78491
 Epoch 50/300
-Average test loss after Epoch 50: 70.79450
+Average test loss after Epoch 50: 485.66359
 Epoch 51/300
-Average test loss after Epoch 51: 70.07168
+Average test loss after Epoch 51: 508.55362
 Epoch 52/300
-Average test loss after Epoch 52: 69.68683
+Average test loss after Epoch 52: 501.89565
 Epoch 53/300
-Average test loss after Epoch 53: 71.30047
+Average test loss after Epoch 53: 490.93850
 Epoch 54/300
-Average test loss after Epoch 54: 70.49071
+Average test loss after Epoch 54: 491.56199
 Epoch 55/300
-Average test loss after Epoch 55: 69.46134
+Average test loss after Epoch 55: 496.27717
 Epoch 56/300
-Average test loss after Epoch 56: 70.03668
+Average test loss after Epoch 56: 494.03931
 Epoch 57/300
-Average test loss after Epoch 57: 70.79819
+Average test loss after Epoch 57: 482.07773
 Epoch 58/300
-Average test loss after Epoch 58: 69.41839
+Average test loss after Epoch 58: 482.53648
 Epoch 59/300
-Average test loss after Epoch 59: 68.71048
+Average test loss after Epoch 59: 496.11180
 Epoch 60/300
-Average test loss after Epoch 60: 70.10618
+Average test loss after Epoch 60: 490.83776
 Epoch 61/300
-Average test loss after Epoch 61: 69.61480
+Average test loss after Epoch 61: 490.66055
 Epoch 62/300
-Average test loss after Epoch 62: 69.69332
+Average test loss after Epoch 62: 494.33268
 Epoch 63/300
-Average test loss after Epoch 63: 71.10811
+Average test loss after Epoch 63: 488.12958
 Epoch 64/300
-Average test loss after Epoch 64: 69.76526
+Average test loss after Epoch 64: 483.84238
 Epoch 65/300
-Average test loss after Epoch 65: 69.20855
+Average test loss after Epoch 65: 477.39243
 Epoch 66/300
-Average test loss after Epoch 66: 69.95466
+Average test loss after Epoch 66: 471.15071
 Epoch 67/300
-Average test loss after Epoch 67: 69.42361
+Average test loss after Epoch 67: 485.41323
 Epoch 68/300
-Average test loss after Epoch 68: 69.44769
+Average test loss after Epoch 68: 488.33431
 Epoch 69/300
-Average test loss after Epoch 69: 71.00943
+Average test loss after Epoch 69: 482.87854
 Epoch 70/300
-Average test loss after Epoch 70: 68.52154
+Average test loss after Epoch 70: 477.66168
 Epoch 71/300
-Average test loss after Epoch 71: 70.86105
+Average test loss after Epoch 71: 495.96282
 Epoch 72/300
-Average test loss after Epoch 72: 69.96412
+Average test loss after Epoch 72: 499.68550
 Epoch 73/300
-Average test loss after Epoch 73: 70.35300
+Average test loss after Epoch 73: 492.56074
 Epoch 74/300
-Average test loss after Epoch 74: 69.25399
+Average test loss after Epoch 74: 492.59849
 Epoch 75/300
-Average test loss after Epoch 75: 68.79564
+Average test loss after Epoch 75: 498.15656
 Epoch 76/300
-Average test loss after Epoch 76: 69.22706
+Average test loss after Epoch 76: 495.10899
 Epoch 77/300
-Average test loss after Epoch 77: 69.43373
+Average test loss after Epoch 77: 480.93392
 Epoch 78/300
-Average test loss after Epoch 78: 68.48379
+Average test loss after Epoch 78: 498.64749
 Epoch 79/300
-Average test loss after Epoch 79: 70.83957
+Average test loss after Epoch 79: 478.89485
 Epoch 80/300
-Average test loss after Epoch 80: 68.53912
+Average test loss after Epoch 80: 481.55811
 Epoch 81/300
-Average test loss after Epoch 81: 70.36843
+Average test loss after Epoch 81: 502.09798
 Epoch 82/300
-Average test loss after Epoch 82: 68.45110
+Average test loss after Epoch 82: 491.16719
 Epoch 83/300
-Average test loss after Epoch 83: 68.42646
+Average test loss after Epoch 83: 486.55453
 Epoch 84/300
-Average test loss after Epoch 84: 68.78917
+Average test loss after Epoch 84: 486.09132
 Epoch 85/300
-Average test loss after Epoch 85: 69.58795
+Average test loss after Epoch 85: 493.34570
 Epoch 86/300
-Average test loss after Epoch 86: 69.26983
+Average test loss after Epoch 86: 487.23989
 Epoch 87/300
-Average test loss after Epoch 87: 68.23427
+Average test loss after Epoch 87: 491.93372
 Epoch 88/300
-Average test loss after Epoch 88: 67.71917
+Average test loss after Epoch 88: 494.92350
 Epoch 89/300
-Average test loss after Epoch 89: 68.38824
+Average test loss after Epoch 89: 482.01702
 Epoch 90/300
-Average test loss after Epoch 90: 67.57742
+Average test loss after Epoch 90: 485.51995
 Epoch 91/300
+Average test loss after Epoch 91: 482.94280
+Epoch 92/300
+Average test loss after Epoch 92: 484.98710
+Epoch 93/300
+Average test loss after Epoch 93: 504.78422
+Epoch 94/300
+Average test loss after Epoch 94: 493.08023
+Epoch 95/300
+Average test loss after Epoch 95: 511.72891
+Epoch 96/300
+Average test loss after Epoch 96: 486.80040
+Epoch 97/300
+Average test loss after Epoch 97: 490.90861
+Epoch 98/300
+Average test loss after Epoch 98: 492.01270
+Epoch 99/300
+Average test loss after Epoch 99: 498.47261
+Epoch 100/300
+Average test loss after Epoch 100: 493.99669
+Epoch 101/300
+Average test loss after Epoch 101: 473.47841
+Epoch 102/300
+Average test loss after Epoch 102: 500.59947
+Epoch 103/300
+Average test loss after Epoch 103: 491.86136
+Epoch 104/300
+Average test loss after Epoch 104: 481.14372
+Epoch 105/300
+Average test loss after Epoch 105: 474.70870
+Epoch 106/300
+Average test loss after Epoch 106: 487.65553
+Epoch 107/300
+Average test loss after Epoch 107: 485.00487
+Epoch 108/300
+Average test loss after Epoch 108: 483.45402
+Epoch 109/300
+Average test loss after Epoch 109: 506.43833
+Epoch 110/300
+Average test loss after Epoch 110: 472.44402
+Epoch 111/300
+Average test loss after Epoch 111: 489.11620
+Epoch 112/300
+Average test loss after Epoch 112: 488.02538
+Epoch 113/300
+Average test loss after Epoch 113: 490.56145
+Epoch 114/300
+Average test loss after Epoch 114: 486.39587
+Epoch 115/300
+Average test loss after Epoch 115: 480.37459
+Epoch 116/300
+Average test loss after Epoch 116: 499.24020
+Epoch 117/300
+Average test loss after Epoch 117: 496.50609
+Epoch 118/300
+Average test loss after Epoch 118: 492.26939
+Epoch 119/300
+Average test loss after Epoch 119: 497.24175
+Epoch 120/300
+Average test loss after Epoch 120: 492.08032
+Epoch 121/300
+Average test loss after Epoch 121: 488.38310
+Epoch 122/300
+Average test loss after Epoch 122: 488.51602
+Epoch 123/300
+Average test loss after Epoch 123: 478.82741
+Epoch 124/300
+Average test loss after Epoch 124: 475.66721
+Epoch 125/300
+Average test loss after Epoch 125: 491.00592
+Epoch 126/300
+Average test loss after Epoch 126: 492.01458
+Epoch 127/300
+Average test loss after Epoch 127: 505.39566
+Epoch 128/300
+Average test loss after Epoch 128: 490.60924
+Epoch 129/300
+Average test loss after Epoch 129: 500.80235
+Epoch 130/300
+Average test loss after Epoch 130: 474.37563
+Epoch 131/300
+Average test loss after Epoch 131: 484.80018
+Epoch 132/300
+Average test loss after Epoch 132: 497.06935
+Epoch 133/300
+Average test loss after Epoch 133: 501.78510
+Epoch 134/300
+Average test loss after Epoch 134: 480.49935
+Epoch 135/300
+Average test loss after Epoch 135: 484.64194
+Epoch 136/300
+Average test loss after Epoch 136: 487.57851
+Epoch 137/300
+Average test loss after Epoch 137: 488.51564
+Epoch 138/300
+Average test loss after Epoch 138: 495.35093
+Epoch 139/300
+Average test loss after Epoch 139: 490.69183
+Epoch 140/300
+Average test loss after Epoch 140: 482.75984
+Epoch 141/300
+Average test loss after Epoch 141: 482.38873
+Epoch 142/300
+Average test loss after Epoch 142: 491.95304
+Epoch 143/300
+Average test loss after Epoch 143: 479.71520
+Epoch 144/300
+Average test loss after Epoch 144: 483.05236
+Epoch 145/300
+Average test loss after Epoch 145: 481.26027
+Epoch 146/300
+Average test loss after Epoch 146: 476.71488
+Epoch 147/300
+Average test loss after Epoch 147: 473.22638
+Epoch 148/300
+Average test loss after Epoch 148: 496.72199
+Epoch 149/300
+Average test loss after Epoch 149: 487.41983
+Epoch 150/300
+Average test loss after Epoch 150: 475.89923
+Epoch 151/300
+Average test loss after Epoch 151: 496.63399
+Epoch 152/300
+Average test loss after Epoch 152: 465.53954
+Epoch 153/300
+Average test loss after Epoch 153: 484.50796
+Epoch 154/300
+Average test loss after Epoch 154: 492.49112
+Epoch 155/300
+Average test loss after Epoch 155: 466.42287
+Epoch 156/300
+Average test loss after Epoch 156: 488.79536
+Epoch 157/300
+Average test loss after Epoch 157: 483.95446
+Epoch 158/300
+Average test loss after Epoch 158: 485.73929
+Epoch 159/300
+Average test loss after Epoch 159: 482.89542
+Epoch 160/300
+Average test loss after Epoch 160: 478.76956
+Epoch 161/300
+Average test loss after Epoch 161: 490.27282
+Epoch 162/300
+Average test loss after Epoch 162: 481.14263
+Epoch 163/300
+Average test loss after Epoch 163: 483.51399
+Epoch 164/300
+Average test loss after Epoch 164: 463.53159
+Epoch 165/300
+Average test loss after Epoch 165: 489.43333
+Epoch 166/300
+Average test loss after Epoch 166: 479.28642
+Epoch 167/300
+Average test loss after Epoch 167: 484.76371
+Epoch 168/300
+Average test loss after Epoch 168: 489.05087
+Epoch 169/300
+Average test loss after Epoch 169: 465.05330
+Epoch 170/300
+Average test loss after Epoch 170: 481.39111
+Epoch 171/300
+Average test loss after Epoch 171: 489.19972
+Epoch 172/300
+Average test loss after Epoch 172: 474.57116
+Epoch 173/300
+Average test loss after Epoch 173: 487.41750
+Epoch 174/300
+Average test loss after Epoch 174: 476.19912
+Epoch 175/300
+Average test loss after Epoch 175: 480.82932
+Epoch 176/300
+Average test loss after Epoch 176: 478.47418
+Epoch 177/300
+Average test loss after Epoch 177: 483.32008
+Epoch 178/300
+Average test loss after Epoch 178: 480.99933
+Epoch 179/300
+Average test loss after Epoch 179: 482.14020
+Epoch 180/300
+Average test loss after Epoch 180: 483.99068
+Epoch 181/300
+Average test loss after Epoch 181: 468.32677
+Epoch 182/300
+Average test loss after Epoch 182: 477.27733
+Epoch 183/300
+Average test loss after Epoch 183: 476.78580
+Epoch 184/300
+Average test loss after Epoch 184: 483.94379
+Epoch 185/300
+Average test loss after Epoch 185: 477.81134
+Epoch 186/300
+Average test loss after Epoch 186: 479.21890
+Epoch 187/300
+Average test loss after Epoch 187: 478.20990
+Epoch 188/300
+Average test loss after Epoch 188: 478.16169
+Epoch 189/300
+Average test loss after Epoch 189: 476.32327
+Epoch 190/300
+Average test loss after Epoch 190: 482.43011
+Epoch 191/300
+Average test loss after Epoch 191: 483.36039
+Epoch 192/300
+Average test loss after Epoch 192: 501.21433
+Epoch 193/300
+Average test loss after Epoch 193: 491.89843
+Epoch 194/300
+Average test loss after Epoch 194: 466.96224
+Epoch 195/300
+Average test loss after Epoch 195: 499.60535
+Epoch 196/300
+Average test loss after Epoch 196: 489.14358
+Epoch 197/300
+Average test loss after Epoch 197: 483.43645
+Epoch 198/300
+Average test loss after Epoch 198: 482.51618
+Epoch 199/300
+Average test loss after Epoch 199: 483.12611
+Epoch 200/300
+Average test loss after Epoch 200: 479.00041
+Epoch 201/300
+Average test loss after Epoch 201: 480.19967
+Epoch 202/300
+Average test loss after Epoch 202: 482.79335
+Epoch 203/300
+Average test loss after Epoch 203: 487.81541
+Epoch 204/300
+Average test loss after Epoch 204: 484.62359
+Epoch 205/300
+Average test loss after Epoch 205: 481.72144
+Epoch 206/300
+Average test loss after Epoch 206: 478.46517
+Epoch 207/300
+Average test loss after Epoch 207: 481.74813
+Epoch 208/300
+Average test loss after Epoch 208: 491.81100
+Epoch 209/300
+Average test loss after Epoch 209: 481.64865
+Epoch 210/300
+Average test loss after Epoch 210: 478.42985
+Epoch 211/300
+Average test loss after Epoch 211: 485.20882
+Epoch 212/300
+Average test loss after Epoch 212: 484.10881
+Epoch 213/300
+Average test loss after Epoch 213: 469.49169
+Epoch 214/300
+Average test loss after Epoch 214: 479.15484
+Epoch 215/300
+Average test loss after Epoch 215: 477.77414
+Epoch 216/300
+Average test loss after Epoch 216: 480.12376
+Epoch 217/300
+Average test loss after Epoch 217: 491.42825
+Epoch 218/300
+Average test loss after Epoch 218: 489.32206
+Epoch 219/300
+Average test loss after Epoch 219: 488.73435
+Epoch 220/300
+Average test loss after Epoch 220: 485.82325
+Epoch 221/300
+Average test loss after Epoch 221: 482.28414
+Epoch 222/300
+Average test loss after Epoch 222: 490.46125
+Epoch 223/300
+Average test loss after Epoch 223: 485.82179
+Epoch 224/300
+Average test loss after Epoch 224: 491.65992
+Epoch 225/300
+Average test loss after Epoch 225: 490.34859
+Epoch 226/300
+Average test loss after Epoch 226: 496.28723
+Epoch 227/300
+Average test loss after Epoch 227: 480.40475
+Epoch 228/300
+Average test loss after Epoch 228: 488.71129
+Epoch 229/300
+Average test loss after Epoch 229: 496.26726
+Epoch 230/300
+Average test loss after Epoch 230: 510.31975
+Epoch 231/300
+Average test loss after Epoch 231: 485.23990
+Epoch 232/300
+Average test loss after Epoch 232: 475.96314
+Epoch 233/300
+Average test loss after Epoch 233: 489.51595
+Epoch 234/300
+Average test loss after Epoch 234: 482.62089
+Epoch 235/300
+Average test loss after Epoch 235: 481.69704
+Epoch 236/300
+Average test loss after Epoch 236: 481.85527
+Epoch 237/300
+Average test loss after Epoch 237: 485.32677
+Epoch 238/300
+Average test loss after Epoch 238: 481.75642
+Epoch 239/300
+Average test loss after Epoch 239: 475.12045
+Epoch 240/300
+Average test loss after Epoch 240: 490.29673
+Epoch 241/300
+Average test loss after Epoch 241: 487.77240
+Epoch 242/300
+Average test loss after Epoch 242: 494.41572
+Epoch 243/300
+Average test loss after Epoch 243: 484.68313
+Epoch 244/300
+Average test loss after Epoch 244: 484.02914
+Epoch 245/300
+Average test loss after Epoch 245: 481.11074
+Epoch 246/300
+Average test loss after Epoch 246: 485.70522
+Epoch 247/300
+Average test loss after Epoch 247: 480.27270
+Epoch 248/300
+Average test loss after Epoch 248: 478.94550
+Epoch 249/300
+Average test loss after Epoch 249: 472.39686
+Epoch 250/300
+Average test loss after Epoch 250: 488.35406
+Epoch 251/300
+Average test loss after Epoch 251: 471.76455
+Epoch 252/300
+Average test loss after Epoch 252: 497.41818
+Epoch 253/300
+Average test loss after Epoch 253: 482.99931
+Epoch 254/300
+Average test loss after Epoch 254: 497.91622
+Epoch 255/300
+Average test loss after Epoch 255: 481.41571
+Epoch 256/300
+Average test loss after Epoch 256: 493.40605
+Epoch 257/300
+Average test loss after Epoch 257: 482.62193
+Epoch 258/300
+Average test loss after Epoch 258: 484.65110
+Epoch 259/300
+Average test loss after Epoch 259: 464.45876
+Epoch 260/300
+Average test loss after Epoch 260: 480.13886
+Epoch 261/300
+Average test loss after Epoch 261: 491.46330
+Epoch 262/300
+Average test loss after Epoch 262: 482.24188
+Epoch 263/300
+Average test loss after Epoch 263: 477.23525
+Epoch 264/300
+Average test loss after Epoch 264: 483.46445
+Epoch 265/300
+Average test loss after Epoch 265: 483.10290
+Epoch 266/300
+Average test loss after Epoch 266: 496.04776
+Epoch 267/300
+Average test loss after Epoch 267: 491.76095
+Epoch 268/300
+Average test loss after Epoch 268: 491.61602
+Epoch 269/300
+Average test loss after Epoch 269: 474.37009
+Epoch 270/300
+Average test loss after Epoch 270: 488.88496
+Epoch 271/300
+Average test loss after Epoch 271: 481.83399
+Epoch 272/300
+Average test loss after Epoch 272: 503.69364
+Epoch 273/300
+Average test loss after Epoch 273: 499.03429
+Epoch 274/300
+Average test loss after Epoch 274: 486.15170
+Epoch 275/300
+Average test loss after Epoch 275: 486.22354
+Epoch 276/300
+Average test loss after Epoch 276: 480.90525
+Epoch 277/300
+Average test loss after Epoch 277: 479.28147
+Epoch 278/300
+Average test loss after Epoch 278: 494.08526
+Epoch 279/300
+Average test loss after Epoch 279: 469.33084
+Epoch 280/300
+Average test loss after Epoch 280: 491.61854
+Epoch 281/300
+Average test loss after Epoch 281: 493.04375
+Epoch 282/300
+Average test loss after Epoch 282: 478.70382
+Epoch 283/300
+Average test loss after Epoch 283: 484.22502
+Epoch 284/300
+Average test loss after Epoch 284: 498.95321
+Epoch 285/300
+Average test loss after Epoch 285: 478.18026
+Epoch 286/300
+Average test loss after Epoch 286: 482.52920
+Epoch 287/300
+Average test loss after Epoch 287: 467.75505
+Epoch 288/300
+Average test loss after Epoch 288: 490.60757
+Epoch 289/300
+Average test loss after Epoch 289: 494.35385
+Epoch 290/300
+Average test loss after Epoch 290: 486.69545
+Epoch 291/300
+Average test loss after Epoch 291: 480.42923
+Epoch 292/300
+Average test loss after Epoch 292: 485.96521
+Epoch 293/300
+Average test loss after Epoch 293: 489.11791
+Epoch 294/300
+Average test loss after Epoch 294: 500.30597
+Epoch 295/300
+Average test loss after Epoch 295: 479.50218
+Epoch 296/300
+Average test loss after Epoch 296: 487.37857
+Epoch 297/300
+Average test loss after Epoch 297: 490.19376
+Epoch 298/300
+Average test loss after Epoch 298: 470.75108
+Epoch 299/300
+Average test loss after Epoch 299: 494.43638
+Epoch 300/300
+Average test loss after Epoch 300: 494.92993
+Fold 3
+device : cuda
+Model not found at ./model/8fold_opticflow_4ch_16frames_/fold_3/fly_model.ckpt
+Epoch 1/300
+Average test loss after Epoch 1: 684.88108
+Epoch 2/300
+Average test loss after Epoch 2: 639.49562
+Epoch 3/300
+Average test loss after Epoch 3: 653.89166
+Epoch 4/300
+Average test loss after Epoch 4: 635.01442
+Epoch 5/300
+Average test loss after Epoch 5: 639.37759
+Epoch 6/300
+Average test loss after Epoch 6: 626.92240
+Epoch 7/300
+Average test loss after Epoch 7: 637.75100
+Epoch 8/300
+Average test loss after Epoch 8: 629.47757
+Epoch 9/300
+Average test loss after Epoch 9: 634.84563
+Epoch 10/300
+Average test loss after Epoch 10: 630.44709
+Epoch 11/300
+Average test loss after Epoch 11: 630.82994
+Epoch 12/300
+Average test loss after Epoch 12: 628.67087
+Epoch 13/300
+Average test loss after Epoch 13: 624.51237
+Epoch 14/300
+Average test loss after Epoch 14: 628.11639
+Epoch 15/300
+Average test loss after Epoch 15: 625.49681
+Epoch 16/300
+Average test loss after Epoch 16: 627.17952
+Epoch 17/300
+Average test loss after Epoch 17: 622.52528
+Epoch 18/300
+Average test loss after Epoch 18: 620.67699
+Epoch 19/300
+Average test loss after Epoch 19: 622.14331
+Epoch 20/300
+Average test loss after Epoch 20: 623.64457
+Epoch 21/300
+Average test loss after Epoch 21: 625.65328
+Epoch 22/300
+Average test loss after Epoch 22: 619.38234
+Epoch 23/300
+Average test loss after Epoch 23: 629.29702
+Epoch 24/300
+Average test loss after Epoch 24: 626.91032
+Epoch 25/300
+Average test loss after Epoch 25: 623.77943
+Epoch 26/300
+Average test loss after Epoch 26: 622.52511
+Epoch 27/300
+Average test loss after Epoch 27: 612.78406
+Epoch 28/300
+Average test loss after Epoch 28: 625.51649
+Epoch 29/300
+Average test loss after Epoch 29: 622.70168
+Epoch 30/300
+Average test loss after Epoch 30: 616.10601
+Epoch 31/300
+Average test loss after Epoch 31: 623.92291
+Epoch 32/300
+Average test loss after Epoch 32: 621.34748
+Epoch 33/300
+Average test loss after Epoch 33: 623.13750
+Epoch 34/300
+Average test loss after Epoch 34: 619.05794
+Epoch 35/300
