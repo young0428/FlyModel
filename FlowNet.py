@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1):
@@ -151,6 +152,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         self.flownet3d = flownet3d.to(self.device)
         self.feature_dim = feature_dim
         self.input_dropout = nn.Dropout2d(p=0.1)
+        self.first = True
         
         #Encoder와 Decoder의 파라미터를 고정 (freeze)
         # for param in self.flownet3d.encoder.parameters():
@@ -160,7 +162,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         
         # Decoder 각 단계에서 나오는 feature를 변환하는 layer들을 초기화
         self.spatial_attentions = nn.ModuleList()
-        self.fc_layers = nn.ModuleList()
+        self.conv_layers = nn.ModuleList()
 
         # 레이어 초기화는 forward pass에서 수행
 
@@ -170,28 +172,70 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         D, H, W, C = input_size
         adaptive_size = 8
         
+        self.conv_layers = nn.ModuleList()
         self.fc_layers = nn.ModuleList()
         for i in range(len(self.flownet3d.decoder.upconvs)):
             in_channels = flownet3d.decoder.convs[i].out_channels
             self.spatial_attentions.append(SpatialAttention())
-            self.fc_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, feature_dim, kernel_size=1),
+            self.conv_layers.append(nn.Sequential(
+                nn.Conv3d(in_channels, max(1,in_channels//2), kernel_size=2),
                 nn.ReLU(inplace=True),
-                nn.AdaptiveAvgPool3d((1, adaptive_size, adaptive_size)),  # Global average pooling
+                nn.Conv3d(max(1, in_channels//2), max(1,in_channels//4), kernel_size=2, padding=1),
+                nn.ReLU(inplace=True),
+                nn.Conv3d(max(1,in_channels//4), max(1,in_channels//8), kernel_size=2, padding=1),
+                nn.MaxPool3d(kernel_size=2, padding=1),
+                nn.ReLU(inplace=True),
+                nn.Conv3d(max(1,in_channels//8), max(1,in_channels//16), kernel_size=2, padding=1),
+                nn.MaxPool3d(kernel_size=2, padding=1),
+                nn.ReLU(inplace=True),
                 nn.Flatten(),
-                nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.3),
+                
+                # nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
+                # nn.ReLU(inplace=True),
+                # nn.Dropout(0.3),
             ))
-        
+        self.conv_layers = self.conv_layers.to(self.device)
+        dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
+        with torch.no_grad():
+            
+            x = self.flownet3d.swap_axis_for_input(dummy_input)
+            x = self.input_dropout(x)
+            encoder_outputs = self.flownet3d.encoder(x)
+            
+            decoder_output = encoder_outputs[-1]
+
+            features = []
+            for i in range(len(self.flownet3d.decoder.upconvs)):
+                decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
+                decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
+                decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
+                
+                #attention_map = self.spatial_attentions[i](decoder_output)
+                #decoder_output = decoder_output * attention_map
+                
+                
+                # 각 단계에서의 feature 추출
+
+                conv_output = self.conv_layers[i](decoder_output)
+                feature_flattened = conv_output.size(1)
+
+                self.fc_layers.append(nn.Sequential(
+                    nn.Linear(feature_flattened, feature_dim),
+                    nn.ReLU(inplace=True),
+                    nn.Dropout(0.3),
+                    #nn.Linear(512, 1)
+                ))
+            
+    
         # 최종 스칼라 값을 출력하는 FC layer
-        self.final_fc = nn.Linear(feature_dim*4 * len(self.fc_layers), 1)
+        self.final_fc = nn.Linear(feature_dim * len(self.conv_layers), 1)
         
         self.spatial_attentions = self.spatial_attentions.to(self.device)
+        #self.conv_layers = self.conv_layers.to(self.device)
         self.fc_layers = self.fc_layers.to(self.device)
         self.final_fc = self.final_fc.to(self.device)
         
-            
+        #nn.AdaptiveAvgPool3d((1, adaptive_size, adaptive_size)),  # Global average pooling    
             
 
     def forward(self, x):
@@ -203,6 +247,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         decoder_output = encoder_outputs[-1]
 
         features = []
+        
         for i in range(len(self.flownet3d.decoder.upconvs)):
             decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
             decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
@@ -211,8 +256,12 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             #attention_map = self.spatial_attentions[i](decoder_output)
             #decoder_output = decoder_output * attention_map
             
+            
             # 각 단계에서의 feature 추출
-            feature = self.fc_layers[i](decoder_output)
+
+            conv_output = self.conv_layers[i](decoder_output)
+
+            feature = self.fc_layers[i](conv_output)
             features.append(feature)
         
         # 모든 feature를 종합하여 최종 스칼라 값 출력
