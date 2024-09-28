@@ -5,3 +5,4 @@
 /model/*
 /best_model/*
 /pretrained_model/*
+/output.log
