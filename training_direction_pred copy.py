@@ -86,7 +86,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     
 
     # create model
-    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
+    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=1024, 
                                            input_size=(frame_per_window, 
                                                        int(h//downsampling_factor), 
                                                        int(w//downsampling_factor), 

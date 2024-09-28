@@ -215,7 +215,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 self.fc_layers.append(nn.Sequential(
                     nn.Linear(feature_flattened, feature_dim),
                     nn.ReLU(inplace=True),
-                    nn.Dropout(0.5),
+                    nn.Dropout(0.1),
                     #nn.Linear(512, 1)
                 ))
             
