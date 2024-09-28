@@ -18,3 +18,18 @@ First epoch took 30.84 seconds.
 Estimated total program duration: 4.28 hours
 Estimated program end time (KST): 2024/09/29 06:06:21
 Epoch 2/100
+Training Sensitivity: 0.47872, Specificity: 0.50905, F1 Score: 0.49342
+Validation Sensitivity: 0.00000, Specificity: 1.00000, F1 Score: 0.00000
+Epoch 3/100
+Training Sensitivity: 0.30986, Specificity: 0.67321, F1 Score: 0.42439
+Validation Sensitivity: 1.00000, Specificity: 0.00000, F1 Score: 0.00000
+Epoch 4/100
+Training Sensitivity: 0.38845, Specificity: 0.59737, F1 Score: 0.47077
+Validation Sensitivity: 1.00000, Specificity: 0.00000, F1 Score: 0.00000
+Epoch 5/100
+Training Sensitivity: 0.79126, Specificity: 0.19872, F1 Score: 0.31766
+Validation Sensitivity: 1.00000, Specificity: 0.00000, F1 Score: 0.00000
+Epoch 6/100
+Training Sensitivity: 1.00000, Specificity: 0.00000, F1 Score: 0.00000
+Validation Sensitivity: 1.00000, Specificity: 0.00000, F1 Score: 0.00000
+Epoch 7/100
