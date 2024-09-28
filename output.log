@@ -12,3 +12,10 @@ Model loaded successfully from ./pretrained_model/64x128_opticflow_64t51216frame
 device : cuda
 Model not found at ./model/only_forest_manual_wba_16frames/fold_1/fly_model.ckpt
 Epoch 1/100
+Training Sensitivity: 0.87154, Specificity: 0.87286, F1 Score: 0.87220
+Validation Sensitivity: 0.32645, Specificity: 0.44476, F1 Score: 0.37653
+New best model saved at epoch 1 with f1 0.37653
+First epoch took 19.84 seconds.
+Estimated total program duration: 2.76 hours
+Estimated program end time (KST): 2024/09/29 05:14:59
+Epoch 2/100
