@@ -527,15 +527,14 @@ if __name__ == "__main__":
     video_data, wba_data_interpolated, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, ds)
     #%%
     #%%
-    for i in range(10):
-        #plt.plot(wba_data_filtered[i, 2,::1000//30], color='red')
-        
+    #plt.plot(wba_data_filtered[i, 2,::1000//30], color='red')
     
-        plt.plot(wba_data_interpolated[2,:], color='blue')
-        
-        #plt.plot(mean_wba[2,:3000],color='blue')
-        plt.show()
-        plt.close()
+
+    plt.plot(wba_data_interpolated[2,:], color='blue')
+    
+    #plt.plot(mean_wba[2,:3000],color='blue')
+    plt.show()
+    plt.close()
     
 #%%
 
