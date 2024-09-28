@@ -24,8 +24,8 @@ c = 1
 fps = 30
 downsampling_factor = 5.625
 
-frame_per_window = 32
-frame_per_sliding = 8
+frame_per_window = 16
+frame_per_sliding = 4
 input_ch = 1
 
 model_string = "only_forest_manual_wba"
@@ -85,7 +85,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     # create model
     flownet_model = flownet3d(layer_configs, num_classes=1)
     flownet_model = load_model(flownet_model, pretrained_model_path)
-    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
+    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=512, 
                                            input_size=(frame_per_window, 
                                                        int(h//downsampling_factor), 
                                                        int(w//downsampling_factor), 
