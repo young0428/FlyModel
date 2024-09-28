@@ -28,7 +28,7 @@ frame_per_window = 32
 frame_per_sliding = 8
 input_ch = 1
 
-model_string = "only_forest_sign_nf_moreConv"
+model_string = "only_forest_manual_wba"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"

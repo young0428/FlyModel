@@ -1,56 +1,67 @@
-./naturalistic/01_Bird.avi                                   Loaded : (1, 3596, 64, 128, 1)
-./naturalistic/02_City.avi                                   Loaded : (1, 3596, 64, 128, 1)
-./naturalistic/03_Forest.avi                                 Loaded : (1, 3596, 64, 128, 1)
+./naturalistic/01_Bird.avi                                   Loaded : (5, 3596, 64, 128, 1)
+./naturalistic/02_City.avi                                   Loaded : (5, 3596, 64, 128, 1)
+./naturalistic/03_Forest.avi                                 Loaded : (5, 3596, 64, 128, 1)
 Video is allocated on memory!
-Shape : (3, 3596, 64, 128, 1)
-(3, 3596, 64, 128, 1)
-augmented shape : (24, 3596, 64, 128, 1)
-augmented shape : (24, 3600)
+Shape : (3, 3596, 64, 128, 5)
+(3, 3596, 64, 128, 5)
+augmented shape : (24, 3596, 64, 128, 5)
+augmented shape : (24, 3596)
 (3568, 2)
 Fold 1
 Model loaded successfully from ./pretrained_model/64x128_opticflow_64t51216frames.ckpt
 device : cuda
-Model not found at ./model/only_forest_sign_nf_moreConv_32frames/fold_1/fly_model.ckpt
+Model not found at ./model/only_forest_manual_wba_32frames/fold_1/fly_model.ckpt
 Epoch 1/100
-Training Sensitivity: 0.87187, Specificity: 0.87500, F1 Score: 0.87343
-Validation Sensitivity: 0.65819, Specificity: 0.96667, F1 Score: 0.78315
-New best model saved at epoch 1 with f1 0.78315
-First epoch took 32.60 seconds.
-Estimated total program duration: 4.53 hours
-Estimated program end time (KST): 2024/09/23 15:15:20
+Training Sensitivity: 0.68763, Specificity: 0.70742, F1 Score: 0.69739
+Validation Sensitivity: 0.35030, Specificity: 0.51316, F1 Score: 0.41637
+New best model saved at epoch 1 with f1 0.41637
+First epoch took 33.38 seconds.
+Estimated total program duration: 4.64 hours
+Estimated program end time (KST): 2024/09/29 00:49:33
 Epoch 2/100
-Training Sensitivity: 0.89721, Specificity: 0.92157, F1 Score: 0.90923
-Validation Sensitivity: 0.47175, Specificity: 0.55556, F1 Score: 0.51024
+Training Sensitivity: 0.76441, Specificity: 0.77585, F1 Score: 0.77009
+Validation Sensitivity: 0.35833, Specificity: 0.72034, F1 Score: 0.47859
+New best model saved at epoch 2 with f1 0.47859
 Epoch 3/100
-Training Sensitivity: 0.91909, Specificity: 0.89214, F1 Score: 0.90541
-Validation Sensitivity: 0.84348, Specificity: 0.88618, F1 Score: 0.86430
-New best model saved at epoch 3 with f1 0.86430
+Training Sensitivity: 0.81743, Specificity: 0.80202, F1 Score: 0.80965
+Validation Sensitivity: 0.33609, Specificity: 0.70085, F1 Score: 0.45431
 Epoch 4/100
-Training Sensitivity: 0.91956, Specificity: 0.93162, F1 Score: 0.92555
-Validation Sensitivity: 0.96100, Specificity: 0.92676, F1 Score: 0.94357
-New best model saved at epoch 4 with f1 0.94357
+Training Sensitivity: 0.86183, Specificity: 0.82081, F1 Score: 0.84082
+Validation Sensitivity: 0.34328, Specificity: 0.73615, F1 Score: 0.46822
 Epoch 5/100
-Training Sensitivity: 0.92397, Specificity: 0.90239, F1 Score: 0.91305
-Validation Sensitivity: 0.44293, Specificity: 0.40462, F1 Score: 0.42291
+Training Sensitivity: 0.88467, Specificity: 0.86838, F1 Score: 0.87645
+Validation Sensitivity: 0.22455, Specificity: 0.71316, F1 Score: 0.34156
 Epoch 6/100
-Training Sensitivity: 0.90985, Specificity: 0.91595, F1 Score: 0.91289
-Validation Sensitivity: 0.76882, Specificity: 0.95029, F1 Score: 0.84998
+Training Sensitivity: 0.83213, Specificity: 0.91495, F1 Score: 0.87158
+Validation Sensitivity: 0.23876, Specificity: 0.73464, F1 Score: 0.36040
 Epoch 7/100
-Training Sensitivity: 0.96246, Specificity: 0.89609, F1 Score: 0.92809
-Validation Sensitivity: 0.76286, Specificity: 0.87637, F1 Score: 0.81568
+Training Sensitivity: 0.85185, Specificity: 0.93412, F1 Score: 0.89109
+Validation Sensitivity: 0.23944, Specificity: 0.74095, F1 Score: 0.36192
 Epoch 8/100
-Training Sensitivity: 0.93935, Specificity: 0.92616, F1 Score: 0.93271
-Validation Sensitivity: 0.88636, Specificity: 0.70442, F1 Score: 0.78499
+Training Sensitivity: 0.87140, Specificity: 0.94589, F1 Score: 0.90712
+Validation Sensitivity: 0.26205, Specificity: 0.70942, F1 Score: 0.38272
 Epoch 9/100
-Training Sensitivity: 0.92975, Specificity: 0.91799, F1 Score: 0.92383
-Validation Sensitivity: 0.78415, Specificity: 0.81034, F1 Score: 0.79703
+Training Sensitivity: 0.90226, Specificity: 0.93059, F1 Score: 0.91620
+Validation Sensitivity: 0.28412, Specificity: 0.77183, F1 Score: 0.41535
 Epoch 10/100
-Training Sensitivity: 0.88987, Specificity: 0.95755, F1 Score: 0.92247
-Validation Sensitivity: 0.74611, Specificity: 0.99390, F1 Score: 0.85236
+Training Sensitivity: 0.87606, Specificity: 0.95021, F1 Score: 0.91163
+Validation Sensitivity: 0.26479, Specificity: 0.72423, F1 Score: 0.38779
 Epoch 11/100
-Training Sensitivity: 0.90800, Specificity: 0.96720, F1 Score: 0.93666
-Validation Sensitivity: 0.67857, Specificity: 0.89143, F1 Score: 0.77057
+Training Sensitivity: 0.88203, Specificity: 0.96370, F1 Score: 0.92106
+Validation Sensitivity: 0.31073, Specificity: 0.73333, F1 Score: 0.43651
 Epoch 12/100
-Training Sensitivity: 0.90966, Specificity: 0.98209, F1 Score: 0.94449
-Validation Sensitivity: 0.69364, Specificity: 0.83696, F1 Score: 0.75859
+Training Sensitivity: 0.89634, Specificity: 0.97641, F1 Score: 0.93466
+Validation Sensitivity: 0.32317, Specificity: 0.76166, F1 Score: 0.45380
 Epoch 13/100
+Training Sensitivity: 0.89024, Specificity: 0.97228, F1 Score: 0.92945
+Validation Sensitivity: 0.25275, Specificity: 0.70857, F1 Score: 0.37259
+Epoch 14/100
+Training Sensitivity: 0.86996, Specificity: 0.96946, F1 Score: 0.91702
+Validation Sensitivity: 0.19588, Specificity: 0.73620, F1 Score: 0.30943
+Epoch 15/100
+Training Sensitivity: 0.87465, Specificity: 0.97475, F1 Score: 0.92199
+Validation Sensitivity: 0.27701, Specificity: 0.68555, F1 Score: 0.39458
+Epoch 16/100
+Training Sensitivity: 0.88512, Specificity: 0.98858, F1 Score: 0.93399
+Validation Sensitivity: 0.21186, Specificity: 0.78056, F1 Score: 0.33327
+Epoch 17/100

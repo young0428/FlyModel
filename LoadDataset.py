@@ -63,7 +63,7 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
 def LoadVideo(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
-    appendix = ['']#,'_upward','_downward','_leftward','_rightward']
+    appendix = ['','_upward','_downward','_leftward','_rightward']
     video_paths_list = [[f"{folder_path}/{type}{ap}.avi" for ap in appendix] for type in type_list ]
 
     combined_video_tensors = combine_videos_to_tensor(video_paths_list, downsampling_factor)
@@ -390,7 +390,34 @@ def apply_salt_and_pepper(video, salt_prob=0.001, pepper_prob=0.001):
 
 # ############################    flow estimation part end    ##############################################
 
+
+
 ###################### for flow estimation #########################
+
+
+def calculate_manual_wba(video_data):
+    """
+    각 프레임별로 leftward와 rightward flow vector의 평균을 구하고, 이를 빼서 최종적으로 manual_wba를 반환하는 함수.
+    
+    Args:
+    video_data (numpy.ndarray): (3, frame#, h, w, c) 형태의 비디오 데이터. c=3, c=4가 leftward, rightward flow vector의 정보를 담고 있음.
+    
+    Returns:
+    numpy.ndarray: (3, frame#) 형태의 manual_wba.
+    """
+
+    # leftward와 rightward flow vector 추출
+    leftward_flow = video_data[..., 3]
+    rightward_flow = video_data[..., 4]
+
+    # 각 프레임별로 leftward와 rightward flow vector의 평균 계산
+    leftward_mean = np.mean(leftward_flow, axis=(2, 3))  # (3, frame#)
+    rightward_mean = np.mean(rightward_flow, axis=(2, 3))  # (3, frame#)
+
+    # leftward와 rightward의 평균을 빼서 manual_wba 계산
+    manual_wba = leftward_mean - rightward_mean  # (3, frame#)
+
+    return manual_wba
 
 def aug_videos(videos, wba_data):
     augmented_videos = []
@@ -428,13 +455,14 @@ def aug_videos(videos, wba_data):
 def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
     video_data = LoadVideo(folder_path, downsampling_factor)
-    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
-    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7)
-    wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
-    diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
+    manual_wba_data = calculate_manual_wba(video_data)
+    #wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
+    #wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7)
+    #wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
+    #diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
     total_frame = np.shape(video_data)[1]
 
-    return video_data, wba_data_interpolated, total_frame
+    return video_data, manual_wba_data, total_frame
 
 def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
     tuples = []

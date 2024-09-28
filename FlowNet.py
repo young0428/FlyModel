@@ -164,61 +164,60 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         self.spatial_attentions = nn.ModuleList()
         self.conv_layers = nn.ModuleList()
 
-        # 레이어 초기화는 forward pass에서 수행
+        # # 레이어 초기화는 forward pass에서 수행
 
-        # 최종 스칼라 값을 출력하는 FC layer
-        # 실제 크기는 forward pass에서 결정됨
-        self.final_fc = None
-        D, H, W, C = input_size
-        adaptive_size = 8
+        # # 최종 스칼라 값을 출력하는 FC layer
+        # # 실제 크기는 forward pass에서 결정됨
+        # self.final_fc = None
+        # D, H, W, C = input_size
+        # adaptive_size = 8
         
-        self.conv_layers = nn.ModuleList()
-        self.fc_layers = nn.ModuleList()
-        for i in range(len(self.flownet3d.decoder.upconvs)):
-            in_channels = flownet3d.decoder.convs[i].out_channels
-            self.spatial_attentions.append(SpatialAttention())
-            self.conv_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, max(1,in_channels//4), kernel_size=2),
-                nn.ReLU(inplace=True),
-                nn.Conv3d(max(1,in_channels//4), max(1,in_channels//8), kernel_size=2, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Flatten(),
+        # self.conv_layers = nn.ModuleList()
+        # self.fc_layers = nn.ModuleList()
+        # for i in range(len(self.flownet3d.decoder.upconvs)):
+        #     in_channels = flownet3d.decoder.convs[i].out_channels
+        #     self.spatial_attentions.append(SpatialAttention())
+        #     self.conv_layers.append(nn.Sequential(
+        #         nn.Conv3d(in_channels, max(1,in_channels//4), kernel_size=2),
+        #         nn.ReLU(inplace=True),
+        #         nn.Conv3d(max(1,in_channels//4), max(1,in_channels//8), kernel_size=2, padding=1),
+        #         nn.ReLU(inplace=True),
+        #         nn.Flatten(),
                 
-                # nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
-                # nn.ReLU(inplace=True),
-                # nn.Dropout(0.3),
-            ))
-        self.conv_layers = self.conv_layers.to(self.device)
-        dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
-        with torch.no_grad():
+        #         # nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
+        #         # nn.ReLU(inplace=True),
+        #         # nn.Dropout(0.3),
+        #     ))
+        # self.conv_layers = self.conv_layers.to(self.device)
+        # dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
+        # with torch.no_grad():
             
-            x = self.flownet3d.swap_axis_for_input(dummy_input)
-            x = self.input_dropout(x)
-            encoder_outputs = self.flownet3d.encoder(x)
+        #     x = self.flownet3d.swap_axis_for_input(dummy_input)
+        #     x = self.input_dropout(x)
+        #     encoder_outputs = self.flownet3d.encoder(x)
             
-            decoder_output = encoder_outputs[-1]
+        #     decoder_output = encoder_outputs[-1]
 
-            features = []
-            for i in range(len(self.flownet3d.decoder.upconvs)):
-                decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
-                decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
-                decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
+        #     features = []
+        #     for i in range(len(self.flownet3d.decoder.upconvs)):
+        #         decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
+        #         decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
+        #         decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
                 
-                #attention_map = self.spatial_attentions[i](decoder_output)
-                #decoder_output = decoder_output * attention_map
+        #         #attention_map = self.spatial_attentions[i](decoder_output)
+        #         #decoder_output = decoder_output * attention_map
                 
-                
-                # 각 단계에서의 feature 추출
+        #         # 각 단계에서의 feature 추출
 
-                conv_output = self.conv_layers[i](decoder_output)
-                feature_flattened = conv_output.size(1)
+        #         conv_output = self.conv_layers[i](decoder_output)
+        #         feature_flattened = conv_output.size(1)
 
-                self.fc_layers.append(nn.Sequential(
-                    nn.Linear(feature_flattened, feature_dim),
-                    nn.ReLU(inplace=True),
-                    nn.Dropout(0.5),
-                    #nn.Linear(512, 1)
-                ))
+        #         self.fc_layers.append(nn.Sequential(
+        #             nn.Linear(feature_flattened, feature_dim),
+        #             nn.ReLU(inplace=True),
+        #             nn.Dropout(0.5),
+        #             #nn.Linear(512, 1)
+        #         ))
             
     
         # 최종 스칼라 값을 출력하는 FC layer
