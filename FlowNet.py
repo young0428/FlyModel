@@ -178,15 +178,9 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             in_channels = flownet3d.decoder.convs[i].out_channels
             self.spatial_attentions.append(SpatialAttention())
             self.conv_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, max(1,in_channels//2), kernel_size=2),
-                nn.ReLU(inplace=True),
-                nn.Conv3d(max(1, in_channels//2), max(1,in_channels//4), kernel_size=2, padding=1),
+                nn.Conv3d(in_channels, max(1,in_channels//4), kernel_size=2),
                 nn.ReLU(inplace=True),
                 nn.Conv3d(max(1,in_channels//4), max(1,in_channels//8), kernel_size=2, padding=1),
-                nn.MaxPool3d(kernel_size=2, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv3d(max(1,in_channels//8), max(1,in_channels//16), kernel_size=2, padding=1),
-                nn.MaxPool3d(kernel_size=2, padding=1),
                 nn.ReLU(inplace=True),
                 nn.Flatten(),
                 
@@ -222,7 +216,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 self.fc_layers.append(nn.Sequential(
                     nn.Linear(feature_flattened, feature_dim),
                     nn.ReLU(inplace=True),
-                    nn.Dropout(0.3),
+                    nn.Dropout(0.5),
                     #nn.Linear(512, 1)
                 ))
             

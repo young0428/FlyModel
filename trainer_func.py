@@ -55,6 +55,7 @@ class Trainer :
         target = target.to(self.device)
         
         self.optimizer.zero_grad()
+        
         pred = self.model(input)
         
         loss = self.loss_func(pred, target)
