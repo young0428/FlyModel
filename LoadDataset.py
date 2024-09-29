@@ -459,14 +459,14 @@ def aug_videos(videos, wba_data):
 def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
     video_data = LoadVideo(folder_path, downsampling_factor)
-    manual_wba_data = calculate_manual_wba(video_data)
-    #wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
-    #wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7)
-    #wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
-    #diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
+    #manual_wba_data = calculate_manual_wba(video_data)
+    wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.4)
+    wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
+    diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
     total_frame = np.shape(video_data)[1]
 
-    return video_data, manual_wba_data, total_frame
+    return video_data, wba_data, total_frame
 
 def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
     tuples = []
@@ -491,7 +491,8 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
+        direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame]) >= 0 else [0])
+        #direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
         #direction_data.append([1] if wba_tensor[video_num, start_frame] >= wba_tensor[video_num, start_frame-frame_per_window] else [0])
         
     return np.array(video_data), np.array(direction_data)
