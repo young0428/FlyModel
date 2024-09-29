@@ -28,7 +28,7 @@ frame_per_window = 16
 frame_per_sliding = 4
 input_ch = 1
 
-model_string = "only_forest_manual_wba"
+model_string = "only_forest_manual_wba_mean_nf_val_no_aug"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -50,7 +50,7 @@ fold_factor = 5
 layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
 
 video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
-video_data,wba_data = aug_videos(video_data, wba_data)
+video_data,wba_data, aug_factor = aug_videos(video_data, wba_data)
 print(f"augmented shape : {video_data.shape}")
 print(f"augmented shape : {wba_data.shape}")
 
@@ -85,7 +85,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     # create model
     flownet_model = flownet3d(layer_configs, num_classes=1)
     flownet_model = load_model(flownet_model, pretrained_model_path)
-    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=512, 
+    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
                                            input_size=(frame_per_window, 
                                                        int(h//downsampling_factor), 
                                                        int(w//downsampling_factor), 
@@ -132,8 +132,11 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     
         training_tuples = batch_tuples[train_index]
         training_tuples = training_tuples[4:-4]
-        val_tuples = batch_tuples[val_index]
         
+        val_tuples = batch_tuples[val_index]
+
+        val_tuples = [tup for tup in val_tuples if tup[0] == 2*aug_factor]
+
         batches = list(get_batches(training_tuples, batch_size))
         print(f"Epoch {epoch + 1}/{epochs}")
 
@@ -296,7 +299,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             intermediate_path = f"{fold_path}/intermediate_epoch"
             os.makedirs(intermediate_path, exist_ok=True)
             val_tuples = batch_tuples[val_index]
-            selected_indices = np.random.choice(val_tuples.shape[0], size=9, replace=False)
+            val_tuples = np.array([tup for tup in val_tuples if tup[0] == 2*aug_factor])
+            selected_indices = np.random.choice(np.shape(val_tuples)[0], size=9, replace=False)
 
             selected_val_tuples = val_tuples[selected_indices]
             batch_input_data, batch_target_data = get_data_from_batch_direction_pred(

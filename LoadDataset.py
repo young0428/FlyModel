@@ -422,7 +422,7 @@ def calculate_manual_wba(video_data):
 def aug_videos(videos, wba_data):
     augmented_videos = []
     augmented_wba = []
-    print(np.shape(videos))
+    before_aug_num = len(videos)
     for i, video in enumerate(videos):
         # 원본 영상 추가
         augmented_videos.append(video)
@@ -448,9 +448,13 @@ def aug_videos(videos, wba_data):
         augmented_wba.append(-wba_data[i])
         augmented_videos.append(vertical_flip(horizontal_flipped_video))
         augmented_wba.append(-wba_data[i])
+        
+    after_aug_num = len(augmented_videos)
+    
+    aug_factor = after_aug_num // before_aug_num
 
         
-    return np.array(augmented_videos), np.array(augmented_wba)
+    return np.array(augmented_videos), np.array(augmented_wba), aug_factor
 
 def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
@@ -488,7 +492,7 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
         direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
-        #direction_data.append([1] if wba_tensor[video_num, start_frame+4] >= wba_tensor[video_num, start_frame-frame_per_window+4] else [0])
+        #direction_data.append([1] if wba_tensor[video_num, start_frame] >= wba_tensor[video_num, start_frame-frame_per_window] else [0])
         
     return np.array(video_data), np.array(direction_data)
 

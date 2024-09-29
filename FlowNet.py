@@ -154,11 +154,13 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         self.input_dropout = nn.Dropout2d(p=0.1)
         self.first = True
         
-        # Encoder와 Decoder의 파라미터를 고정 (freeze)
-        for param in self.flownet3d.encoder.parameters():
-            param.requires_grad = False
-        for param in self.flownet3d.decoder.parameters():
-            param.requires_grad = False
+        print(f"device : {self.device}")
+        
+        # # Encoder와 Decoder의 파라미터를 고정 (freeze)
+        # for param in self.flownet3d.encoder.parameters():
+        #     param.requires_grad = False
+        # for param in self.flownet3d.decoder.parameters():
+        #     param.requires_grad = False
         
         # Decoder 각 단계에서 나오는 feature를 변환하는 layer들을 초기화
         self.spatial_attentions = nn.ModuleList()
@@ -178,10 +180,14 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             in_channels = flownet3d.decoder.convs[i].out_channels
             self.spatial_attentions.append(SpatialAttention())
             self.conv_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, max(1,in_channels//4), kernel_size=2),
+                nn.Conv3d(in_channels, 32, kernel_size=2, padding=1),
                 nn.ReLU(inplace=True),
-                nn.Conv3d(max(1,in_channels//4), max(1,in_channels//8), kernel_size=2, padding=1),
-                nn.ReLU(inplace=True),
+                nn.Conv3d(32, 16, kernel_size=2, padding=1),
+                # #nn.ReLU(inplace=True),
+                # nn.Conv3d(max(1,in_channels//2), max(1,in_channels//4), kernel_size=2, padding=1),
+                # #nn.ReLU(inplace=True),
+                # nn.Conv3d(max(1,in_channels//4), max(1,in_channels//4), kernel_size=2, padding=1),
+                
                 nn.Flatten(),
                 
                 # nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
@@ -189,6 +195,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 # nn.Dropout(0.3),
             ))
         self.conv_layers = self.conv_layers.to(self.device)
+        self.spatial_attentions = self.spatial_attentions.to(self.device)
         dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
         with torch.no_grad():
             
@@ -204,8 +211,8 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
                 decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
                 
-                #attention_map = self.spatial_attentions[i](decoder_output)
-                #decoder_output = decoder_output * attention_map
+                # attention_map = self.spatial_attentions[i](decoder_output)
+                # decoder_output = decoder_output * attention_map
                 
                 # 각 단계에서의 feature 추출
 
@@ -215,7 +222,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 self.fc_layers.append(nn.Sequential(
                     nn.Linear(feature_flattened, feature_dim),
                     nn.ReLU(inplace=True),
-                    nn.Dropout(0.1),
+                    nn.Dropout(0.4),
                     #nn.Linear(512, 1)
                 ))
             
@@ -223,7 +230,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         # 최종 스칼라 값을 출력하는 FC layer
         self.final_fc = nn.Linear(feature_dim * len(self.conv_layers), 1)
         
-        self.spatial_attentions = self.spatial_attentions.to(self.device)
+        
         #self.conv_layers = self.conv_layers.to(self.device)
         self.fc_layers = self.fc_layers.to(self.device)
         self.final_fc = self.final_fc.to(self.device)
@@ -246,8 +253,8 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
             decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
             
-            attention_map = self.spatial_attentions[i](decoder_output)
-            decoder_output = decoder_output * attention_map
+            # attention_map = self.spatial_attentions[i](decoder_output)
+            # decoder_output = decoder_output * attention_map
             
             
             # 각 단계에서의 feature 추출
