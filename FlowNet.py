@@ -222,7 +222,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
                 self.fc_layers.append(nn.Sequential(
                     nn.Linear(feature_flattened, feature_dim),
                     nn.ReLU(inplace=True),
-                    nn.Dropout(0.4),
+                    nn.Dropout(0.5),
                     #nn.Linear(512, 1)
                 ))
             
@@ -241,7 +241,7 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
     def forward(self, x):
         
         x = self.flownet3d.swap_axis_for_input(x)
-        #x = self.input_dropout(x)
+        x = self.input_dropout(x)
         encoder_outputs = self.flownet3d.encoder(x)
         
         decoder_output = encoder_outputs[-1]

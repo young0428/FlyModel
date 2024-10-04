@@ -466,7 +466,7 @@ def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downs
     diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
     total_frame = np.shape(video_data)[1]
 
-    return video_data, wba_data, total_frame
+    return video_data, wba_data_interpolated, total_frame
 
 def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
     tuples = []
@@ -491,7 +491,7 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame]) >= 0 else [0])
+        direction_data.append([1] if wba_tensor[video_num, start_frame] >= 0 else [0])
         #direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
         #direction_data.append([1] if wba_tensor[video_num, start_frame] >= wba_tensor[video_num, start_frame-frame_per_window] else [0])
         

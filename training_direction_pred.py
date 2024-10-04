@@ -77,6 +77,8 @@ with open(conf_matrix_val_path, "wb") as f:
 
 KST = pytz.timezone('Asia/Seoul')
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
+    if fold < 3 :
+        continue
     print(f"Fold {fold+1}")
     fold_path = f"{model_name}/fold_{fold+1}"
     
