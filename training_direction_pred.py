@@ -25,10 +25,10 @@ fps = 30
 downsampling_factor = 5.625
 
 frame_per_window = 16
-frame_per_sliding = 4
+frame_per_sliding = 16
 input_ch = 1
 
-model_string = "only_forest_last_frame_sign"
+model_string = "only_forest_last_frame_sign_random_val"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -43,7 +43,7 @@ pretrained_model_path = "./pretrained_model/64x128_opticflow_64t51216frames.ckpt
 
 # hyperparameter 
 batch_size = 20
-lr = 1e-3
+lr = 1e-4
 epochs = 100
 fold_factor = 5
 
@@ -61,7 +61,7 @@ val_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
 print(np.shape(batch_tuples))
-kf = KFold(n_splits=fold_factor)
+kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
 
 all_fold_losses = []
 
@@ -189,7 +189,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
         avg_train_loss = total_train_loss / len(batches)
         train_losses.append(avg_train_loss)
-
+        
         # 누적된 값을 사용하여 최종적으로 F1 점수, 민감도, 특이도를 계산
         sensitivity_train = tp_train / (tp_train + fn_train)
         specificity_train = tn_train / (tn_train + fp_train)
@@ -248,9 +248,18 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         avg_val_loss = total_val_loss / len(val_batches)
         val_losses.append(avg_val_loss)
         
+        
+        if tp_val + fn_val == 0:
+            sensitivity_val = 0  # 또는 다른 적절한 값
+        else:
+            sensitivity_val = tp_val / (tp_val + fn_val)
 
-        sensitivity_val = tp_val / (tp_val + fn_val)
-        specificity_val = tn_val / (tn_val + fp_val)
+        # Specificity 계산
+        if tn_val + fp_val == 0:
+            specificity_val = 0  # 또는 다른 적절한 값
+        else:
+            specificity_val = tn_val / (tn_val + fp_val)
+            
         f1_val = 2 * (sensitivity_val * specificity_val)/ (sensitivity_val + specificity_val)
 
         print(f"Validation Sensitivity: {sensitivity_val:.5f}, Specificity: {specificity_val:.5f}, F1 Score: {f1_val:.5f}")
