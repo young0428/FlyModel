@@ -25,10 +25,10 @@ fps = 30
 downsampling_factor = 5.625
 
 frame_per_window = 16
-frame_per_sliding = 4
+frame_per_sliding = 16
 input_ch = 1
 
-model_string = "only_forest_manual_wba_mean_nf_val_no_aug"
+model_string = "only_forest_manual_wba_mean_nf_val_no_aug_random"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -43,7 +43,7 @@ pretrained_model_path = "./pretrained_model/64x128_opticflow_64t51216frames.ckpt
 
 # hyperparameter 
 batch_size = 20
-lr = 1e-3
+lr = 1e-4
 epochs = 100
 fold_factor = 5
 
@@ -61,7 +61,7 @@ val_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
 print(np.shape(batch_tuples))
-kf = KFold(n_splits=fold_factor)
+kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
 
 all_fold_losses = []
 
