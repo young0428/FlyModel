@@ -28,7 +28,7 @@ frame_per_window = 16
 frame_per_sliding = 16
 input_ch = 1
 
-model_string = "only_forest_last_frame_sign_random_val"
+model_string = "only_forest_last_ud_random_val"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"

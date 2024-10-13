@@ -1,0 +1,644 @@
+./naturalistic/01_Bird.avi                                   Loaded : (5, 3596, 64, 128, 1)
+./naturalistic/02_City.avi                                   Loaded : (5, 3596, 64, 128, 1)
+./naturalistic/03_Forest.avi                                 Loaded : (5, 3596, 64, 128, 1)
+Video is allocated on memory!
+Shape : (3, 3596, 64, 128, 5)
+augmented shape : (24, 3596, 64, 128, 5)
+augmented shape : (24, 3600)
+(1792, 2)
+Fold 4
+Model loaded successfully from ./pretrained_model/64x128_opticflow_64t51216frames.ckpt
+device : cuda
+device : cuda
+Model not found at ./model/only_forest_last_ud_random_val_16frames/fold_4/fly_model.ckpt
+Epoch 1/100
+Training Sensitivity: 0.62315, Specificity: 0.69149, F1 Score: 0.65554
+Validation Sensitivity: 0.57143, Specificity: 1.00000, F1 Score: 0.72727
+New best model saved at epoch 1 with f1 0.72727
+First epoch took 10.17 seconds.
+Estimated total program duration: 1.41 hours
+Estimated program end time (KST): 2024/10/07 14:45:24
+Epoch 2/100
+Training Sensitivity: 0.77535, Specificity: 0.85987, F1 Score: 0.81543
+Validation Sensitivity: 0.90476, Specificity: 0.78947, F1 Score: 0.84320
+New best model saved at epoch 2 with f1 0.84320
+Epoch 3/100
+Training Sensitivity: 0.85246, Specificity: 0.94172, F1 Score: 0.89487
+Validation Sensitivity: 1.00000, Specificity: 0.68421, F1 Score: 0.81250
+Epoch 4/100
+Training Sensitivity: 0.89396, Specificity: 0.92503, F1 Score: 0.90923
+Validation Sensitivity: 0.90476, Specificity: 1.00000, F1 Score: 0.95000
+New best model saved at epoch 4 with f1 0.95000
+Epoch 5/100
+Training Sensitivity: 0.89543, Specificity: 0.93440, F1 Score: 0.91450
+Validation Sensitivity: 0.85714, Specificity: 1.00000, F1 Score: 0.92308
+Epoch 6/100
+Training Sensitivity: 0.92387, Specificity: 0.92598, F1 Score: 0.92492
+Validation Sensitivity: 1.00000, Specificity: 0.63158, F1 Score: 0.77419
+Epoch 7/100
+Training Sensitivity: 0.93027, Specificity: 0.92154, F1 Score: 0.92588
+Validation Sensitivity: 1.00000, Specificity: 0.68421, F1 Score: 0.81250
+Epoch 8/100
+Training Sensitivity: 0.90950, Specificity: 0.95151, F1 Score: 0.93003
+Validation Sensitivity: 0.80952, Specificity: 1.00000, F1 Score: 0.89474
+Epoch 9/100
+Training Sensitivity: 0.92980, Specificity: 0.92720, F1 Score: 0.92850
+Validation Sensitivity: 1.00000, Specificity: 0.78947, F1 Score: 0.88235
+Epoch 10/100
+Training Sensitivity: 0.92603, Specificity: 0.96404, F1 Score: 0.94465
+Validation Sensitivity: 1.00000, Specificity: 0.78947, F1 Score: 0.88235
+Epoch 11/100
+Training Sensitivity: 0.91292, Specificity: 0.97151, F1 Score: 0.94130
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 12/100
+Training Sensitivity: 0.92835, Specificity: 0.94675, F1 Score: 0.93746
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 13/100
+Training Sensitivity: 0.88872, Specificity: 0.95974, F1 Score: 0.92287
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 14/100
+Training Sensitivity: 0.96676, Specificity: 0.93188, F1 Score: 0.94900
+Validation Sensitivity: 0.80952, Specificity: 0.84211, F1 Score: 0.82549
+Epoch 15/100
+Training Sensitivity: 0.92006, Specificity: 0.94038, F1 Score: 0.93011
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 16/100
+Training Sensitivity: 0.91424, Specificity: 0.95393, F1 Score: 0.93367
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 17/100
+Training Sensitivity: 0.94170, Specificity: 0.92734, F1 Score: 0.93447
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 18/100
+Training Sensitivity: 0.89941, Specificity: 0.96267, F1 Score: 0.92996
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 19/100
+Training Sensitivity: 0.90760, Specificity: 0.97483, F1 Score: 0.94002
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 20/100
+Training Sensitivity: 0.93874, Specificity: 0.92626, F1 Score: 0.93246
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 21/100
+Training Sensitivity: 0.93094, Specificity: 0.95075, F1 Score: 0.94074
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 22/100
+Training Sensitivity: 0.94397, Specificity: 0.94110, F1 Score: 0.94253
+Validation Sensitivity: 0.95238, Specificity: 0.84211, F1 Score: 0.89385
+Epoch 23/100
+Training Sensitivity: 0.97134, Specificity: 0.90826, F1 Score: 0.93874
+Validation Sensitivity: 0.95238, Specificity: 0.78947, F1 Score: 0.86331
+Epoch 24/100
+Training Sensitivity: 0.92878, Specificity: 0.93089, F1 Score: 0.92984
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 25/100
+Training Sensitivity: 0.93786, Specificity: 0.96185, F1 Score: 0.94971
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 26/100
+Training Sensitivity: 0.90107, Specificity: 0.98700, F1 Score: 0.94208
+Validation Sensitivity: 0.95238, Specificity: 0.84211, F1 Score: 0.89385
+Epoch 27/100
+Training Sensitivity: 0.91717, Specificity: 0.98031, F1 Score: 0.94769
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 28/100
+Training Sensitivity: 0.91043, Specificity: 0.97852, F1 Score: 0.94325
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 29/100
+Training Sensitivity: 0.94429, Specificity: 0.94904, F1 Score: 0.94665
+Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+New best model saved at epoch 29 with f1 0.97297
+Epoch 30/100
+Training Sensitivity: 0.93378, Specificity: 0.95773, F1 Score: 0.94560
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 31/100
+Training Sensitivity: 0.94942, Specificity: 0.92371, F1 Score: 0.93639
+Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Epoch 32/100
+Training Sensitivity: 0.98971, Specificity: 0.89410, F1 Score: 0.93948
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 33/100
+Training Sensitivity: 0.91956, Specificity: 0.97601, F1 Score: 0.94694
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+New best model saved at epoch 33 with f1 0.97561
+Epoch 34/100
+Training Sensitivity: 0.91819, Specificity: 0.96234, F1 Score: 0.93975
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 35/100
+Training Sensitivity: 0.95082, Specificity: 0.96159, F1 Score: 0.95617
+Validation Sensitivity: 0.90476, Specificity: 1.00000, F1 Score: 0.95000
+Epoch 36/100
+Training Sensitivity: 0.90219, Specificity: 0.97976, F1 Score: 0.93937
+Validation Sensitivity: 0.95238, Specificity: 0.84211, F1 Score: 0.89385
+Epoch 37/100
+Training Sensitivity: 0.93804, Specificity: 0.94809, F1 Score: 0.94304
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 38/100
+Training Sensitivity: 0.93411, Specificity: 0.94213, F1 Score: 0.93810
+Validation Sensitivity: 0.95238, Specificity: 0.94737, F1 Score: 0.94987
+Epoch 39/100
+Training Sensitivity: 0.93983, Specificity: 0.93819, F1 Score: 0.93901
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Epoch 40/100
+Training Sensitivity: 0.92297, Specificity: 0.95122, F1 Score: 0.93688
+Validation Sensitivity: 0.90476, Specificity: 0.84211, F1 Score: 0.87231
+Epoch 41/100
+Training Sensitivity: 0.90448, Specificity: 0.97487, F1 Score: 0.93835
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 42/100
+Training Sensitivity: 0.93814, Specificity: 0.96386, F1 Score: 0.95083
+Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Epoch 43/100
+Training Sensitivity: 0.92117, Specificity: 0.97301, F1 Score: 0.94638
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Epoch 44/100
+Training Sensitivity: 0.94667, Specificity: 0.93342, F1 Score: 0.94000
+Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
+New best model saved at epoch 44 with f1 1.00000
+Epoch 45/100
+Training Sensitivity: 0.92350, Specificity: 0.97030, F1 Score: 0.94632
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 46/100
+Training Sensitivity: 0.90976, Specificity: 0.95867, F1 Score: 0.93358
+Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
+Epoch 47/100
+Training Sensitivity: 0.95529, Specificity: 0.94437, F1 Score: 0.94980
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 48/100
+Training Sensitivity: 0.90045, Specificity: 0.99070, F1 Score: 0.94342
+Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Epoch 49/100
+Training Sensitivity: 0.89747, Specificity: 0.97199, F1 Score: 0.93325
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 50/100
+Training Sensitivity: 0.95362, Specificity: 0.93342, F1 Score: 0.94342
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Epoch 51/100
+Training Sensitivity: 0.94058, Specificity: 0.97418, F1 Score: 0.95709
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 52/100
+Training Sensitivity: 0.92627, Specificity: 0.96774, F1 Score: 0.94655
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Epoch 53/100
+Training Sensitivity: 0.95415, Specificity: 0.93544, F1 Score: 0.94470
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 54/100
+Training Sensitivity: 0.93713, Specificity: 0.95778, F1 Score: 0.94734
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 55/100
+Training Sensitivity: 0.95294, Specificity: 0.94102, F1 Score: 0.94694
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 56/100
+Training Sensitivity: 0.91292, Specificity: 0.98236, F1 Score: 0.94637
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 57/100
+Training Sensitivity: 0.91976, Specificity: 0.98274, F1 Score: 0.95021
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 58/100
+Training Sensitivity: 0.92426, Specificity: 0.99158, F1 Score: 0.95674
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 59/100
+Training Sensitivity: 0.90373, Specificity: 0.98849, F1 Score: 0.94421
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 60/100
+Training Sensitivity: 0.91372, Specificity: 0.97914, F1 Score: 0.94530
+Validation Sensitivity: 0.95238, Specificity: 0.94737, F1 Score: 0.94987
+Epoch 61/100
+Training Sensitivity: 0.91620, Specificity: 0.97042, F1 Score: 0.94253
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 62/100
+Training Sensitivity: 0.94545, Specificity: 0.94093, F1 Score: 0.94319
+Validation Sensitivity: 1.00000, Specificity: 0.73684, F1 Score: 0.84848
+Epoch 63/100
+Training Sensitivity: 0.90963, Specificity: 0.96272, F1 Score: 0.93542
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 64/100
+Training Sensitivity: 0.94015, Specificity: 0.95816, F1 Score: 0.94907
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 65/100
+Training Sensitivity: 0.90385, Specificity: 0.98000, F1 Score: 0.94038
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 66/100
+Training Sensitivity: 0.95182, Specificity: 0.94737, F1 Score: 0.94959
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 67/100
+Training Sensitivity: 0.93636, Specificity: 0.96084, F1 Score: 0.94844
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 68/100
+Training Sensitivity: 0.93440, Specificity: 0.97027, F1 Score: 0.95200
+Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Epoch 69/100
+Training Sensitivity: 0.91181, Specificity: 0.99207, F1 Score: 0.95025
+Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
+Epoch 70/100
+Training Sensitivity: 0.88348, Specificity: 0.98797, F1 Score: 0.93281
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 71/100
+Training Sensitivity: 0.92273, Specificity: 0.98433, F1 Score: 0.95254
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 72/100
+Training Sensitivity: 0.93237, Specificity: 0.97264, F1 Score: 0.95208
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 73/100
+Training Sensitivity: 0.90694, Specificity: 0.98665, F1 Score: 0.94512
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 74/100
+Training Sensitivity: 0.91016, Specificity: 0.96921, F1 Score: 0.93876
+Validation Sensitivity: 1.00000, Specificity: 0.78947, F1 Score: 0.88235
+Epoch 75/100
+Training Sensitivity: 0.93813, Specificity: 0.94665, F1 Score: 0.94237
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 76/100
+Training Sensitivity: 0.91916, Specificity: 0.96306, F1 Score: 0.94060
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 77/100
+Training Sensitivity: 0.92662, Specificity: 0.96854, F1 Score: 0.94711
+Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Epoch 78/100
+Training Sensitivity: 0.92401, Specificity: 0.97135, F1 Score: 0.94709
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 79/100
+Training Sensitivity: 0.91190, Specificity: 0.99101, F1 Score: 0.94981
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 80/100
+Training Sensitivity: 0.90415, Specificity: 0.99175, F1 Score: 0.94592
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 81/100
+Training Sensitivity: 0.92910, Specificity: 0.99466, F1 Score: 0.96076
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 82/100
+Training Sensitivity: 0.89818, Specificity: 0.99349, F1 Score: 0.94343
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 83/100
+Training Sensitivity: 0.91246, Specificity: 0.99601, F1 Score: 0.95241
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 84/100
+Training Sensitivity: 0.90511, Specificity: 0.98111, F1 Score: 0.94158
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 85/100
+Training Sensitivity: 0.89440, Specificity: 0.99501, F1 Score: 0.94202
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Epoch 86/100
+Training Sensitivity: 0.89510, Specificity: 0.99437, F1 Score: 0.94213
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 87/100
+Training Sensitivity: 0.91859, Specificity: 0.98710, F1 Score: 0.95161
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 88/100
+Training Sensitivity: 0.90962, Specificity: 0.96757, F1 Score: 0.93770
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 89/100
+Training Sensitivity: 0.97681, Specificity: 0.92663, F1 Score: 0.95106
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 90/100
+Training Sensitivity: 0.95493, Specificity: 0.94832, F1 Score: 0.95162
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 91/100
+Training Sensitivity: 0.91437, Specificity: 0.97965, F1 Score: 0.94588
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 92/100
+Training Sensitivity: 0.95646, Specificity: 0.94474, F1 Score: 0.95056
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 93/100
+Training Sensitivity: 0.94228, Specificity: 0.96317, F1 Score: 0.95261
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 94/100
+Training Sensitivity: 0.92034, Specificity: 0.97234, F1 Score: 0.94563
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 95/100
+Training Sensitivity: 0.92560, Specificity: 0.96021, F1 Score: 0.94259
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 96/100
+Training Sensitivity: 0.90433, Specificity: 0.99075, F1 Score: 0.94557
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 97/100
+Training Sensitivity: 0.91061, Specificity: 0.99086, F1 Score: 0.94904
+Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Epoch 98/100
+Training Sensitivity: 0.91950, Specificity: 0.95385, F1 Score: 0.93636
+Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Epoch 99/100
+Training Sensitivity: 0.88756, Specificity: 0.99868, F1 Score: 0.93985
+Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Epoch 100/100
+Training Sensitivity: 0.89828, Specificity: 0.99588, F1 Score: 0.94457
+Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
+Best model for fold 4 saved from epoch 44 with f1 1.00000
+Final training loss: 0.08314
+Final test loss: 0.07717
+Fold 5
+Model loaded successfully from ./pretrained_model/64x128_opticflow_64t51216frames.ckpt
+device : cuda
+device : cuda
+Model not found at ./model/only_forest_last_ud_random_val_16frames/fold_5/fly_model.ckpt
+Epoch 1/100
+Training Sensitivity: 0.66395, Specificity: 0.63386, F1 Score: 0.64856
+Validation Sensitivity: 0.88889, Specificity: 0.57143, F1 Score: 0.69565
+New best model saved at epoch 1 with f1 0.69565
+First epoch took 9.92 seconds.
+Estimated total program duration: 1.38 hours
+Estimated program end time (KST): 2024/10/07 14:59:53
+Epoch 2/100
+Training Sensitivity: 0.83588, Specificity: 0.80905, F1 Score: 0.82225
+Validation Sensitivity: 0.62963, Specificity: 0.92857, F1 Score: 0.75042
+New best model saved at epoch 2 with f1 0.75042
+Epoch 3/100
+Training Sensitivity: 0.90909, Specificity: 0.88186, F1 Score: 0.89527
+Validation Sensitivity: 0.77778, Specificity: 0.89286, F1 Score: 0.83135
+New best model saved at epoch 3 with f1 0.83135
+Epoch 4/100
+Training Sensitivity: 0.94568, Specificity: 0.89266, F1 Score: 0.91840
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+New best model saved at epoch 4 with f1 0.90909
+Epoch 5/100
+Training Sensitivity: 0.91001, Specificity: 0.92809, F1 Score: 0.91896
+Validation Sensitivity: 0.88889, Specificity: 0.82143, F1 Score: 0.85383
+Epoch 6/100
+Training Sensitivity: 0.91571, Specificity: 0.94353, F1 Score: 0.92941
+Validation Sensitivity: 0.81481, Specificity: 0.85714, F1 Score: 0.83544
+Epoch 7/100
+Training Sensitivity: 0.95132, Specificity: 0.90665, F1 Score: 0.92845
+Validation Sensitivity: 0.77778, Specificity: 0.96429, F1 Score: 0.86105
+Epoch 8/100
+Training Sensitivity: 0.91549, Specificity: 0.90223, F1 Score: 0.90882
+Validation Sensitivity: 0.92593, Specificity: 0.60714, F1 Score: 0.73339
+Epoch 9/100
+Training Sensitivity: 0.93343, Specificity: 0.94184, F1 Score: 0.93762
+Validation Sensitivity: 0.85185, Specificity: 0.78571, F1 Score: 0.81745
+Epoch 10/100
+Training Sensitivity: 0.90346, Specificity: 0.97678, F1 Score: 0.93869
+Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Epoch 11/100
+Training Sensitivity: 0.91865, Specificity: 0.94951, F1 Score: 0.93383
+Validation Sensitivity: 1.00000, Specificity: 0.75000, F1 Score: 0.85714
+Epoch 12/100
+Training Sensitivity: 0.94078, Specificity: 0.91508, F1 Score: 0.92775
+Validation Sensitivity: 0.44444, Specificity: 0.96429, F1 Score: 0.60845
+Epoch 13/100
+Training Sensitivity: 0.94669, Specificity: 0.93443, F1 Score: 0.94052
+Validation Sensitivity: 0.81481, Specificity: 0.71429, F1 Score: 0.76125
+Epoch 14/100
+Training Sensitivity: 0.91667, Specificity: 0.96027, F1 Score: 0.93796
+Validation Sensitivity: 1.00000, Specificity: 0.82143, F1 Score: 0.90196
+Epoch 15/100
+Training Sensitivity: 0.91209, Specificity: 0.97851, F1 Score: 0.94413
+Validation Sensitivity: 0.81481, Specificity: 0.85714, F1 Score: 0.83544
+Epoch 16/100
+Training Sensitivity: 0.95461, Specificity: 0.91678, F1 Score: 0.93531
+Validation Sensitivity: 0.59259, Specificity: 0.92857, F1 Score: 0.72348
+Epoch 17/100
+Training Sensitivity: 0.92929, Specificity: 0.94952, F1 Score: 0.93930
+Validation Sensitivity: 0.85185, Specificity: 0.82143, F1 Score: 0.83636
+Epoch 18/100
+Training Sensitivity: 0.91988, Specificity: 0.94681, F1 Score: 0.93315
+Validation Sensitivity: 0.59259, Specificity: 0.96429, F1 Score: 0.73407
+Epoch 19/100
+Training Sensitivity: 0.89898, Specificity: 0.96097, F1 Score: 0.92894
+Validation Sensitivity: 0.81481, Specificity: 0.96429, F1 Score: 0.88327
+Epoch 20/100
+Training Sensitivity: 0.93566, Specificity: 0.93249, F1 Score: 0.93407
+Validation Sensitivity: 0.74074, Specificity: 0.82143, F1 Score: 0.77900
+Epoch 21/100
+Training Sensitivity: 0.94966, Specificity: 0.93343, F1 Score: 0.94147
+Validation Sensitivity: 0.96296, Specificity: 0.78571, F1 Score: 0.86536
+Epoch 22/100
+Training Sensitivity: 0.97286, Specificity: 0.91736, F1 Score: 0.94429
+Validation Sensitivity: 1.00000, Specificity: 0.78571, F1 Score: 0.88000
+Epoch 23/100
+Training Sensitivity: 0.93581, Specificity: 0.94345, F1 Score: 0.93961
+Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Epoch 24/100
+Training Sensitivity: 0.92433, Specificity: 0.95612, F1 Score: 0.93996
+Validation Sensitivity: 0.96296, Specificity: 0.82143, F1 Score: 0.88658
+Epoch 25/100
+Training Sensitivity: 0.93922, Specificity: 0.95238, F1 Score: 0.94575
+Validation Sensitivity: 0.88889, Specificity: 0.92857, F1 Score: 0.90830
+Epoch 26/100
+Training Sensitivity: 0.90141, Specificity: 0.97346, F1 Score: 0.93605
+Validation Sensitivity: 0.70370, Specificity: 0.85714, F1 Score: 0.77288
+Epoch 27/100
+Training Sensitivity: 0.91207, Specificity: 0.97748, F1 Score: 0.94365
+Validation Sensitivity: 0.96296, Specificity: 0.75000, F1 Score: 0.84324
+Epoch 28/100
+Training Sensitivity: 0.90987, Specificity: 0.95873, F1 Score: 0.93366
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 29/100
+Training Sensitivity: 0.96392, Specificity: 0.91814, F1 Score: 0.94048
+Validation Sensitivity: 0.92593, Specificity: 0.71429, F1 Score: 0.80645
+Epoch 30/100
+Training Sensitivity: 0.96652, Specificity: 0.91475, F1 Score: 0.93992
+Validation Sensitivity: 0.92593, Specificity: 0.75000, F1 Score: 0.82873
+Epoch 31/100
+Training Sensitivity: 0.91942, Specificity: 0.94918, F1 Score: 0.93406
+Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Epoch 32/100
+Training Sensitivity: 0.97791, Specificity: 0.91432, F1 Score: 0.94505
+Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Epoch 33/100
+Training Sensitivity: 0.94056, Specificity: 0.94821, F1 Score: 0.94437
+Validation Sensitivity: 0.55556, Specificity: 0.96429, F1 Score: 0.70496
+Epoch 34/100
+Training Sensitivity: 0.96334, Specificity: 0.91667, F1 Score: 0.93943
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+New best model saved at epoch 34 with f1 0.92659
+Epoch 35/100
+Training Sensitivity: 0.97429, Specificity: 0.91598, F1 Score: 0.94423
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Epoch 36/100
+Training Sensitivity: 0.97968, Specificity: 0.91452, F1 Score: 0.94598
+Validation Sensitivity: 0.77778, Specificity: 0.92857, F1 Score: 0.84651
+Epoch 37/100
+Training Sensitivity: 0.95205, Specificity: 0.94253, F1 Score: 0.94727
+Validation Sensitivity: 0.92593, Specificity: 0.85714, F1 Score: 0.89021
+Epoch 38/100
+Training Sensitivity: 0.99441, Specificity: 0.91549, F1 Score: 0.95332
+Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Epoch 39/100
+Training Sensitivity: 0.99282, Specificity: 0.91096, F1 Score: 0.95013
+Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Epoch 40/100
+Training Sensitivity: 0.91818, Specificity: 0.96606, F1 Score: 0.94151
+Validation Sensitivity: 0.88889, Specificity: 0.85714, F1 Score: 0.87273
+Epoch 41/100
+Training Sensitivity: 0.95389, Specificity: 0.93989, F1 Score: 0.94684
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 42/100
+Training Sensitivity: 0.95027, Specificity: 0.92962, F1 Score: 0.93983
+Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Epoch 43/100
+Training Sensitivity: 0.93588, Specificity: 0.96537, F1 Score: 0.95040
+Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Epoch 44/100
+Training Sensitivity: 0.97015, Specificity: 0.91292, F1 Score: 0.94066
+Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Epoch 45/100
+Training Sensitivity: 0.95621, Specificity: 0.93454, F1 Score: 0.94525
+Validation Sensitivity: 0.92593, Specificity: 0.85714, F1 Score: 0.89021
+Epoch 46/100
+Training Sensitivity: 0.93714, Specificity: 0.95868, F1 Score: 0.94779
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 47/100
+Training Sensitivity: 0.96765, Specificity: 0.93164, F1 Score: 0.94930
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 48/100
+Training Sensitivity: 0.94868, Specificity: 0.93191, F1 Score: 0.94022
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 49/100
+Training Sensitivity: 0.90346, Specificity: 0.98224, F1 Score: 0.94120
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 50/100
+Training Sensitivity: 0.96413, Specificity: 0.90398, F1 Score: 0.93309
+Validation Sensitivity: 1.00000, Specificity: 0.89286, F1 Score: 0.94340
+New best model saved at epoch 50 with f1 0.94340
+Epoch 51/100
+Training Sensitivity: 0.93277, Specificity: 0.95506, F1 Score: 0.94378
+Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Epoch 52/100
+Training Sensitivity: 0.93939, Specificity: 0.96453, F1 Score: 0.95180
+Validation Sensitivity: 0.88889, Specificity: 0.85714, F1 Score: 0.87273
+Epoch 53/100
+Training Sensitivity: 0.93363, Specificity: 0.99214, F1 Score: 0.96200
+Validation Sensitivity: 0.88889, Specificity: 0.82143, F1 Score: 0.85383
+Epoch 54/100
+Training Sensitivity: 0.90141, Specificity: 0.99581, F1 Score: 0.94626
+Validation Sensitivity: 0.70370, Specificity: 0.89286, F1 Score: 0.78708
+Epoch 55/100
+Training Sensitivity: 0.91150, Specificity: 0.97995, F1 Score: 0.94449
+Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Epoch 56/100
+Training Sensitivity: 0.89744, Specificity: 0.98689, F1 Score: 0.94004
+Validation Sensitivity: 0.88889, Specificity: 0.82143, F1 Score: 0.85383
+Epoch 57/100
+Training Sensitivity: 0.91255, Specificity: 0.97350, F1 Score: 0.94204
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 58/100
+Training Sensitivity: 0.93997, Specificity: 0.96392, F1 Score: 0.95180
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 59/100
+Training Sensitivity: 0.93006, Specificity: 0.96684, F1 Score: 0.94809
+Validation Sensitivity: 0.92593, Specificity: 0.85714, F1 Score: 0.89021
+Epoch 60/100
+Training Sensitivity: 0.94298, Specificity: 0.96361, F1 Score: 0.95319
+Validation Sensitivity: 1.00000, Specificity: 0.89286, F1 Score: 0.94340
+Epoch 61/100
+Training Sensitivity: 0.91549, Specificity: 0.97486, F1 Score: 0.94424
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 62/100
+Training Sensitivity: 0.95150, Specificity: 0.94621, F1 Score: 0.94885
+Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Epoch 63/100
+Training Sensitivity: 0.92888, Specificity: 0.96744, F1 Score: 0.94777
+Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Epoch 64/100
+Training Sensitivity: 0.94501, Specificity: 0.97007, F1 Score: 0.95737
+Validation Sensitivity: 0.85185, Specificity: 0.89286, F1 Score: 0.87187
+Epoch 65/100
+Training Sensitivity: 0.92445, Specificity: 0.96275, F1 Score: 0.94321
+Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Epoch 66/100
+Training Sensitivity: 0.91926, Specificity: 0.98472, F1 Score: 0.95087
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 67/100
+Training Sensitivity: 0.93304, Specificity: 0.97613, F1 Score: 0.95410
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Epoch 68/100
+Training Sensitivity: 0.90714, Specificity: 0.98760, F1 Score: 0.94566
+Validation Sensitivity: 0.85185, Specificity: 0.89286, F1 Score: 0.87187
+Epoch 69/100
+Training Sensitivity: 0.91978, Specificity: 0.99716, F1 Score: 0.95691
+Validation Sensitivity: 0.77778, Specificity: 0.89286, F1 Score: 0.83135
+Epoch 70/100
+Training Sensitivity: 0.88439, Specificity: 0.98501, F1 Score: 0.93200
+Validation Sensitivity: 0.74074, Specificity: 0.89286, F1 Score: 0.80972
+Epoch 71/100
+Training Sensitivity: 0.91563, Specificity: 0.98578, F1 Score: 0.94941
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 72/100
+Training Sensitivity: 0.89443, Specificity: 0.99462, F1 Score: 0.94187
+Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Epoch 73/100
+Training Sensitivity: 0.91690, Specificity: 0.99148, F1 Score: 0.95273
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Epoch 74/100
+Training Sensitivity: 0.92230, Specificity: 0.97127, F1 Score: 0.94615
+Validation Sensitivity: 0.74074, Specificity: 0.96429, F1 Score: 0.83786
+Epoch 75/100
+Training Sensitivity: 0.91703, Specificity: 0.97294, F1 Score: 0.94416
+Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Epoch 76/100
+Training Sensitivity: 0.91474, Specificity: 0.98638, F1 Score: 0.94921
+Validation Sensitivity: 0.74074, Specificity: 0.96429, F1 Score: 0.83786
+Epoch 77/100
+Training Sensitivity: 0.90730, Specificity: 1.00000, F1 Score: 0.95140
+Validation Sensitivity: 0.77778, Specificity: 0.85714, F1 Score: 0.81553
+Epoch 78/100
+Training Sensitivity: 0.91499, Specificity: 0.98497, F1 Score: 0.94869
+Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Epoch 79/100
+Training Sensitivity: 0.90045, Specificity: 0.99734, F1 Score: 0.94642
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 80/100
+Training Sensitivity: 0.91520, Specificity: 0.99730, F1 Score: 0.95449
+Validation Sensitivity: 0.74074, Specificity: 0.96429, F1 Score: 0.83786
+Epoch 81/100
+Training Sensitivity: 0.90469, Specificity: 0.99585, F1 Score: 0.94809
+Validation Sensitivity: 0.74074, Specificity: 0.82143, F1 Score: 0.77900
+Epoch 82/100
+Training Sensitivity: 0.91525, Specificity: 0.99861, F1 Score: 0.95512
+Validation Sensitivity: 0.96296, Specificity: 0.82143, F1 Score: 0.88658
+Epoch 83/100
+Training Sensitivity: 0.89804, Specificity: 0.99296, F1 Score: 0.94312
+Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Epoch 84/100
+Training Sensitivity: 0.89940, Specificity: 0.99474, F1 Score: 0.94467
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 85/100
+Training Sensitivity: 0.87770, Specificity: 0.99590, F1 Score: 0.93307
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 86/100
+Training Sensitivity: 0.89118, Specificity: 0.99286, F1 Score: 0.93928
+Validation Sensitivity: 0.74074, Specificity: 0.89286, F1 Score: 0.80972
+Epoch 87/100
+Training Sensitivity: 0.91896, Specificity: 0.98095, F1 Score: 0.94894
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 88/100
+Training Sensitivity: 0.92500, Specificity: 0.95751, F1 Score: 0.94097
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 89/100
+Training Sensitivity: 0.95028, Specificity: 0.94587, F1 Score: 0.94807
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Epoch 90/100
+Training Sensitivity: 0.92970, Specificity: 0.92730, F1 Score: 0.92850
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Epoch 91/100
+Training Sensitivity: 0.94767, Specificity: 0.96070, F1 Score: 0.95415
+Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Epoch 92/100
+Training Sensitivity: 0.93075, Specificity: 0.96591, F1 Score: 0.94800
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 93/100
+Training Sensitivity: 0.92608, Specificity: 0.96188, F1 Score: 0.94364
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 94/100
+Training Sensitivity: 0.91154, Specificity: 0.98419, F1 Score: 0.94648
+Validation Sensitivity: 0.74074, Specificity: 0.89286, F1 Score: 0.80972
+Epoch 95/100
+Training Sensitivity: 0.92287, Specificity: 0.99286, F1 Score: 0.95658
+Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Epoch 96/100
+Training Sensitivity: 0.91311, Specificity: 0.99171, F1 Score: 0.95079
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 97/100
+Training Sensitivity: 0.91433, Specificity: 0.97899, F1 Score: 0.94555
+Validation Sensitivity: 1.00000, Specificity: 0.89286, F1 Score: 0.94340
+Epoch 98/100
+Training Sensitivity: 0.89383, Specificity: 0.98080, F1 Score: 0.93530
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 99/100
+Training Sensitivity: 0.90462, Specificity: 0.97003, F1 Score: 0.93618
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Epoch 100/100
+Training Sensitivity: 0.92232, Specificity: 0.97632, F1 Score: 0.94855
+Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Best model for fold 5 saved from epoch 50 with f1 0.94340
+Final training loss: 0.08055
+Final test loss: 0.36917
+All fold val losses: [inf, inf]
+Average val loss: inf

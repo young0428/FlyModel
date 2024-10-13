@@ -491,9 +491,9 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append([1] if wba_tensor[video_num, start_frame] >= 0 else [0])
+        #direction_data.append([1] if wba_tensor[video_num, start_frame] >= 0 else [0])
         #direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
-        #direction_data.append([1] if wba_tensor[video_num, start_frame] >= wba_tensor[video_num, start_frame-frame_per_window] else [0])
+        direction_data.append([1] if wba_tensor[video_num, start_frame] >= wba_tensor[video_num, start_frame-frame_per_window] else [0])
         
     return np.array(video_data), np.array(direction_data)
 
