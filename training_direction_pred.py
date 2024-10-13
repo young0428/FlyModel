@@ -119,7 +119,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # Initialize minimum loss to a large value
     min_val_loss = float('inf')
-    best_f1_score = 0
+    min_val_loss = 0
     best_epoch = 0
 
     # Initialize lists to store metrics
@@ -214,8 +214,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             torch.cuda.empty_cache()
 
         # Save model if this epoch has the lowest test loss
-        if avg_val_loss > best_f1_score:
-            best_f1_score = avg_val_loss
+        if avg_val_loss < min_val_loss:
+            min_val_loss = avg_val_loss
             best_epoch = epoch + 1
             best_model_path = f"{fold_path}/best_model.ckpt"
             trainer.save(best_model_path, epoch)
@@ -252,7 +252,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             plt.savefig(f"{intermediate_path}/{epoch + 1}.png")
             plt.close()
 
-    print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with f1 {best_f1_score:.5f}")
+    print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with f1 {min_val_loss:.5f}")
     all_fold_losses.append(min_val_loss)
 
     print(f"Final training loss: {train_losses[-1]:.5f}")
