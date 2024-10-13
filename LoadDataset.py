@@ -493,7 +493,8 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
         #direction_data.append([1] if wba_tensor[video_num, start_frame] >= 0 else [0])
         #direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
-        direction_data.append([1] if wba_tensor[video_num, start_frame] >= wba_tensor[video_num, start_frame-frame_per_window] else [0])
+        #direction_data.append(wba_tensor[video_num, start_frame] - wba_tensor[video_num, start_frame-frame_per_window])
+        direction_data.append([wba_tensor[video_num, start_frame]])
         
     return np.array(video_data), np.array(direction_data)
 
@@ -538,7 +539,7 @@ if __name__ == "__main__":
     plt.plot(wba_data_interpolated[2,:], color='blue')
     
     #plt.plot(mean_wba[2,:3000],color='blue')
-    plt.show()
+    plt.savefig("test.png")
     plt.close()
     
 #%%
