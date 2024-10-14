@@ -28,7 +28,7 @@ frame_per_window = 16
 frame_per_sliding = 16
 input_ch = 1
 
-model_string = "only_forest_predict_wba_random_val"
+model_string = "only_forest_predict_wba_diff_random_val"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -61,6 +61,7 @@ layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
 
 video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
 video_data, wba_data, aug_factor = aug_videos(video_data, wba_data)
+
 print(f"augmented shape : {video_data.shape}")
 print(f"augmented shape : {wba_data.shape}")
 wba_data = wba_data
@@ -209,6 +210,8 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         
         print(f"Training loss: {avg_train_loss:.5f}")
         print(f"Validation loss: {avg_val_loss:.5f}")
+        
+        update_metrics_plot(fold_path, epoch, train_losses, val_losses)
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -236,11 +239,12 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             plt.figure(figsize=(10, 6))
             
             # wba_data를 window size만큼 생략하고 플로팅
-            plt.plot(range(frame_per_window, len(wba_data[2*aug_factor])), wba_data[ 2 * aug_factor, frame_per_window:], label='WBA Data', color='blue')
+            diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
+            plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
             
             # Validation prediction 결과를 다른 색으로 점으로 플로팅
             val_frames, val_preds = zip(*val_predictions)
-            plt.scatter(val_frames, val_preds, color='red', s=3, label='Validation Predictions')
+            plt.scatter(np.array(val_frames)//frame_per_window, val_preds, color='red', s=6, label='Validation Predictions')
             
             plt.xlabel('Frame')
             plt.ylabel('WBA Value')

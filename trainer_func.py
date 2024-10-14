@@ -136,10 +136,9 @@ def update_confusion_matrix_file(fold_path, epoch, confusion_matrices, mode='tra
         grp = f.create_group(f"epoch_{epoch+1}")
         grp.create_dataset('confusion_matrix', data=confusion_matrices)
     
-def update_metrics_plot(fold_path, epoch, train_losses, train_accuracies, test_losses, test_accuracies):
+def update_metrics_plot(fold_path, epoch, train_losses, test_losses):
     
     plt.figure(figsize=(12, 8))
-    plt.subplot(2, 1, 1)
     plt.plot(train_losses, label='Training Loss')
     plt.plot(test_losses, label='Test Loss')
     plt.title('Training and Test Loss')
@@ -147,13 +146,6 @@ def update_metrics_plot(fold_path, epoch, train_losses, train_accuracies, test_l
     plt.ylabel('Loss')
     plt.legend()
 
-    plt.subplot(2, 1, 2)
-    plt.plot(train_accuracies, label='Training F1 score')
-    plt.plot(test_accuracies, label='Test F1 score')
-    plt.title('Training and Test F1 score')
-    plt.xlabel('Epoch')
-    plt.ylabel('F1 score')
-    plt.legend()
 
     plt.tight_layout()
     plt.savefig(f'{fold_path}/metrics_plot.png')
