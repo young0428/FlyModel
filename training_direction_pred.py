@@ -24,11 +24,11 @@ c = 1
 fps = 30
 downsampling_factor = 5.625
 
-frame_per_window = 16
-frame_per_sliding = 16
+frame_per_window = 8
+frame_per_sliding = 8
 input_ch = 1
 
-model_string = "only_forest_predict_wba_diff_random_val"
+model_string = "only_forest_predict_wba_random_val_optic_3layers_fixed"
 model_string += f"_{frame_per_window}frames"
 
 folder_path = "./naturalistic"
@@ -49,7 +49,7 @@ else:
 
 result_save_path = f"./model/{model_string}/result_data.h5"
 
-pretrained_model_path = "./pretrained_model/64x128_opticflow_64t51216frames.ckpt"
+pretrained_model_path = "./pretrained_model/64_to_256_3layers.ckpt"
 
 # hyperparameter 
 batch_size = 20
@@ -57,7 +57,7 @@ lr = 1e-4
 epochs = 100
 fold_factor = 5
 
-layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
+layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
 
 video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
 video_data, wba_data, aug_factor = aug_videos(video_data, wba_data)
@@ -72,29 +72,28 @@ recent_f1_scores = deque(maxlen=100)
 val_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
-kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
+#kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
+fold_set_list = []
+for i in range(fold_factor):
+    train_idx, val_idx = split_train_val_index(batch_tuples, aug_factor, piece_size=1+(4*i), val_ratio=0.2)
+    fold_set_list.append((train_idx, val_idx))
+    
 
 all_fold_losses = []
 
-# Confusion Matrix 저장 경로
-conf_matrix_train_path = f"{model_name}/train_confusion_matrix.pkl"
-conf_matrix_val_path = f"{model_name}/val_confusion_matrix.pkl"
-
-# 파일 초기화 (이전 내용 덮어쓰기)
-with open(conf_matrix_train_path, "wb") as f:
-    pickle.dump([], f)
-with open(conf_matrix_val_path, "wb") as f:
-    pickle.dump([], f)
 
 KST = pytz.timezone('Asia/Seoul')
-for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
+for fold, (train_index, val_index) in enumerate(fold_set_list):
     print(f"Fold {fold+1}")
+    print(f"piece size   : {1+(4*fold)}")
+    print(f"train window : {len(train_index)}")
+    print(f"val window   : {len(val_index)}")
     fold_path = f"{model_name}/fold_{fold+1}"
     
     
 
     # create model
-    flownet_model = flownet3d(layer_configs, num_classes=1)
+    flownet_model = flownet3d(layer_configs, num_classes=2)
     flownet_model = load_model(flownet_model, pretrained_model_path)
     model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
                                            input_size=(frame_per_window, 
@@ -120,7 +119,6 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # Initialize minimum loss to a large value
     min_val_loss = float('inf')
-    min_val_loss = 0
     best_epoch = 0
 
     # Initialize lists to store metrics
@@ -140,7 +138,6 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
         epoch_start_time = time.time()  # 각 epoch의 시작 시간을 기록합니다.
 
         training_tuples = batch_tuples[train_index]
-        training_tuples = training_tuples[4:-4]
         
         val_tuples = batch_tuples[val_index]
         val_tuples = [tup for tup in val_tuples if tup[0] == 2 * aug_factor]
@@ -239,12 +236,13 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             plt.figure(figsize=(10, 6))
             
             # wba_data를 window size만큼 생략하고 플로팅
-            diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
-            plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
+            #diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
+            #plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
+            plt.plot(np.array(range(0,len(wba_data[2*aug_factor])))+1, wba_data[2*aug_factor], label='WBA Data', color='blue')
             
             # Validation prediction 결과를 다른 색으로 점으로 플로팅
             val_frames, val_preds = zip(*val_predictions)
-            plt.scatter(np.array(val_frames)//frame_per_window, val_preds, color='red', s=6, label='Validation Predictions')
+            plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
             
             plt.xlabel('Frame')
             plt.ylabel('WBA Value')

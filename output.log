@@ -5,640 +5,1672 @@ Video is allocated on memory!
 Shape : (3, 3596, 64, 128, 5)
 augmented shape : (24, 3596, 64, 128, 5)
 augmented shape : (24, 3600)
-(1792, 2)
+Fold 1
+Model loaded successfully from ./pretrained_model/64_to_256_3layers.ckpt
+device : cuda
+device : cuda
+Model not found at ./model/only_forest_predict_wba_random_val_optic_3layers_fixed_8frames/fold_1/fly_model.ckpt
+Epoch 1/100
+Training loss: 99.04337
+Validation loss: 66.24450
+New best model saved at epoch 1 with loss 66.24450
+First epoch took 3.76 seconds.
+Estimated total program duration: 0.52 hours
+Estimated program end time (KST): 2024/10/17 03:58:01
+Epoch 2/100
+Training loss: 55.38453
+Validation loss: 27.92139
+New best model saved at epoch 2 with loss 27.92139
+Epoch 3/100
+Training loss: 45.22360
+Validation loss: 28.80600
+Epoch 4/100
+Training loss: 34.97566
+Validation loss: 23.03163
+New best model saved at epoch 4 with loss 23.03163
+Epoch 5/100
+Training loss: 34.69312
+Validation loss: 25.01144
+Epoch 6/100
+Training loss: 30.04520
+Validation loss: 15.39068
+New best model saved at epoch 6 with loss 15.39068
+Epoch 7/100
+Training loss: 28.49850
+Validation loss: 10.74254
+New best model saved at epoch 7 with loss 10.74254
+Epoch 8/100
+Training loss: 28.52125
+Validation loss: 10.64861
+New best model saved at epoch 8 with loss 10.64861
+Epoch 9/100
+Training loss: 28.53428
+Validation loss: 10.40627
+New best model saved at epoch 9 with loss 10.40627
+Epoch 10/100
+Training loss: 27.00502
+Validation loss: 8.61318
+New best model saved at epoch 10 with loss 8.61318
+Epoch 11/100
+Training loss: 22.46456
+Validation loss: 8.64018
+Epoch 12/100
+Training loss: 23.94964
+Validation loss: 9.28942
+Epoch 13/100
+Training loss: 23.30414
+Validation loss: 6.47827
+New best model saved at epoch 13 with loss 6.47827
+Epoch 14/100
+Training loss: 25.46166
+Validation loss: 8.45790
+Epoch 15/100
+Training loss: 29.19373
+Validation loss: 9.86663
+Epoch 16/100
+Training loss: 25.04374
+Validation loss: 7.66786
+Epoch 17/100
+Training loss: 26.09833
+Validation loss: 8.68402
+Epoch 18/100
+Training loss: 23.62360
+Validation loss: 7.67460
+Epoch 19/100
+Training loss: 29.75185
+Validation loss: 6.46245
+New best model saved at epoch 19 with loss 6.46245
+Epoch 20/100
+Training loss: 25.72772
+Validation loss: 6.61249
+Epoch 21/100
+Training loss: 25.91832
+Validation loss: 7.10126
+Epoch 22/100
+Training loss: 25.28217
+Validation loss: 5.01600
+New best model saved at epoch 22 with loss 5.01600
+Epoch 23/100
+Training loss: 24.33208
+Validation loss: 4.86659
+New best model saved at epoch 23 with loss 4.86659
+Epoch 24/100
+Training loss: 24.65007
+Validation loss: 4.74023
+New best model saved at epoch 24 with loss 4.74023
+Epoch 25/100
+Training loss: 21.71381
+Validation loss: 4.44531
+New best model saved at epoch 25 with loss 4.44531
+Epoch 26/100
+Training loss: 20.31270
+Validation loss: 5.33678
+Epoch 27/100
+Training loss: 21.09301
+Validation loss: 5.49862
+Epoch 28/100
+Training loss: 22.02877
+Validation loss: 5.16102
+Epoch 29/100
+Training loss: 21.18323
+Validation loss: 5.83804
+Epoch 30/100
+Training loss: 23.30704
+Validation loss: 4.38062
+New best model saved at epoch 30 with loss 4.38062
+Epoch 31/100
+Training loss: 23.39248
+Validation loss: 4.73437
+Epoch 32/100
+Training loss: 20.68704
+Validation loss: 4.74979
+Epoch 33/100
+Training loss: 22.02905
+Validation loss: 7.80210
+Epoch 34/100
+Training loss: 24.63344
+Validation loss: 4.36328
+New best model saved at epoch 34 with loss 4.36328
+Epoch 35/100
+Training loss: 21.89464
+Validation loss: 4.49813
+Epoch 36/100
+Training loss: 19.30644
+Validation loss: 4.30688
+New best model saved at epoch 36 with loss 4.30688
+Epoch 37/100
+Training loss: 19.16028
+Validation loss: 3.28196
+New best model saved at epoch 37 with loss 3.28196
+Epoch 38/100
+Training loss: 19.56608
+Validation loss: 3.11998
+New best model saved at epoch 38 with loss 3.11998
+Epoch 39/100
+Training loss: 21.29349
+Validation loss: 3.37082
+Epoch 40/100
+Training loss: 21.12302
+Validation loss: 3.13519
+Epoch 41/100
+Training loss: 21.29219
+Validation loss: 3.03940
+New best model saved at epoch 41 with loss 3.03940
+Epoch 42/100
+Training loss: 22.19480
+Validation loss: 3.58202
+Epoch 43/100
+Training loss: 20.63730
+Validation loss: 3.44654
+Epoch 44/100
+Training loss: 23.38317
+Validation loss: 2.78249
+New best model saved at epoch 44 with loss 2.78249
+Epoch 45/100
+Training loss: 24.63307
+Validation loss: 2.80667
+Epoch 46/100
+Training loss: 18.40804
+Validation loss: 4.12780
+Epoch 47/100
+Training loss: 20.96311
+Validation loss: 3.95728
+Epoch 48/100
+Training loss: 20.90147
+Validation loss: 4.20668
+Epoch 49/100
+Training loss: 19.83861
+Validation loss: 5.01829
+Epoch 50/100
+Training loss: 20.15316
+Validation loss: 3.12405
+Epoch 51/100
+Training loss: 19.70818
+Validation loss: 3.39326
+Epoch 52/100
+Training loss: 19.25226
+Validation loss: 3.28991
+Epoch 53/100
+Training loss: 23.13705
+Validation loss: 3.20584
+Epoch 54/100
+Training loss: 21.29275
+Validation loss: 3.55184
+Epoch 55/100
+Training loss: 18.03280
+Validation loss: 4.36431
+Epoch 56/100
+Training loss: 19.17072
+Validation loss: 3.33104
+Epoch 57/100
+Training loss: 20.92160
+Validation loss: 2.73026
+New best model saved at epoch 57 with loss 2.73026
+Epoch 58/100
+Training loss: 19.64447
+Validation loss: 3.66802
+Epoch 59/100
+Training loss: 22.54647
+Validation loss: 2.92344
+Epoch 60/100
+Training loss: 20.28454
+Validation loss: 2.98107
+Epoch 61/100
+Training loss: 17.97945
+Validation loss: 3.74633
+Epoch 62/100
+Training loss: 21.29860
+Validation loss: 3.58344
+Epoch 63/100
+Training loss: 20.75220
+Validation loss: 3.39717
+Epoch 64/100
+Training loss: 19.76415
+Validation loss: 4.07515
+Epoch 65/100
+Training loss: 18.84335
+Validation loss: 3.06951
+Epoch 66/100
+Training loss: 18.52390
+Validation loss: 4.25885
+Epoch 67/100
+Training loss: 19.96170
+Validation loss: 3.15107
+Epoch 68/100
+Training loss: 21.04676
+Validation loss: 3.00984
+Epoch 69/100
+Training loss: 20.63180
+Validation loss: 3.14732
+Epoch 70/100
+Training loss: 17.08648
+Validation loss: 3.19689
+Epoch 71/100
+Training loss: 20.57985
+Validation loss: 3.03991
+Epoch 72/100
+Training loss: 19.65823
+Validation loss: 2.75830
+Epoch 73/100
+Training loss: 18.76140
+Validation loss: 3.44812
+Epoch 74/100
+Training loss: 20.54962
+Validation loss: 2.52969
+New best model saved at epoch 74 with loss 2.52969
+Epoch 75/100
+Training loss: 19.89727
+Validation loss: 3.09514
+Epoch 76/100
+Training loss: 21.12251
+Validation loss: 2.71245
+Epoch 77/100
+Training loss: 25.98931
+Validation loss: 2.69299
+Epoch 78/100
+Training loss: 19.03184
+Validation loss: 2.91054
+Epoch 79/100
+Training loss: 19.74589
+Validation loss: 2.70395
+Epoch 80/100
+Training loss: 16.70286
+Validation loss: 2.87847
+Epoch 81/100
+Training loss: 23.04966
+Validation loss: 2.30346
+New best model saved at epoch 81 with loss 2.30346
+Epoch 82/100
+Training loss: 23.76172
+Validation loss: 2.82030
+Epoch 83/100
+Training loss: 21.37809
+Validation loss: 2.78952
+Epoch 84/100
+Training loss: 23.16508
+Validation loss: 2.37531
+Epoch 85/100
+Training loss: 20.43650
+Validation loss: 2.88868
+Epoch 86/100
+Training loss: 22.13064
+Validation loss: 2.79952
+Epoch 87/100
+Training loss: 24.54713
+Validation loss: 2.64964
+Epoch 88/100
+Training loss: 20.87674
+Validation loss: 2.55508
+Epoch 89/100
+Training loss: 20.89973
+Validation loss: 2.74186
+Epoch 90/100
+Training loss: 18.34869
+Validation loss: 2.46629
+Epoch 91/100
+Training loss: 19.18845
+Validation loss: 2.70609
+Epoch 92/100
+Training loss: 21.47565
+Validation loss: 2.52894
+Epoch 93/100
+Training loss: 19.54989
+Validation loss: 2.78813
+Epoch 94/100
+Training loss: 21.73299
+Validation loss: 2.53764
+Epoch 95/100
+Training loss: 20.58449
+Validation loss: 2.52679
+Epoch 96/100
+Training loss: 18.34670
+Validation loss: 2.26890
+New best model saved at epoch 96 with loss 2.26890
+Epoch 97/100
+Training loss: 21.86591
+Validation loss: 2.48843
+Epoch 98/100
+Training loss: 21.18382
+Validation loss: 2.43460
+Epoch 99/100
+Training loss: 21.85764
+Validation loss: 2.78493
+Epoch 100/100
+Training loss: 18.31070
+Validation loss: 2.40586
+Best model for fold 1 saved from epoch 96 with f1 2.26890
+Final training loss: 18.31070
+Final test loss: 2.40586
+Fold 2
+Model loaded successfully from ./pretrained_model/64_to_256_3layers.ckpt
+device : cuda
+device : cuda
+Model not found at ./model/only_forest_predict_wba_random_val_optic_3layers_fixed_8frames/fold_2/fly_model.ckpt
+Epoch 1/100
+Training loss: 98.94887
+Validation loss: 36.73618
+New best model saved at epoch 1 with loss 36.73618
+First epoch took 3.54 seconds.
+Estimated total program duration: 0.49 hours
+Estimated program end time (KST): 2024/10/17 04:01:44
+Epoch 2/100
+Training loss: 54.56131
+Validation loss: 27.78141
+New best model saved at epoch 2 with loss 27.78141
+Epoch 3/100
+Training loss: 40.91872
+Validation loss: 14.34352
+New best model saved at epoch 3 with loss 14.34352
+Epoch 4/100
+Training loss: 38.66037
+Validation loss: 11.39536
+New best model saved at epoch 4 with loss 11.39536
+Epoch 5/100
+Training loss: 30.63496
+Validation loss: 13.87275
+Epoch 6/100
+Training loss: 28.88617
+Validation loss: 8.68140
+New best model saved at epoch 6 with loss 8.68140
+Epoch 7/100
+Training loss: 32.24866
+Validation loss: 8.76105
+Epoch 8/100
+Training loss: 28.97578
+Validation loss: 7.31281
+New best model saved at epoch 8 with loss 7.31281
+Epoch 9/100
+Training loss: 30.91839
+Validation loss: 10.08926
+Epoch 10/100
+Training loss: 26.46363
+Validation loss: 6.75362
+New best model saved at epoch 10 with loss 6.75362
+Epoch 11/100
+Training loss: 27.86759
+Validation loss: 5.66842
+New best model saved at epoch 11 with loss 5.66842
+Epoch 12/100
+Training loss: 24.28172
+Validation loss: 11.08704
+Epoch 13/100
+Training loss: 28.85484
+Validation loss: 6.16370
+Epoch 14/100
+Training loss: 29.03666
+Validation loss: 9.12973
+Epoch 15/100
+Training loss: 27.77726
+Validation loss: 5.66497
+New best model saved at epoch 15 with loss 5.66497
+Epoch 16/100
+Training loss: 28.56067
+Validation loss: 6.01957
+Epoch 17/100
+Training loss: 24.56403
+Validation loss: 4.92477
+New best model saved at epoch 17 with loss 4.92477
+Epoch 18/100
+Training loss: 26.33467
+Validation loss: 3.83892
+New best model saved at epoch 18 with loss 3.83892
+Epoch 19/100
+Training loss: 24.38600
+Validation loss: 4.57016
+Epoch 20/100
+Training loss: 22.59949
+Validation loss: 4.15727
+Epoch 21/100
+Training loss: 23.43427
+Validation loss: 5.16416
+Epoch 22/100
+Training loss: 27.98363
+Validation loss: 4.48530
+Epoch 23/100
+Training loss: 26.42448
+Validation loss: 4.20852
+Epoch 24/100
+Training loss: 25.16334
+Validation loss: 2.76946
+New best model saved at epoch 24 with loss 2.76946
+Epoch 25/100
+Training loss: 25.66636
+Validation loss: 3.28972
+Epoch 26/100
+Training loss: 23.48804
+Validation loss: 5.36239
+Epoch 27/100
+Training loss: 26.20718
+Validation loss: 4.04097
+Epoch 28/100
+Training loss: 25.81405
+Validation loss: 4.51539
+Epoch 29/100
+Training loss: 22.16659
+Validation loss: 3.37220
+Epoch 30/100
+Training loss: 21.89280
+Validation loss: 4.23847
+Epoch 31/100
+Training loss: 21.81827
+Validation loss: 5.00852
+Epoch 32/100
+Training loss: 23.17926
+Validation loss: 2.91622
+Epoch 33/100
+Training loss: 19.53315
+Validation loss: 4.46241
+Epoch 34/100
+Training loss: 20.98676
+Validation loss: 4.56490
+Epoch 35/100
+Training loss: 20.62626
+Validation loss: 3.55795
+Epoch 36/100
+Training loss: 24.54492
+Validation loss: 2.63035
+New best model saved at epoch 36 with loss 2.63035
+Epoch 37/100
+Training loss: 24.61726
+Validation loss: 2.96244
+Epoch 38/100
+Training loss: 20.93864
+Validation loss: 5.68568
+Epoch 39/100
+Training loss: 22.68383
+Validation loss: 2.75825
+Epoch 40/100
+Training loss: 21.47342
+Validation loss: 2.86241
+Epoch 41/100
+Training loss: 21.04616
+Validation loss: 3.70892
+Epoch 42/100
+Training loss: 22.89846
+Validation loss: 3.81941
+Epoch 43/100
+Training loss: 24.87937
+Validation loss: 3.59415
+Epoch 44/100
+Training loss: 23.20060
+Validation loss: 3.18012
+Epoch 45/100
+Training loss: 22.81662
+Validation loss: 2.65228
+Epoch 46/100
+Training loss: 21.24101
+Validation loss: 3.02569
+Epoch 47/100
+Training loss: 21.22716
+Validation loss: 4.34008
+Epoch 48/100
+Training loss: 20.42301
+Validation loss: 4.16333
+Epoch 49/100
+Training loss: 23.61610
+Validation loss: 3.24401
+Epoch 50/100
+Training loss: 23.62109
+Validation loss: 3.07065
+Epoch 51/100
+Training loss: 20.32679
+Validation loss: 2.42213
+New best model saved at epoch 51 with loss 2.42213
+Epoch 52/100
+Training loss: 22.68974
+Validation loss: 1.98361
+New best model saved at epoch 52 with loss 1.98361
+Epoch 53/100
+Training loss: 22.86020
+Validation loss: 2.02104
+Epoch 54/100
+Training loss: 20.62508
+Validation loss: 1.86692
+New best model saved at epoch 54 with loss 1.86692
+Epoch 55/100
+Training loss: 22.50416
+Validation loss: 2.35912
+Epoch 56/100
+Training loss: 21.85290
+Validation loss: 2.19614
+Epoch 57/100
+Training loss: 22.94311
+Validation loss: 3.43153
+Epoch 58/100
+Training loss: 20.72088
+Validation loss: 3.50483
+Epoch 59/100
+Training loss: 21.50424
+Validation loss: 2.68746
+Epoch 60/100
+Training loss: 22.46399
+Validation loss: 2.87139
+Epoch 61/100
+Training loss: 18.82884
+Validation loss: 3.11444
+Epoch 62/100
+Training loss: 21.38196
+Validation loss: 2.91374
+Epoch 63/100
+Training loss: 19.70507
+Validation loss: 2.49230
+Epoch 64/100
+Training loss: 21.06675
+Validation loss: 3.17828
+Epoch 65/100
+Training loss: 20.67204
+Validation loss: 3.20487
+Epoch 66/100
+Training loss: 23.85393
+Validation loss: 2.90604
+Epoch 67/100
+Training loss: 19.58461
+Validation loss: 3.26772
+Epoch 68/100
+Training loss: 22.24085
+Validation loss: 2.39677
+Epoch 69/100
+Training loss: 20.04719
+Validation loss: 3.65077
+Epoch 70/100
+Training loss: 21.80623
+Validation loss: 3.63518
+Epoch 71/100
+Training loss: 22.03930
+Validation loss: 3.41108
+Epoch 72/100
+Training loss: 20.84113
+Validation loss: 3.31163
+Epoch 73/100
+Training loss: 21.49541
+Validation loss: 3.08376
+Epoch 74/100
+Training loss: 22.22679
+Validation loss: 2.72060
+Epoch 75/100
+Training loss: 19.58493
+Validation loss: 2.52289
+Epoch 76/100
+Training loss: 20.26653
+Validation loss: 2.26458
+Epoch 77/100
+Training loss: 22.46472
+Validation loss: 2.94199
+Epoch 78/100
+Training loss: 20.78031
+Validation loss: 1.92163
+Epoch 79/100
+Training loss: 23.29593
+Validation loss: 2.43531
+Epoch 80/100
+Training loss: 21.57079
+Validation loss: 2.72690
+Epoch 81/100
+Training loss: 22.52384
+Validation loss: 2.97156
+Epoch 82/100
+Training loss: 19.51641
+Validation loss: 2.28631
+Epoch 83/100
+Training loss: 23.29135
+Validation loss: 2.26147
+Epoch 84/100
+Training loss: 18.81779
+Validation loss: 2.09676
+Epoch 85/100
+Training loss: 22.86289
+Validation loss: 2.15936
+Epoch 86/100
+Training loss: 20.94365
+Validation loss: 2.28198
+Epoch 87/100
+Training loss: 17.14554
+Validation loss: 2.92293
+Epoch 88/100
+Training loss: 22.46699
+Validation loss: 2.20514
+Epoch 89/100
+Training loss: 19.87441
+Validation loss: 2.45475
+Epoch 90/100
+Training loss: 19.92973
+Validation loss: 2.73122
+Epoch 91/100
+Training loss: 21.02008
+Validation loss: 3.22632
+Epoch 92/100
+Training loss: 21.02270
+Validation loss: 2.25314
+Epoch 93/100
+Training loss: 21.76461
+Validation loss: 2.76505
+Epoch 94/100
+Training loss: 19.73611
+Validation loss: 2.32628
+Epoch 95/100
+Training loss: 20.27826
+Validation loss: 2.46384
+Epoch 96/100
+Training loss: 18.69051
+Validation loss: 1.88217
+Epoch 97/100
+Training loss: 21.54809
+Validation loss: 1.78248
+New best model saved at epoch 97 with loss 1.78248
+Epoch 98/100
+Training loss: 20.52258
+Validation loss: 2.31235
+Epoch 99/100
+Training loss: 23.65587
+Validation loss: 1.73699
+New best model saved at epoch 99 with loss 1.73699
+Epoch 100/100
+Training loss: 20.27038
+Validation loss: 1.76513
+Best model for fold 2 saved from epoch 99 with f1 1.73699
+Final training loss: 20.27038
+Final test loss: 1.76513
+Fold 3
+Model loaded successfully from ./pretrained_model/64_to_256_3layers.ckpt
+device : cuda
+device : cuda
+Model not found at ./model/only_forest_predict_wba_random_val_optic_3layers_fixed_8frames/fold_3/fly_model.ckpt
+Epoch 1/100
+Training loss: 109.90881
+Validation loss: 30.71162
+New best model saved at epoch 1 with loss 30.71162
+First epoch took 3.56 seconds.
+Estimated total program duration: 0.49 hours
+Estimated program end time (KST): 2024/10/17 04:07:18
+Epoch 2/100
+Training loss: 58.35840
+Validation loss: 33.38436
+Epoch 3/100
+Training loss: 43.30058
+Validation loss: 20.23111
+New best model saved at epoch 3 with loss 20.23111
+Epoch 4/100
+Training loss: 35.07247
+Validation loss: 18.59848
+New best model saved at epoch 4 with loss 18.59848
+Epoch 5/100
+Training loss: 36.70209
+Validation loss: 16.28736
+New best model saved at epoch 5 with loss 16.28736
+Epoch 6/100
+Training loss: 28.79434
+Validation loss: 15.42277
+New best model saved at epoch 6 with loss 15.42277
+Epoch 7/100
+Training loss: 29.72721
+Validation loss: 13.97268
+New best model saved at epoch 7 with loss 13.97268
+Epoch 8/100
+Training loss: 30.11759
+Validation loss: 18.13949
+Epoch 9/100
+Training loss: 27.98948
+Validation loss: 15.15724
+Epoch 10/100
+Training loss: 28.74715
+Validation loss: 9.27604
+New best model saved at epoch 10 with loss 9.27604
+Epoch 11/100
+Training loss: 27.05096
+Validation loss: 11.71449
+Epoch 12/100
+Training loss: 25.87872
+Validation loss: 13.85142
+Epoch 13/100
+Training loss: 27.92894
+Validation loss: 11.30268
+Epoch 14/100
+Training loss: 29.30392
+Validation loss: 11.16387
+Epoch 15/100
+Training loss: 28.01344
+Validation loss: 10.58821
+Epoch 16/100
+Training loss: 27.01319
+Validation loss: 7.52191
+New best model saved at epoch 16 with loss 7.52191
+Epoch 17/100
+Training loss: 28.09046
+Validation loss: 10.59433
+Epoch 18/100
+Training loss: 24.24785
+Validation loss: 12.65050
+Epoch 19/100
+Training loss: 25.27481
+Validation loss: 7.67181
+Epoch 20/100
+Training loss: 23.87398
+Validation loss: 9.93447
+Epoch 21/100
+Training loss: 26.86350
+Validation loss: 8.74197
+Epoch 22/100
+Training loss: 27.85798
+Validation loss: 6.83532
+New best model saved at epoch 22 with loss 6.83532
+Epoch 23/100
+Training loss: 24.57259
+Validation loss: 10.11964
+Epoch 24/100
+Training loss: 25.03933
+Validation loss: 8.09052
+Epoch 25/100
+Training loss: 21.85082
+Validation loss: 6.69821
+New best model saved at epoch 25 with loss 6.69821
+Epoch 26/100
+Training loss: 25.60648
+Validation loss: 6.23394
+New best model saved at epoch 26 with loss 6.23394
+Epoch 27/100
+Training loss: 25.15099
+Validation loss: 5.92541
+New best model saved at epoch 27 with loss 5.92541
+Epoch 28/100
+Training loss: 22.14805
+Validation loss: 10.71574
+Epoch 29/100
+Training loss: 25.22519
+Validation loss: 8.15670
+Epoch 30/100
+Training loss: 24.16289
+Validation loss: 4.87812
+New best model saved at epoch 30 with loss 4.87812
+Epoch 31/100
+Training loss: 24.99780
+Validation loss: 5.09957
+Epoch 32/100
+Training loss: 22.60563
+Validation loss: 4.93890
+Epoch 33/100
+Training loss: 23.51285
+Validation loss: 9.47750
+Epoch 34/100
+Training loss: 26.62932
+Validation loss: 5.87569
+Epoch 35/100
+Training loss: 25.54877
+Validation loss: 5.22605
+Epoch 36/100
+Training loss: 25.16441
+Validation loss: 5.04425
+Epoch 37/100
+Training loss: 22.90703
+Validation loss: 4.39880
+New best model saved at epoch 37 with loss 4.39880
+Epoch 38/100
+Training loss: 20.69991
+Validation loss: 5.71107
+Epoch 39/100
+Training loss: 22.48271
+Validation loss: 4.76400
+Epoch 40/100
+Training loss: 21.23214
+Validation loss: 4.72979
+Epoch 41/100
+Training loss: 21.03600
+Validation loss: 6.86897
+Epoch 42/100
+Training loss: 22.29412
+Validation loss: 7.07717
+Epoch 43/100
+Training loss: 21.80071
+Validation loss: 4.72307
+Epoch 44/100
+Training loss: 22.07228
+Validation loss: 5.48707
+Epoch 45/100
+Training loss: 20.30892
+Validation loss: 4.78776
+Epoch 46/100
+Training loss: 18.60647
+Validation loss: 5.55870
+Epoch 47/100
+Training loss: 19.02971
+Validation loss: 3.33144
+New best model saved at epoch 47 with loss 3.33144
+Epoch 48/100
+Training loss: 19.09146
+Validation loss: 4.50351
+Epoch 49/100
+Training loss: 18.77125
+Validation loss: 4.77644
+Epoch 50/100
+Training loss: 22.77123
+Validation loss: 4.09717
+Epoch 51/100
+Training loss: 20.56500
+Validation loss: 4.34907
+Epoch 52/100
+Training loss: 20.25108
+Validation loss: 4.47832
+Epoch 53/100
+Training loss: 24.73682
+Validation loss: 4.10904
+Epoch 54/100
+Training loss: 19.92464
+Validation loss: 3.01391
+New best model saved at epoch 54 with loss 3.01391
+Epoch 55/100
+Training loss: 20.93060
+Validation loss: 3.30913
+Epoch 56/100
+Training loss: 21.93850
+Validation loss: 3.81990
+Epoch 57/100
+Training loss: 24.38304
+Validation loss: 3.72660
+Epoch 58/100
+Training loss: 19.98223
+Validation loss: 3.60623
+Epoch 59/100
+Training loss: 21.84957
+Validation loss: 3.84686
+Epoch 60/100
+Training loss: 22.00904
+Validation loss: 4.17448
+Epoch 61/100
+Training loss: 20.72078
+Validation loss: 4.24740
+Epoch 62/100
+Training loss: 20.09315
+Validation loss: 3.37679
+Epoch 63/100
+Training loss: 18.97357
+Validation loss: 3.30335
+Epoch 64/100
+Training loss: 22.46853
+Validation loss: 3.31156
+Epoch 65/100
+Training loss: 20.45571
+Validation loss: 3.18614
+Epoch 66/100
+Training loss: 21.46218
+Validation loss: 3.84922
+Epoch 67/100
+Training loss: 20.08697
+Validation loss: 3.50567
+Epoch 68/100
+Training loss: 20.80166
+Validation loss: 4.22456
+Epoch 69/100
+Training loss: 23.24615
+Validation loss: 3.84688
+Epoch 70/100
+Training loss: 23.44917
+Validation loss: 3.07390
+Epoch 71/100
+Training loss: 22.11088
+Validation loss: 2.63477
+New best model saved at epoch 71 with loss 2.63477
+Epoch 72/100
+Training loss: 23.76563
+Validation loss: 2.72667
+Epoch 73/100
+Training loss: 19.16571
+Validation loss: 3.00869
+Epoch 74/100
+Training loss: 19.37108
+Validation loss: 3.14596
+Epoch 75/100
+Training loss: 17.34808
+Validation loss: 3.43053
+Epoch 76/100
+Training loss: 20.44260
+Validation loss: 3.09093
+Epoch 77/100
+Training loss: 19.43709
+Validation loss: 3.15489
+Epoch 78/100
+Training loss: 22.67571
+Validation loss: 3.24782
+Epoch 79/100
+Training loss: 20.87814
+Validation loss: 2.99019
+Epoch 80/100
+Training loss: 23.32190
+Validation loss: 3.65109
+Epoch 81/100
+Training loss: 22.81857
+Validation loss: 2.63787
+Epoch 82/100
+Training loss: 21.38437
+Validation loss: 2.76982
+Epoch 83/100
+Training loss: 22.40555
+Validation loss: 3.20048
+Epoch 84/100
+Training loss: 19.43898
+Validation loss: 3.16624
+Epoch 85/100
+Training loss: 18.53680
+Validation loss: 3.31746
+Epoch 86/100
+Training loss: 19.57593
+Validation loss: 3.27070
+Epoch 87/100
+Training loss: 18.41537
+Validation loss: 3.55784
+Epoch 88/100
+Training loss: 20.10638
+Validation loss: 2.89464
+Epoch 89/100
+Training loss: 19.52157
+Validation loss: 3.61204
+Epoch 90/100
+Training loss: 18.37905
+Validation loss: 3.69488
+Epoch 91/100
+Training loss: 18.96428
+Validation loss: 3.28253
+Epoch 92/100
+Training loss: 19.20463
+Validation loss: 2.70058
+Epoch 93/100
+Training loss: 18.52774
+Validation loss: 2.89558
+Epoch 94/100
+Training loss: 18.61896
+Validation loss: 3.57800
+Epoch 95/100
+Training loss: 20.87772
+Validation loss: 3.89228
+Epoch 96/100
+Training loss: 19.75339
+Validation loss: 3.59175
+Epoch 97/100
+Training loss: 20.56765
+Validation loss: 3.33382
+Epoch 98/100
+Training loss: 21.33570
+Validation loss: 3.49099
+Epoch 99/100
+Training loss: 17.59014
+Validation loss: 4.04203
+Epoch 100/100
+Training loss: 22.03810
+Validation loss: 3.41347
+Best model for fold 3 saved from epoch 71 with f1 2.63477
+Final training loss: 22.03810
+Final test loss: 3.41347
 Fold 4
-Model loaded successfully from ./pretrained_model/64x128_opticflow_64t51216frames.ckpt
+Model loaded successfully from ./pretrained_model/64_to_256_3layers.ckpt
 device : cuda
 device : cuda
-Model not found at ./model/only_forest_last_ud_random_val_16frames/fold_4/fly_model.ckpt
+Model not found at ./model/only_forest_predict_wba_random_val_optic_3layers_fixed_8frames/fold_4/fly_model.ckpt
 Epoch 1/100
-Training Sensitivity: 0.62315, Specificity: 0.69149, F1 Score: 0.65554
-Validation Sensitivity: 0.57143, Specificity: 1.00000, F1 Score: 0.72727
-New best model saved at epoch 1 with f1 0.72727
-First epoch took 10.17 seconds.
-Estimated total program duration: 1.41 hours
-Estimated program end time (KST): 2024/10/07 14:45:24
+Training loss: 115.45817
+Validation loss: 42.01816
+New best model saved at epoch 1 with loss 42.01816
+First epoch took 3.60 seconds.
+Estimated total program duration: 0.50 hours
+Estimated program end time (KST): 2024/10/17 04:12:58
 Epoch 2/100
-Training Sensitivity: 0.77535, Specificity: 0.85987, F1 Score: 0.81543
-Validation Sensitivity: 0.90476, Specificity: 0.78947, F1 Score: 0.84320
-New best model saved at epoch 2 with f1 0.84320
+Training loss: 54.85538
+Validation loss: 34.56167
+New best model saved at epoch 2 with loss 34.56167
 Epoch 3/100
-Training Sensitivity: 0.85246, Specificity: 0.94172, F1 Score: 0.89487
-Validation Sensitivity: 1.00000, Specificity: 0.68421, F1 Score: 0.81250
+Training loss: 42.95879
+Validation loss: 25.65990
+New best model saved at epoch 3 with loss 25.65990
 Epoch 4/100
-Training Sensitivity: 0.89396, Specificity: 0.92503, F1 Score: 0.90923
-Validation Sensitivity: 0.90476, Specificity: 1.00000, F1 Score: 0.95000
-New best model saved at epoch 4 with f1 0.95000
+Training loss: 36.12499
+Validation loss: 23.01277
+New best model saved at epoch 4 with loss 23.01277
 Epoch 5/100
-Training Sensitivity: 0.89543, Specificity: 0.93440, F1 Score: 0.91450
-Validation Sensitivity: 0.85714, Specificity: 1.00000, F1 Score: 0.92308
+Training loss: 37.44487
+Validation loss: 17.32813
+New best model saved at epoch 5 with loss 17.32813
 Epoch 6/100
-Training Sensitivity: 0.92387, Specificity: 0.92598, F1 Score: 0.92492
-Validation Sensitivity: 1.00000, Specificity: 0.63158, F1 Score: 0.77419
+Training loss: 35.85656
+Validation loss: 19.13268
 Epoch 7/100
-Training Sensitivity: 0.93027, Specificity: 0.92154, F1 Score: 0.92588
-Validation Sensitivity: 1.00000, Specificity: 0.68421, F1 Score: 0.81250
+Training loss: 30.75755
+Validation loss: 13.10059
+New best model saved at epoch 7 with loss 13.10059
 Epoch 8/100
-Training Sensitivity: 0.90950, Specificity: 0.95151, F1 Score: 0.93003
-Validation Sensitivity: 0.80952, Specificity: 1.00000, F1 Score: 0.89474
+Training loss: 27.88181
+Validation loss: 12.74639
+New best model saved at epoch 8 with loss 12.74639
 Epoch 9/100
-Training Sensitivity: 0.92980, Specificity: 0.92720, F1 Score: 0.92850
-Validation Sensitivity: 1.00000, Specificity: 0.78947, F1 Score: 0.88235
+Training loss: 27.58677
+Validation loss: 10.41735
+New best model saved at epoch 9 with loss 10.41735
 Epoch 10/100
-Training Sensitivity: 0.92603, Specificity: 0.96404, F1 Score: 0.94465
-Validation Sensitivity: 1.00000, Specificity: 0.78947, F1 Score: 0.88235
+Training loss: 25.84830
+Validation loss: 9.78039
+New best model saved at epoch 10 with loss 9.78039
 Epoch 11/100
-Training Sensitivity: 0.91292, Specificity: 0.97151, F1 Score: 0.94130
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 29.23418
+Validation loss: 9.49715
+New best model saved at epoch 11 with loss 9.49715
 Epoch 12/100
-Training Sensitivity: 0.92835, Specificity: 0.94675, F1 Score: 0.93746
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 31.86804
+Validation loss: 10.89844
 Epoch 13/100
-Training Sensitivity: 0.88872, Specificity: 0.95974, F1 Score: 0.92287
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 23.20549
+Validation loss: 8.29478
+New best model saved at epoch 13 with loss 8.29478
 Epoch 14/100
-Training Sensitivity: 0.96676, Specificity: 0.93188, F1 Score: 0.94900
-Validation Sensitivity: 0.80952, Specificity: 0.84211, F1 Score: 0.82549
+Training loss: 25.62699
+Validation loss: 7.56932
+New best model saved at epoch 14 with loss 7.56932
 Epoch 15/100
-Training Sensitivity: 0.92006, Specificity: 0.94038, F1 Score: 0.93011
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 26.72568
+Validation loss: 9.76964
 Epoch 16/100
-Training Sensitivity: 0.91424, Specificity: 0.95393, F1 Score: 0.93367
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 29.51881
+Validation loss: 6.77984
+New best model saved at epoch 16 with loss 6.77984
 Epoch 17/100
-Training Sensitivity: 0.94170, Specificity: 0.92734, F1 Score: 0.93447
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 23.64815
+Validation loss: 7.38801
 Epoch 18/100
-Training Sensitivity: 0.89941, Specificity: 0.96267, F1 Score: 0.92996
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 22.67057
+Validation loss: 8.75874
 Epoch 19/100
-Training Sensitivity: 0.90760, Specificity: 0.97483, F1 Score: 0.94002
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 24.33414
+Validation loss: 6.10457
+New best model saved at epoch 19 with loss 6.10457
 Epoch 20/100
-Training Sensitivity: 0.93874, Specificity: 0.92626, F1 Score: 0.93246
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 26.41896
+Validation loss: 7.63699
 Epoch 21/100
-Training Sensitivity: 0.93094, Specificity: 0.95075, F1 Score: 0.94074
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 25.93243
+Validation loss: 5.98584
+New best model saved at epoch 21 with loss 5.98584
 Epoch 22/100
-Training Sensitivity: 0.94397, Specificity: 0.94110, F1 Score: 0.94253
-Validation Sensitivity: 0.95238, Specificity: 0.84211, F1 Score: 0.89385
+Training loss: 26.25207
+Validation loss: 5.69290
+New best model saved at epoch 22 with loss 5.69290
 Epoch 23/100
-Training Sensitivity: 0.97134, Specificity: 0.90826, F1 Score: 0.93874
-Validation Sensitivity: 0.95238, Specificity: 0.78947, F1 Score: 0.86331
+Training loss: 28.36794
+Validation loss: 5.77693
 Epoch 24/100
-Training Sensitivity: 0.92878, Specificity: 0.93089, F1 Score: 0.92984
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 26.38818
+Validation loss: 5.29766
+New best model saved at epoch 24 with loss 5.29766
 Epoch 25/100
-Training Sensitivity: 0.93786, Specificity: 0.96185, F1 Score: 0.94971
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.19362
+Validation loss: 6.44866
 Epoch 26/100
-Training Sensitivity: 0.90107, Specificity: 0.98700, F1 Score: 0.94208
-Validation Sensitivity: 0.95238, Specificity: 0.84211, F1 Score: 0.89385
+Training loss: 22.44885
+Validation loss: 7.42591
 Epoch 27/100
-Training Sensitivity: 0.91717, Specificity: 0.98031, F1 Score: 0.94769
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 23.39355
+Validation loss: 4.79114
+New best model saved at epoch 27 with loss 4.79114
 Epoch 28/100
-Training Sensitivity: 0.91043, Specificity: 0.97852, F1 Score: 0.94325
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 23.23864
+Validation loss: 5.80755
 Epoch 29/100
-Training Sensitivity: 0.94429, Specificity: 0.94904, F1 Score: 0.94665
-Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
-New best model saved at epoch 29 with f1 0.97297
+Training loss: 21.36955
+Validation loss: 4.38520
+New best model saved at epoch 29 with loss 4.38520
 Epoch 30/100
-Training Sensitivity: 0.93378, Specificity: 0.95773, F1 Score: 0.94560
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 25.89985
+Validation loss: 4.55592
 Epoch 31/100
-Training Sensitivity: 0.94942, Specificity: 0.92371, F1 Score: 0.93639
-Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Training loss: 21.89719
+Validation loss: 5.16847
 Epoch 32/100
-Training Sensitivity: 0.98971, Specificity: 0.89410, F1 Score: 0.93948
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 22.07079
+Validation loss: 5.46769
 Epoch 33/100
-Training Sensitivity: 0.91956, Specificity: 0.97601, F1 Score: 0.94694
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
-New best model saved at epoch 33 with f1 0.97561
+Training loss: 24.21169
+Validation loss: 4.46295
 Epoch 34/100
-Training Sensitivity: 0.91819, Specificity: 0.96234, F1 Score: 0.93975
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.55698
+Validation loss: 5.28395
 Epoch 35/100
-Training Sensitivity: 0.95082, Specificity: 0.96159, F1 Score: 0.95617
-Validation Sensitivity: 0.90476, Specificity: 1.00000, F1 Score: 0.95000
+Training loss: 22.57109
+Validation loss: 3.77447
+New best model saved at epoch 35 with loss 3.77447
 Epoch 36/100
-Training Sensitivity: 0.90219, Specificity: 0.97976, F1 Score: 0.93937
-Validation Sensitivity: 0.95238, Specificity: 0.84211, F1 Score: 0.89385
+Training loss: 23.12568
+Validation loss: 3.72325
+New best model saved at epoch 36 with loss 3.72325
 Epoch 37/100
-Training Sensitivity: 0.93804, Specificity: 0.94809, F1 Score: 0.94304
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 24.55064
+Validation loss: 6.29733
 Epoch 38/100
-Training Sensitivity: 0.93411, Specificity: 0.94213, F1 Score: 0.93810
-Validation Sensitivity: 0.95238, Specificity: 0.94737, F1 Score: 0.94987
+Training loss: 22.60154
+Validation loss: 4.10226
 Epoch 39/100
-Training Sensitivity: 0.93983, Specificity: 0.93819, F1 Score: 0.93901
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Training loss: 23.52686
+Validation loss: 3.52573
+New best model saved at epoch 39 with loss 3.52573
 Epoch 40/100
-Training Sensitivity: 0.92297, Specificity: 0.95122, F1 Score: 0.93688
-Validation Sensitivity: 0.90476, Specificity: 0.84211, F1 Score: 0.87231
+Training loss: 23.32356
+Validation loss: 4.49349
 Epoch 41/100
-Training Sensitivity: 0.90448, Specificity: 0.97487, F1 Score: 0.93835
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 22.32168
+Validation loss: 3.34913
+New best model saved at epoch 41 with loss 3.34913
 Epoch 42/100
-Training Sensitivity: 0.93814, Specificity: 0.96386, F1 Score: 0.95083
-Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Training loss: 20.71471
+Validation loss: 3.58220
 Epoch 43/100
-Training Sensitivity: 0.92117, Specificity: 0.97301, F1 Score: 0.94638
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Training loss: 18.53550
+Validation loss: 3.29158
+New best model saved at epoch 43 with loss 3.29158
 Epoch 44/100
-Training Sensitivity: 0.94667, Specificity: 0.93342, F1 Score: 0.94000
-Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
-New best model saved at epoch 44 with f1 1.00000
+Training loss: 22.06151
+Validation loss: 3.51614
 Epoch 45/100
-Training Sensitivity: 0.92350, Specificity: 0.97030, F1 Score: 0.94632
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 19.98801
+Validation loss: 3.63359
 Epoch 46/100
-Training Sensitivity: 0.90976, Specificity: 0.95867, F1 Score: 0.93358
-Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
+Training loss: 21.60918
+Validation loss: 4.39982
 Epoch 47/100
-Training Sensitivity: 0.95529, Specificity: 0.94437, F1 Score: 0.94980
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.23265
+Validation loss: 3.80919
 Epoch 48/100
-Training Sensitivity: 0.90045, Specificity: 0.99070, F1 Score: 0.94342
-Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Training loss: 21.58092
+Validation loss: 3.33616
 Epoch 49/100
-Training Sensitivity: 0.89747, Specificity: 0.97199, F1 Score: 0.93325
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.76192
+Validation loss: 3.26827
+New best model saved at epoch 49 with loss 3.26827
 Epoch 50/100
-Training Sensitivity: 0.95362, Specificity: 0.93342, F1 Score: 0.94342
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Training loss: 23.11003
+Validation loss: 3.62699
 Epoch 51/100
-Training Sensitivity: 0.94058, Specificity: 0.97418, F1 Score: 0.95709
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 21.06899
+Validation loss: 3.59983
 Epoch 52/100
-Training Sensitivity: 0.92627, Specificity: 0.96774, F1 Score: 0.94655
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Training loss: 21.05512
+Validation loss: 3.43808
 Epoch 53/100
-Training Sensitivity: 0.95415, Specificity: 0.93544, F1 Score: 0.94470
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 21.55183
+Validation loss: 4.02048
 Epoch 54/100
-Training Sensitivity: 0.93713, Specificity: 0.95778, F1 Score: 0.94734
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 19.36176
+Validation loss: 3.44491
 Epoch 55/100
-Training Sensitivity: 0.95294, Specificity: 0.94102, F1 Score: 0.94694
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 21.92601
+Validation loss: 2.45131
+New best model saved at epoch 55 with loss 2.45131
 Epoch 56/100
-Training Sensitivity: 0.91292, Specificity: 0.98236, F1 Score: 0.94637
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.56268
+Validation loss: 2.63028
 Epoch 57/100
-Training Sensitivity: 0.91976, Specificity: 0.98274, F1 Score: 0.95021
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 25.52111
+Validation loss: 2.93475
 Epoch 58/100
-Training Sensitivity: 0.92426, Specificity: 0.99158, F1 Score: 0.95674
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 24.94122
+Validation loss: 3.88239
 Epoch 59/100
-Training Sensitivity: 0.90373, Specificity: 0.98849, F1 Score: 0.94421
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 18.90179
+Validation loss: 3.22635
 Epoch 60/100
-Training Sensitivity: 0.91372, Specificity: 0.97914, F1 Score: 0.94530
-Validation Sensitivity: 0.95238, Specificity: 0.94737, F1 Score: 0.94987
+Training loss: 23.37365
+Validation loss: 3.70990
 Epoch 61/100
-Training Sensitivity: 0.91620, Specificity: 0.97042, F1 Score: 0.94253
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 21.74532
+Validation loss: 2.44766
+New best model saved at epoch 61 with loss 2.44766
 Epoch 62/100
-Training Sensitivity: 0.94545, Specificity: 0.94093, F1 Score: 0.94319
-Validation Sensitivity: 1.00000, Specificity: 0.73684, F1 Score: 0.84848
+Training loss: 21.42238
+Validation loss: 2.48200
 Epoch 63/100
-Training Sensitivity: 0.90963, Specificity: 0.96272, F1 Score: 0.93542
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 20.89054
+Validation loss: 2.62060
 Epoch 64/100
-Training Sensitivity: 0.94015, Specificity: 0.95816, F1 Score: 0.94907
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.88441
+Validation loss: 3.46435
 Epoch 65/100
-Training Sensitivity: 0.90385, Specificity: 0.98000, F1 Score: 0.94038
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 24.10898
+Validation loss: 2.50497
 Epoch 66/100
-Training Sensitivity: 0.95182, Specificity: 0.94737, F1 Score: 0.94959
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 19.52846
+Validation loss: 3.00400
 Epoch 67/100
-Training Sensitivity: 0.93636, Specificity: 0.96084, F1 Score: 0.94844
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 23.46269
+Validation loss: 2.74153
 Epoch 68/100
-Training Sensitivity: 0.93440, Specificity: 0.97027, F1 Score: 0.95200
-Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Training loss: 20.50282
+Validation loss: 3.34034
 Epoch 69/100
-Training Sensitivity: 0.91181, Specificity: 0.99207, F1 Score: 0.95025
-Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
+Training loss: 20.38974
+Validation loss: 2.98115
 Epoch 70/100
-Training Sensitivity: 0.88348, Specificity: 0.98797, F1 Score: 0.93281
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 21.40692
+Validation loss: 2.48135
 Epoch 71/100
-Training Sensitivity: 0.92273, Specificity: 0.98433, F1 Score: 0.95254
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.14539
+Validation loss: 3.08298
 Epoch 72/100
-Training Sensitivity: 0.93237, Specificity: 0.97264, F1 Score: 0.95208
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 18.72483
+Validation loss: 2.96914
 Epoch 73/100
-Training Sensitivity: 0.90694, Specificity: 0.98665, F1 Score: 0.94512
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 22.15012
+Validation loss: 2.69560
 Epoch 74/100
-Training Sensitivity: 0.91016, Specificity: 0.96921, F1 Score: 0.93876
-Validation Sensitivity: 1.00000, Specificity: 0.78947, F1 Score: 0.88235
+Training loss: 21.70151
+Validation loss: 2.74796
 Epoch 75/100
-Training Sensitivity: 0.93813, Specificity: 0.94665, F1 Score: 0.94237
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.61083
+Validation loss: 3.29903
 Epoch 76/100
-Training Sensitivity: 0.91916, Specificity: 0.96306, F1 Score: 0.94060
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 22.67746
+Validation loss: 3.16134
 Epoch 77/100
-Training Sensitivity: 0.92662, Specificity: 0.96854, F1 Score: 0.94711
-Validation Sensitivity: 1.00000, Specificity: 0.94737, F1 Score: 0.97297
+Training loss: 20.14782
+Validation loss: 2.78181
 Epoch 78/100
-Training Sensitivity: 0.92401, Specificity: 0.97135, F1 Score: 0.94709
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.96246
+Validation loss: 2.81302
 Epoch 79/100
-Training Sensitivity: 0.91190, Specificity: 0.99101, F1 Score: 0.94981
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 19.44261
+Validation loss: 3.04759
 Epoch 80/100
-Training Sensitivity: 0.90415, Specificity: 0.99175, F1 Score: 0.94592
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.16596
+Validation loss: 2.55398
 Epoch 81/100
-Training Sensitivity: 0.92910, Specificity: 0.99466, F1 Score: 0.96076
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 19.04299
+Validation loss: 2.99331
 Epoch 82/100
-Training Sensitivity: 0.89818, Specificity: 0.99349, F1 Score: 0.94343
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.55066
+Validation loss: 2.72689
 Epoch 83/100
-Training Sensitivity: 0.91246, Specificity: 0.99601, F1 Score: 0.95241
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 18.75329
+Validation loss: 3.35634
 Epoch 84/100
-Training Sensitivity: 0.90511, Specificity: 0.98111, F1 Score: 0.94158
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 24.02879
+Validation loss: 3.04738
 Epoch 85/100
-Training Sensitivity: 0.89440, Specificity: 0.99501, F1 Score: 0.94202
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Training loss: 22.52056
+Validation loss: 2.57624
 Epoch 86/100
-Training Sensitivity: 0.89510, Specificity: 0.99437, F1 Score: 0.94213
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 23.54091
+Validation loss: 2.94691
 Epoch 87/100
-Training Sensitivity: 0.91859, Specificity: 0.98710, F1 Score: 0.95161
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 20.80958
+Validation loss: 2.98143
 Epoch 88/100
-Training Sensitivity: 0.90962, Specificity: 0.96757, F1 Score: 0.93770
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.14658
+Validation loss: 2.62510
 Epoch 89/100
-Training Sensitivity: 0.97681, Specificity: 0.92663, F1 Score: 0.95106
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.35401
+Validation loss: 2.81875
 Epoch 90/100
-Training Sensitivity: 0.95493, Specificity: 0.94832, F1 Score: 0.95162
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.30119
+Validation loss: 2.36583
+New best model saved at epoch 90 with loss 2.36583
 Epoch 91/100
-Training Sensitivity: 0.91437, Specificity: 0.97965, F1 Score: 0.94588
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 20.68969
+Validation loss: 3.12156
 Epoch 92/100
-Training Sensitivity: 0.95646, Specificity: 0.94474, F1 Score: 0.95056
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 19.57720
+Validation loss: 2.92300
 Epoch 93/100
-Training Sensitivity: 0.94228, Specificity: 0.96317, F1 Score: 0.95261
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 18.92990
+Validation loss: 2.42364
 Epoch 94/100
-Training Sensitivity: 0.92034, Specificity: 0.97234, F1 Score: 0.94563
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 23.16416
+Validation loss: 2.60582
 Epoch 95/100
-Training Sensitivity: 0.92560, Specificity: 0.96021, F1 Score: 0.94259
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 22.35808
+Validation loss: 2.46651
 Epoch 96/100
-Training Sensitivity: 0.90433, Specificity: 0.99075, F1 Score: 0.94557
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 21.17220
+Validation loss: 2.53211
 Epoch 97/100
-Training Sensitivity: 0.91061, Specificity: 0.99086, F1 Score: 0.94904
-Validation Sensitivity: 1.00000, Specificity: 0.84211, F1 Score: 0.91429
+Training loss: 18.78125
+Validation loss: 2.75589
 Epoch 98/100
-Training Sensitivity: 0.91950, Specificity: 0.95385, F1 Score: 0.93636
-Validation Sensitivity: 1.00000, Specificity: 0.89474, F1 Score: 0.94444
+Training loss: 23.60779
+Validation loss: 2.28075
+New best model saved at epoch 98 with loss 2.28075
 Epoch 99/100
-Training Sensitivity: 0.88756, Specificity: 0.99868, F1 Score: 0.93985
-Validation Sensitivity: 0.95238, Specificity: 1.00000, F1 Score: 0.97561
+Training loss: 21.83166
+Validation loss: 2.41996
 Epoch 100/100
-Training Sensitivity: 0.89828, Specificity: 0.99588, F1 Score: 0.94457
-Validation Sensitivity: 1.00000, Specificity: 1.00000, F1 Score: 1.00000
-Best model for fold 4 saved from epoch 44 with f1 1.00000
-Final training loss: 0.08314
-Final test loss: 0.07717
+Training loss: 22.92286
+Validation loss: 2.70065
+Best model for fold 4 saved from epoch 98 with f1 2.28075
+Final training loss: 22.92286
+Final test loss: 2.70065
 Fold 5
-Model loaded successfully from ./pretrained_model/64x128_opticflow_64t51216frames.ckpt
+Model loaded successfully from ./pretrained_model/64_to_256_3layers.ckpt
 device : cuda
 device : cuda
-Model not found at ./model/only_forest_last_ud_random_val_16frames/fold_5/fly_model.ckpt
+Model not found at ./model/only_forest_predict_wba_random_val_optic_3layers_fixed_8frames/fold_5/fly_model.ckpt
 Epoch 1/100
-Training Sensitivity: 0.66395, Specificity: 0.63386, F1 Score: 0.64856
-Validation Sensitivity: 0.88889, Specificity: 0.57143, F1 Score: 0.69565
-New best model saved at epoch 1 with f1 0.69565
-First epoch took 9.92 seconds.
-Estimated total program duration: 1.38 hours
-Estimated program end time (KST): 2024/10/07 14:59:53
+Training loss: 98.17294
+Validation loss: 38.20118
+New best model saved at epoch 1 with loss 38.20118
+First epoch took 3.53 seconds.
+Estimated total program duration: 0.49 hours
+Estimated program end time (KST): 2024/10/17 04:17:58
 Epoch 2/100
-Training Sensitivity: 0.83588, Specificity: 0.80905, F1 Score: 0.82225
-Validation Sensitivity: 0.62963, Specificity: 0.92857, F1 Score: 0.75042
-New best model saved at epoch 2 with f1 0.75042
+Training loss: 48.37923
+Validation loss: 29.87607
+New best model saved at epoch 2 with loss 29.87607
 Epoch 3/100
-Training Sensitivity: 0.90909, Specificity: 0.88186, F1 Score: 0.89527
-Validation Sensitivity: 0.77778, Specificity: 0.89286, F1 Score: 0.83135
-New best model saved at epoch 3 with f1 0.83135
+Training loss: 41.44514
+Validation loss: 18.74818
+New best model saved at epoch 3 with loss 18.74818
 Epoch 4/100
-Training Sensitivity: 0.94568, Specificity: 0.89266, F1 Score: 0.91840
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
-New best model saved at epoch 4 with f1 0.90909
+Training loss: 30.37559
+Validation loss: 18.78893
 Epoch 5/100
-Training Sensitivity: 0.91001, Specificity: 0.92809, F1 Score: 0.91896
-Validation Sensitivity: 0.88889, Specificity: 0.82143, F1 Score: 0.85383
+Training loss: 29.67732
+Validation loss: 16.27564
+New best model saved at epoch 5 with loss 16.27564
 Epoch 6/100
-Training Sensitivity: 0.91571, Specificity: 0.94353, F1 Score: 0.92941
-Validation Sensitivity: 0.81481, Specificity: 0.85714, F1 Score: 0.83544
+Training loss: 28.66493
+Validation loss: 19.74995
 Epoch 7/100
-Training Sensitivity: 0.95132, Specificity: 0.90665, F1 Score: 0.92845
-Validation Sensitivity: 0.77778, Specificity: 0.96429, F1 Score: 0.86105
+Training loss: 26.43022
+Validation loss: 13.69351
+New best model saved at epoch 7 with loss 13.69351
 Epoch 8/100
-Training Sensitivity: 0.91549, Specificity: 0.90223, F1 Score: 0.90882
-Validation Sensitivity: 0.92593, Specificity: 0.60714, F1 Score: 0.73339
+Training loss: 26.89762
+Validation loss: 13.57764
+New best model saved at epoch 8 with loss 13.57764
 Epoch 9/100
-Training Sensitivity: 0.93343, Specificity: 0.94184, F1 Score: 0.93762
-Validation Sensitivity: 0.85185, Specificity: 0.78571, F1 Score: 0.81745
+Training loss: 27.24510
+Validation loss: 13.50035
+New best model saved at epoch 9 with loss 13.50035
 Epoch 10/100
-Training Sensitivity: 0.90346, Specificity: 0.97678, F1 Score: 0.93869
-Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Training loss: 25.86360
+Validation loss: 15.35062
 Epoch 11/100
-Training Sensitivity: 0.91865, Specificity: 0.94951, F1 Score: 0.93383
-Validation Sensitivity: 1.00000, Specificity: 0.75000, F1 Score: 0.85714
+Training loss: 23.74394
+Validation loss: 12.61151
+New best model saved at epoch 11 with loss 12.61151
 Epoch 12/100
-Training Sensitivity: 0.94078, Specificity: 0.91508, F1 Score: 0.92775
-Validation Sensitivity: 0.44444, Specificity: 0.96429, F1 Score: 0.60845
+Training loss: 26.69364
+Validation loss: 10.16182
+New best model saved at epoch 12 with loss 10.16182
 Epoch 13/100
-Training Sensitivity: 0.94669, Specificity: 0.93443, F1 Score: 0.94052
-Validation Sensitivity: 0.81481, Specificity: 0.71429, F1 Score: 0.76125
+Training loss: 26.37676
+Validation loss: 14.36777
 Epoch 14/100
-Training Sensitivity: 0.91667, Specificity: 0.96027, F1 Score: 0.93796
-Validation Sensitivity: 1.00000, Specificity: 0.82143, F1 Score: 0.90196
+Training loss: 25.63861
+Validation loss: 9.31250
+New best model saved at epoch 14 with loss 9.31250
 Epoch 15/100
-Training Sensitivity: 0.91209, Specificity: 0.97851, F1 Score: 0.94413
-Validation Sensitivity: 0.81481, Specificity: 0.85714, F1 Score: 0.83544
+Training loss: 23.33536
+Validation loss: 10.18573
 Epoch 16/100
-Training Sensitivity: 0.95461, Specificity: 0.91678, F1 Score: 0.93531
-Validation Sensitivity: 0.59259, Specificity: 0.92857, F1 Score: 0.72348
+Training loss: 28.99413
+Validation loss: 8.55185
+New best model saved at epoch 16 with loss 8.55185
 Epoch 17/100
-Training Sensitivity: 0.92929, Specificity: 0.94952, F1 Score: 0.93930
-Validation Sensitivity: 0.85185, Specificity: 0.82143, F1 Score: 0.83636
+Training loss: 22.63479
+Validation loss: 9.72180
 Epoch 18/100
-Training Sensitivity: 0.91988, Specificity: 0.94681, F1 Score: 0.93315
-Validation Sensitivity: 0.59259, Specificity: 0.96429, F1 Score: 0.73407
+Training loss: 24.40356
+Validation loss: 8.40014
+New best model saved at epoch 18 with loss 8.40014
 Epoch 19/100
-Training Sensitivity: 0.89898, Specificity: 0.96097, F1 Score: 0.92894
-Validation Sensitivity: 0.81481, Specificity: 0.96429, F1 Score: 0.88327
+Training loss: 24.84746
+Validation loss: 8.85999
 Epoch 20/100
-Training Sensitivity: 0.93566, Specificity: 0.93249, F1 Score: 0.93407
-Validation Sensitivity: 0.74074, Specificity: 0.82143, F1 Score: 0.77900
+Training loss: 24.57913
+Validation loss: 8.65805
 Epoch 21/100
-Training Sensitivity: 0.94966, Specificity: 0.93343, F1 Score: 0.94147
-Validation Sensitivity: 0.96296, Specificity: 0.78571, F1 Score: 0.86536
+Training loss: 22.82580
+Validation loss: 11.09435
 Epoch 22/100
-Training Sensitivity: 0.97286, Specificity: 0.91736, F1 Score: 0.94429
-Validation Sensitivity: 1.00000, Specificity: 0.78571, F1 Score: 0.88000
+Training loss: 20.55872
+Validation loss: 8.14365
+New best model saved at epoch 22 with loss 8.14365
 Epoch 23/100
-Training Sensitivity: 0.93581, Specificity: 0.94345, F1 Score: 0.93961
-Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Training loss: 24.57461
+Validation loss: 7.80080
+New best model saved at epoch 23 with loss 7.80080
 Epoch 24/100
-Training Sensitivity: 0.92433, Specificity: 0.95612, F1 Score: 0.93996
-Validation Sensitivity: 0.96296, Specificity: 0.82143, F1 Score: 0.88658
+Training loss: 24.67776
+Validation loss: 15.56227
 Epoch 25/100
-Training Sensitivity: 0.93922, Specificity: 0.95238, F1 Score: 0.94575
-Validation Sensitivity: 0.88889, Specificity: 0.92857, F1 Score: 0.90830
+Training loss: 24.37941
+Validation loss: 9.45142
 Epoch 26/100
-Training Sensitivity: 0.90141, Specificity: 0.97346, F1 Score: 0.93605
-Validation Sensitivity: 0.70370, Specificity: 0.85714, F1 Score: 0.77288
+Training loss: 22.63407
+Validation loss: 7.79182
+New best model saved at epoch 26 with loss 7.79182
 Epoch 27/100
-Training Sensitivity: 0.91207, Specificity: 0.97748, F1 Score: 0.94365
-Validation Sensitivity: 0.96296, Specificity: 0.75000, F1 Score: 0.84324
+Training loss: 23.17529
+Validation loss: 6.14021
+New best model saved at epoch 27 with loss 6.14021
 Epoch 28/100
-Training Sensitivity: 0.90987, Specificity: 0.95873, F1 Score: 0.93366
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 24.72793
+Validation loss: 6.79484
 Epoch 29/100
-Training Sensitivity: 0.96392, Specificity: 0.91814, F1 Score: 0.94048
-Validation Sensitivity: 0.92593, Specificity: 0.71429, F1 Score: 0.80645
+Training loss: 20.80804
+Validation loss: 9.96154
 Epoch 30/100
-Training Sensitivity: 0.96652, Specificity: 0.91475, F1 Score: 0.93992
-Validation Sensitivity: 0.92593, Specificity: 0.75000, F1 Score: 0.82873
+Training loss: 20.38542
+Validation loss: 5.80358
+New best model saved at epoch 30 with loss 5.80358
 Epoch 31/100
-Training Sensitivity: 0.91942, Specificity: 0.94918, F1 Score: 0.93406
-Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Training loss: 24.34505
+Validation loss: 8.36623
 Epoch 32/100
-Training Sensitivity: 0.97791, Specificity: 0.91432, F1 Score: 0.94505
-Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Training loss: 22.37904
+Validation loss: 6.76682
 Epoch 33/100
-Training Sensitivity: 0.94056, Specificity: 0.94821, F1 Score: 0.94437
-Validation Sensitivity: 0.55556, Specificity: 0.96429, F1 Score: 0.70496
+Training loss: 21.36463
+Validation loss: 6.52631
 Epoch 34/100
-Training Sensitivity: 0.96334, Specificity: 0.91667, F1 Score: 0.93943
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
-New best model saved at epoch 34 with f1 0.92659
+Training loss: 24.84389
+Validation loss: 7.83518
 Epoch 35/100
-Training Sensitivity: 0.97429, Specificity: 0.91598, F1 Score: 0.94423
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Training loss: 21.62229
+Validation loss: 6.50482
 Epoch 36/100
-Training Sensitivity: 0.97968, Specificity: 0.91452, F1 Score: 0.94598
-Validation Sensitivity: 0.77778, Specificity: 0.92857, F1 Score: 0.84651
+Training loss: 22.83202
+Validation loss: 8.64160
 Epoch 37/100
-Training Sensitivity: 0.95205, Specificity: 0.94253, F1 Score: 0.94727
-Validation Sensitivity: 0.92593, Specificity: 0.85714, F1 Score: 0.89021
+Training loss: 23.00994
+Validation loss: 6.11215
 Epoch 38/100
-Training Sensitivity: 0.99441, Specificity: 0.91549, F1 Score: 0.95332
-Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Training loss: 21.31929
+Validation loss: 7.55450
 Epoch 39/100
-Training Sensitivity: 0.99282, Specificity: 0.91096, F1 Score: 0.95013
-Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Training loss: 19.14359
+Validation loss: 7.36432
 Epoch 40/100
-Training Sensitivity: 0.91818, Specificity: 0.96606, F1 Score: 0.94151
-Validation Sensitivity: 0.88889, Specificity: 0.85714, F1 Score: 0.87273
+Training loss: 18.47733
+Validation loss: 6.21428
 Epoch 41/100
-Training Sensitivity: 0.95389, Specificity: 0.93989, F1 Score: 0.94684
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 22.92704
+Validation loss: 6.43342
 Epoch 42/100
-Training Sensitivity: 0.95027, Specificity: 0.92962, F1 Score: 0.93983
-Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Training loss: 19.10945
+Validation loss: 7.15975
 Epoch 43/100
-Training Sensitivity: 0.93588, Specificity: 0.96537, F1 Score: 0.95040
-Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Training loss: 19.11399
+Validation loss: 6.67456
 Epoch 44/100
-Training Sensitivity: 0.97015, Specificity: 0.91292, F1 Score: 0.94066
-Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Training loss: 20.96119
+Validation loss: 6.49307
 Epoch 45/100
-Training Sensitivity: 0.95621, Specificity: 0.93454, F1 Score: 0.94525
-Validation Sensitivity: 0.92593, Specificity: 0.85714, F1 Score: 0.89021
+Training loss: 25.57435
+Validation loss: 5.00085
+New best model saved at epoch 45 with loss 5.00085
 Epoch 46/100
-Training Sensitivity: 0.93714, Specificity: 0.95868, F1 Score: 0.94779
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 22.33769
+Validation loss: 7.49716
 Epoch 47/100
-Training Sensitivity: 0.96765, Specificity: 0.93164, F1 Score: 0.94930
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 24.79249
+Validation loss: 5.91202
 Epoch 48/100
-Training Sensitivity: 0.94868, Specificity: 0.93191, F1 Score: 0.94022
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 19.45375
+Validation loss: 5.95416
 Epoch 49/100
-Training Sensitivity: 0.90346, Specificity: 0.98224, F1 Score: 0.94120
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 20.18237
+Validation loss: 7.63547
 Epoch 50/100
-Training Sensitivity: 0.96413, Specificity: 0.90398, F1 Score: 0.93309
-Validation Sensitivity: 1.00000, Specificity: 0.89286, F1 Score: 0.94340
-New best model saved at epoch 50 with f1 0.94340
+Training loss: 21.90359
+Validation loss: 5.92743
 Epoch 51/100
-Training Sensitivity: 0.93277, Specificity: 0.95506, F1 Score: 0.94378
-Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Training loss: 20.97610
+Validation loss: 6.04233
 Epoch 52/100
-Training Sensitivity: 0.93939, Specificity: 0.96453, F1 Score: 0.95180
-Validation Sensitivity: 0.88889, Specificity: 0.85714, F1 Score: 0.87273
+Training loss: 15.92645
+Validation loss: 4.90563
+New best model saved at epoch 52 with loss 4.90563
 Epoch 53/100
-Training Sensitivity: 0.93363, Specificity: 0.99214, F1 Score: 0.96200
-Validation Sensitivity: 0.88889, Specificity: 0.82143, F1 Score: 0.85383
+Training loss: 21.44465
+Validation loss: 5.24490
 Epoch 54/100
-Training Sensitivity: 0.90141, Specificity: 0.99581, F1 Score: 0.94626
-Validation Sensitivity: 0.70370, Specificity: 0.89286, F1 Score: 0.78708
+Training loss: 19.12077
+Validation loss: 5.11728
 Epoch 55/100
-Training Sensitivity: 0.91150, Specificity: 0.97995, F1 Score: 0.94449
-Validation Sensitivity: 0.96296, Specificity: 0.85714, F1 Score: 0.90698
+Training loss: 20.26885
+Validation loss: 5.81133
 Epoch 56/100
-Training Sensitivity: 0.89744, Specificity: 0.98689, F1 Score: 0.94004
-Validation Sensitivity: 0.88889, Specificity: 0.82143, F1 Score: 0.85383
+Training loss: 19.73348
+Validation loss: 6.98056
 Epoch 57/100
-Training Sensitivity: 0.91255, Specificity: 0.97350, F1 Score: 0.94204
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 18.77768
+Validation loss: 5.55471
 Epoch 58/100
-Training Sensitivity: 0.93997, Specificity: 0.96392, F1 Score: 0.95180
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 23.87151
+Validation loss: 6.00914
 Epoch 59/100
-Training Sensitivity: 0.93006, Specificity: 0.96684, F1 Score: 0.94809
-Validation Sensitivity: 0.92593, Specificity: 0.85714, F1 Score: 0.89021
+Training loss: 18.11292
+Validation loss: 5.69756
 Epoch 60/100
-Training Sensitivity: 0.94298, Specificity: 0.96361, F1 Score: 0.95319
-Validation Sensitivity: 1.00000, Specificity: 0.89286, F1 Score: 0.94340
+Training loss: 19.62738
+Validation loss: 5.20812
 Epoch 61/100
-Training Sensitivity: 0.91549, Specificity: 0.97486, F1 Score: 0.94424
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 18.85084
+Validation loss: 5.95606
 Epoch 62/100
-Training Sensitivity: 0.95150, Specificity: 0.94621, F1 Score: 0.94885
-Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Training loss: 20.99419
+Validation loss: 4.61100
+New best model saved at epoch 62 with loss 4.61100
 Epoch 63/100
-Training Sensitivity: 0.92888, Specificity: 0.96744, F1 Score: 0.94777
-Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Training loss: 20.52519
+Validation loss: 5.49484
 Epoch 64/100
-Training Sensitivity: 0.94501, Specificity: 0.97007, F1 Score: 0.95737
-Validation Sensitivity: 0.85185, Specificity: 0.89286, F1 Score: 0.87187
+Training loss: 18.05922
+Validation loss: 4.13114
+New best model saved at epoch 64 with loss 4.13114
 Epoch 65/100
-Training Sensitivity: 0.92445, Specificity: 0.96275, F1 Score: 0.94321
-Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Training loss: 20.18632
+Validation loss: 5.73226
 Epoch 66/100
-Training Sensitivity: 0.91926, Specificity: 0.98472, F1 Score: 0.95087
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 21.32527
+Validation loss: 4.92086
 Epoch 67/100
-Training Sensitivity: 0.93304, Specificity: 0.97613, F1 Score: 0.95410
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Training loss: 22.57125
+Validation loss: 6.28835
 Epoch 68/100
-Training Sensitivity: 0.90714, Specificity: 0.98760, F1 Score: 0.94566
-Validation Sensitivity: 0.85185, Specificity: 0.89286, F1 Score: 0.87187
+Training loss: 17.34347
+Validation loss: 4.51518
 Epoch 69/100
-Training Sensitivity: 0.91978, Specificity: 0.99716, F1 Score: 0.95691
-Validation Sensitivity: 0.77778, Specificity: 0.89286, F1 Score: 0.83135
+Training loss: 20.77978
+Validation loss: 4.75984
 Epoch 70/100
-Training Sensitivity: 0.88439, Specificity: 0.98501, F1 Score: 0.93200
-Validation Sensitivity: 0.74074, Specificity: 0.89286, F1 Score: 0.80972
+Training loss: 19.07503
+Validation loss: 3.73010
+New best model saved at epoch 70 with loss 3.73010
 Epoch 71/100
-Training Sensitivity: 0.91563, Specificity: 0.98578, F1 Score: 0.94941
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 17.59612
+Validation loss: 4.07316
 Epoch 72/100
-Training Sensitivity: 0.89443, Specificity: 0.99462, F1 Score: 0.94187
-Validation Sensitivity: 0.88889, Specificity: 0.89286, F1 Score: 0.89087
+Training loss: 18.31449
+Validation loss: 4.68046
 Epoch 73/100
-Training Sensitivity: 0.91690, Specificity: 0.99148, F1 Score: 0.95273
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Training loss: 16.87138
+Validation loss: 4.33365
 Epoch 74/100
-Training Sensitivity: 0.92230, Specificity: 0.97127, F1 Score: 0.94615
-Validation Sensitivity: 0.74074, Specificity: 0.96429, F1 Score: 0.83786
+Training loss: 19.90120
+Validation loss: 6.11323
 Epoch 75/100
-Training Sensitivity: 0.91703, Specificity: 0.97294, F1 Score: 0.94416
-Validation Sensitivity: 1.00000, Specificity: 0.85714, F1 Score: 0.92308
+Training loss: 20.86604
+Validation loss: 4.47925
 Epoch 76/100
-Training Sensitivity: 0.91474, Specificity: 0.98638, F1 Score: 0.94921
-Validation Sensitivity: 0.74074, Specificity: 0.96429, F1 Score: 0.83786
+Training loss: 17.33841
+Validation loss: 5.60824
 Epoch 77/100
-Training Sensitivity: 0.90730, Specificity: 1.00000, F1 Score: 0.95140
-Validation Sensitivity: 0.77778, Specificity: 0.85714, F1 Score: 0.81553
+Training loss: 21.78547
+Validation loss: 4.25810
 Epoch 78/100
-Training Sensitivity: 0.91499, Specificity: 0.98497, F1 Score: 0.94869
-Validation Sensitivity: 0.85185, Specificity: 0.85714, F1 Score: 0.85449
+Training loss: 20.14946
+Validation loss: 5.99196
 Epoch 79/100
-Training Sensitivity: 0.90045, Specificity: 0.99734, F1 Score: 0.94642
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 19.69440
+Validation loss: 4.78259
 Epoch 80/100
-Training Sensitivity: 0.91520, Specificity: 0.99730, F1 Score: 0.95449
-Validation Sensitivity: 0.74074, Specificity: 0.96429, F1 Score: 0.83786
+Training loss: 17.19634
+Validation loss: 5.36329
 Epoch 81/100
-Training Sensitivity: 0.90469, Specificity: 0.99585, F1 Score: 0.94809
-Validation Sensitivity: 0.74074, Specificity: 0.82143, F1 Score: 0.77900
+Training loss: 21.78088
+Validation loss: 5.31868
 Epoch 82/100
-Training Sensitivity: 0.91525, Specificity: 0.99861, F1 Score: 0.95512
-Validation Sensitivity: 0.96296, Specificity: 0.82143, F1 Score: 0.88658
+Training loss: 20.25761
+Validation loss: 3.88569
 Epoch 83/100
-Training Sensitivity: 0.89804, Specificity: 0.99296, F1 Score: 0.94312
-Validation Sensitivity: 0.74074, Specificity: 0.92857, F1 Score: 0.82409
+Training loss: 22.52710
+Validation loss: 4.64572
 Epoch 84/100
-Training Sensitivity: 0.89940, Specificity: 0.99474, F1 Score: 0.94467
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 16.52606
+Validation loss: 4.56459
 Epoch 85/100
-Training Sensitivity: 0.87770, Specificity: 0.99590, F1 Score: 0.93307
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 19.57668
+Validation loss: 5.14049
 Epoch 86/100
-Training Sensitivity: 0.89118, Specificity: 0.99286, F1 Score: 0.93928
-Validation Sensitivity: 0.74074, Specificity: 0.89286, F1 Score: 0.80972
+Training loss: 19.55706
+Validation loss: 4.31676
 Epoch 87/100
-Training Sensitivity: 0.91896, Specificity: 0.98095, F1 Score: 0.94894
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 20.41273
+Validation loss: 3.60513
+New best model saved at epoch 87 with loss 3.60513
 Epoch 88/100
-Training Sensitivity: 0.92500, Specificity: 0.95751, F1 Score: 0.94097
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 19.85334
+Validation loss: 5.41897
 Epoch 89/100
-Training Sensitivity: 0.95028, Specificity: 0.94587, F1 Score: 0.94807
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Training loss: 17.26887
+Validation loss: 4.89187
 Epoch 90/100
-Training Sensitivity: 0.92970, Specificity: 0.92730, F1 Score: 0.92850
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Training loss: 20.06767
+Validation loss: 4.79847
 Epoch 91/100
-Training Sensitivity: 0.94767, Specificity: 0.96070, F1 Score: 0.95415
-Validation Sensitivity: 0.96296, Specificity: 0.89286, F1 Score: 0.92659
+Training loss: 22.25045
+Validation loss: 3.99424
 Epoch 92/100
-Training Sensitivity: 0.93075, Specificity: 0.96591, F1 Score: 0.94800
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 21.98580
+Validation loss: 3.90207
 Epoch 93/100
-Training Sensitivity: 0.92608, Specificity: 0.96188, F1 Score: 0.94364
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 17.11189
+Validation loss: 4.13834
 Epoch 94/100
-Training Sensitivity: 0.91154, Specificity: 0.98419, F1 Score: 0.94648
-Validation Sensitivity: 0.74074, Specificity: 0.89286, F1 Score: 0.80972
+Training loss: 22.53880
+Validation loss: 3.76998
 Epoch 95/100
-Training Sensitivity: 0.92287, Specificity: 0.99286, F1 Score: 0.95658
-Validation Sensitivity: 0.81481, Specificity: 0.89286, F1 Score: 0.85205
+Training loss: 22.00297
+Validation loss: 4.11645
 Epoch 96/100
-Training Sensitivity: 0.91311, Specificity: 0.99171, F1 Score: 0.95079
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 18.09191
+Validation loss: 4.40945
 Epoch 97/100
-Training Sensitivity: 0.91433, Specificity: 0.97899, F1 Score: 0.94555
-Validation Sensitivity: 1.00000, Specificity: 0.89286, F1 Score: 0.94340
+Training loss: 20.79935
+Validation loss: 4.87849
 Epoch 98/100
-Training Sensitivity: 0.89383, Specificity: 0.98080, F1 Score: 0.93530
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 19.32341
+Validation loss: 3.74472
 Epoch 99/100
-Training Sensitivity: 0.90462, Specificity: 0.97003, F1 Score: 0.93618
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
+Training loss: 21.00139
+Validation loss: 3.67337
 Epoch 100/100
-Training Sensitivity: 0.92232, Specificity: 0.97632, F1 Score: 0.94855
-Validation Sensitivity: 0.92593, Specificity: 0.89286, F1 Score: 0.90909
-Best model for fold 5 saved from epoch 50 with f1 0.94340
-Final training loss: 0.08055
-Final test loss: 0.36917
-All fold val losses: [inf, inf]
-Average val loss: inf
+Training loss: 18.21716
+Validation loss: 4.51531
+Best model for fold 5 saved from epoch 87 with f1 3.60513
+Final training loss: 18.21716
+Final test loss: 4.51531
+All fold val losses: [2.268902611732483, 1.7369875192642212, 2.6347742080688477, 2.280750000476837, 3.605129837989807]
+Average val loss: 2.50531

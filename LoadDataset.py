@@ -117,6 +117,22 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
                     
     return training_tuples_list, test_tuples_list
 
+def split_train_val_index(tuples, aug_factor, piece_size = 1, val_ratio = 0.2):
+    train_index = []
+    val_index = []
+    tuples_num = len(tuples) // aug_factor
+    piece_num = tuples_num // piece_size
+    if int(piece_num * val_ratio) < 1:
+        print("Can't fit validation ratio, check piece size or validation ratio")
+    val_piece_index = random.sample(range(piece_num), max(int(piece_num * val_ratio),1))
+    for i in range(len(tuples)):
+        if (i // aug_factor) // piece_size in val_piece_index:
+            val_index.append(i)
+        else:
+            train_index.append(i)
+    return train_index, val_index
+    
+
 
 
 def low_pass_filter(data, cutoff_freq, sample_rate=1000):
@@ -493,8 +509,8 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
         #direction_data.append([1] if wba_tensor[video_num, start_frame] >= 0 else [0])
         #direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
-        direction_data.append([wba_tensor[video_num, start_frame] - wba_tensor[video_num, start_frame-frame_per_window]])
-        #direction_data.append([wba_tensor[video_num, start_frame]])
+        #direction_data.append([wba_tensor[video_num, start_frame] - wba_tensor[video_num, start_frame-frame_per_window]])
+        direction_data.append([wba_tensor[video_num, start_frame]])
         
     return np.array(video_data), np.array(direction_data)
 
@@ -527,20 +543,20 @@ if __name__ == "__main__":
     # print(np.shape(sac_binary))
     
     # plt.show()
-    folder_path = "./naturalistic"
-    mat_file_name = "experimental_data.mat"
-    ds = 5.625
-    video_data, wba_data_interpolated, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, ds)
-    #%%
-    #%%
-    #plt.plot(wba_data_filtered[i, 2,::1000//30], color='red')
+    # folder_path = "./naturalistic"
+    # mat_file_name = "experimental_data.mat"
+    # ds = 5.625
+    # video_data, wba_data_interpolated, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, ds)
+    # #%%
+    # #%%
+    # #plt.plot(wba_data_filtered[i, 2,::1000//30], color='red')
     
 
-    plt.plot(wba_data_interpolated[2,:], color='blue')
+    # plt.plot(wba_data_interpolated[2,:], color='blue')
     
-    #plt.plot(mean_wba[2,:3000],color='blue')
-    plt.savefig("test.png")
-    plt.close()
+    # #plt.plot(mean_wba[2,:3000],color='blue')
+    # plt.savefig("test.png")
+    # plt.close()
     
 #%%
 
