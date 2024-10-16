@@ -129,9 +129,9 @@ def flownet3d(layer_configs, num_classes = 2):
 def loss_function(pred, target):
     loss_ch1 = F.mse_loss(pred[:,:,:,:,0], target[:,:,:,:,0])
     loss_ch2 = F.mse_loss(pred[:,:,:,:,1], target[:,:,:,:,1])
-    loss_ch3 = F.mse_loss(pred[:,:,:,:,2], target[:,:,:,:,2])
-    loss_ch4 = F.mse_loss(pred[:,:,:,:,3], target[:,:,:,:,3])
-    return loss_ch1 + loss_ch2 + loss_ch3 + loss_ch4
+    # loss_ch3 = F.mse_loss(pred[:,:,:,:,2], target[:,:,:,:,2])
+    # loss_ch4 = F.mse_loss(pred[:,:,:,:,3], target[:,:,:,:,3])
+    return loss_ch1 + loss_ch2# + loss_ch3 + loss_ch4
 
 #예시: 다양한 형태의 layer_configs를 입력으로 모델을 구성
 # layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]

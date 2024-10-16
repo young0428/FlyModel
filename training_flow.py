@@ -23,7 +23,7 @@ frame_per_window = 16
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "8fold_opticflow_4ch_"
+model_string = "opticflow_2ch_3layers"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -35,12 +35,12 @@ os.makedirs(model_name, exist_ok=True)
 result_save_path = f"./model/{model_string}/result_data.h5"
 
 # hyperparameter 
-batch_size = 10
+batch_size = 20
 lr = 1e-3
-epochs = 300
+epochs = 100
 fold_factor = 5
 
-layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
+layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
 
 video_data, total_frame = load_video_data(folder_path, downsampling_factor)
 video_data = aug_videos(video_data)
@@ -51,7 +51,7 @@ recent_losses = deque(maxlen=100)
 test_losses_per_epoch = []
 
 batch_tuples = np.array(generate_tuples_flow(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
-kf = KFold(n_splits=fold_factor)
+kf = KFold(n_splits=fold_factor, shuffle=True, random_state=42)
 
 all_fold_losses = []
 #%%
@@ -64,7 +64,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # create model
     #model = p3d_resnet(input_ch, block_list, feature_output_dims)
-    model = flownet3d(layer_configs, num_classes=4)
+    model = flownet3d(layer_configs, num_classes=2)
     trainer = Trainer(model, loss_function, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
@@ -178,7 +178,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
             
             _, predictions = trainer.evaluate(batch_input_data, batch_target_data)
-            batch_input_data[:, ::2, ::2, ::2, 0:1]
+            
             
 
             fig, axes = plt.subplots(3, 6, figsize=(15, 8))
@@ -196,7 +196,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # target
             for j in range(3):
                 img_left = batch_target_data[j,-1,:,:,0].cpu()
-                img_right = batch_target_data[j,-1,:,:,2].cpu()
+                img_right = batch_target_data[j,-1,:,:,1].cpu()
                 axes[1, j*2].imshow(img_left)
                 axes[1, j*2+1].imshow(img_right)
                 axes[1, j*2].axis('off')  # 축 숨기기
@@ -205,7 +205,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # prediction       
             for j in range(3):
                 img_left = predictions[j,-1,:,:,0].cpu()
-                img_right = predictions[j,-1,:,:,2].cpu()
+                img_right = predictions[j,-1,:,:,1].cpu()
                 axes[2, j*2].imshow(img_left)
                 axes[2, j*2+1].imshow(img_right)
                 axes[2, j*2].axis('off')  # 축 숨기기

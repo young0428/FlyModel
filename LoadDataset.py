@@ -572,7 +572,7 @@ def generate_tuples_sac(frame_num, frame_per_window, frame_per_sliding, video_nu
     # 0 = Bird
     # 1 = City
     # 2 = forest
-    for video_n in range(2, 3):  # n = 0, 1, 2, video#
+    for video_n in range(0, video_num):  # n = 0, 1, 2, video#
         for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
             tuples.append((video_n, start_frame))
                     
@@ -610,7 +610,7 @@ def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
-        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:5])
+        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:3])
 
     return np.array(video_data), np.array(flow_data)
 
