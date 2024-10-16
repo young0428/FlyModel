@@ -23,7 +23,7 @@ frame_per_window = 16
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "opticflow_2ch_3layers"
+model_string = "opticflow_2ch_3layers_mse_"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -61,11 +61,12 @@ all_fold_losses = []
 for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
     print(f"Fold {fold+1}")
     fold_path = f"{model_name}/fold_{fold+1}"
+    min_val_loss = np.inf
 
     # create model
     #model = p3d_resnet(input_ch, block_list, feature_output_dims)
     model = flownet3d(layer_configs, num_classes=2)
-    trainer = Trainer(model, loss_function, lr)
+    trainer = Trainer(model, loss_function_mse, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
 
@@ -156,6 +157,13 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+            
+        if avg_test_loss < min_val_loss:
+            min_val_loss = avg_test_loss
+            best_epoch = epoch + 1
+            best_model_path = f"{fold_path}/best_model.ckpt"
+            trainer.save(best_model_path, epoch)
+            print(f"New best model saved at epoch {best_epoch} with loss {avg_test_loss:.5f}")
         
 
         # Save intermediate results every 10 epochs

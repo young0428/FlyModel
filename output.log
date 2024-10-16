@@ -6,33 +6,475 @@ Shape : (3, 3596, 64, 128, 5)
 augmented shape : (33, 3596, 64, 128, 5)
 Fold 1
 device : cuda
-Model not found at ./model/opticflow_2ch_3layers16frames_/fold_1/fly_model.ckpt
+Model not found at ./model/opticflow_2ch_3layers_mse_16frames_/fold_1/fly_model.ckpt
 Epoch 1/100
-Average test loss after Epoch 1: 179.60132
+Average test loss after Epoch 1: 197.11643
+New best model saved at epoch 1 with loss 197.11643
 Epoch 2/100
-Average test loss after Epoch 2: 174.34685
+Average test loss after Epoch 2: 170.24919
+New best model saved at epoch 2 with loss 170.24919
 Epoch 3/100
-Average test loss after Epoch 3: 168.86426
+Average test loss after Epoch 3: 172.73798
 Epoch 4/100
-Average test loss after Epoch 4: 167.02713
+Average test loss after Epoch 4: 170.94652
 Epoch 5/100
-Average test loss after Epoch 5: 169.24063
+Average test loss after Epoch 5: 172.91635
 Epoch 6/100
-Average test loss after Epoch 6: 175.06171
+Average test loss after Epoch 6: 170.69743
 Epoch 7/100
-Average test loss after Epoch 7: 169.34476
+Average test loss after Epoch 7: 171.54806
 Epoch 8/100
-Average test loss after Epoch 8: 168.28950
+Average test loss after Epoch 8: 172.64981
 Epoch 9/100
-Average test loss after Epoch 9: 168.44329
+Average test loss after Epoch 9: 172.96234
 Epoch 10/100
-Average test loss after Epoch 10: 169.86407
+Average test loss after Epoch 10: 174.23479
 Epoch 11/100
-Average test loss after Epoch 11: 170.08877
+Average test loss after Epoch 11: 170.89988
 Epoch 12/100
-Average test loss after Epoch 12: 171.09324
+Average test loss after Epoch 12: 171.91583
 Epoch 13/100
-Average test loss after Epoch 13: 166.40958
+Average test loss after Epoch 13: 168.16463
+New best model saved at epoch 13 with loss 168.16463
 Epoch 14/100
-Average test loss after Epoch 14: 169.01493
+Average test loss after Epoch 14: 169.19973
 Epoch 15/100
+Average test loss after Epoch 15: 166.97436
+New best model saved at epoch 15 with loss 166.97436
+Epoch 16/100
+Average test loss after Epoch 16: 169.82646
+Epoch 17/100
+Average test loss after Epoch 17: 169.64894
+Epoch 18/100
+Average test loss after Epoch 18: 169.22008
+Epoch 19/100
+Average test loss after Epoch 19: 167.50564
+Epoch 20/100
+Average test loss after Epoch 20: 168.97678
+Epoch 21/100
+Average test loss after Epoch 21: 167.90777
+Epoch 22/100
+Average test loss after Epoch 22: 171.51293
+Epoch 23/100
+Average test loss after Epoch 23: 167.03318
+Epoch 24/100
+Average test loss after Epoch 24: 169.25236
+Epoch 25/100
+Average test loss after Epoch 25: 173.27701
+Epoch 26/100
+Average test loss after Epoch 26: 169.42041
+Epoch 27/100
+Average test loss after Epoch 27: 169.60410
+Epoch 28/100
+Average test loss after Epoch 28: 170.71974
+Epoch 29/100
+Average test loss after Epoch 29: 168.07544
+Epoch 30/100
+Average test loss after Epoch 30: 168.68798
+Epoch 31/100
+Average test loss after Epoch 31: 167.26960
+Epoch 32/100
+Average test loss after Epoch 32: 167.71043
+Epoch 33/100
+Average test loss after Epoch 33: 166.17681
+New best model saved at epoch 33 with loss 166.17681
+Epoch 34/100
+Average test loss after Epoch 34: 168.77341
+Epoch 35/100
+Average test loss after Epoch 35: 166.37101
+Epoch 36/100
+Average test loss after Epoch 36: 170.96796
+Epoch 37/100
+Average test loss after Epoch 37: 167.10719
+Epoch 38/100
+Average test loss after Epoch 38: 168.26821
+Epoch 39/100
+Average test loss after Epoch 39: 167.35128
+Epoch 40/100
+Average test loss after Epoch 40: 170.98213
+Epoch 41/100
+Average test loss after Epoch 41: 168.59758
+Epoch 42/100
+Average test loss after Epoch 42: 166.92686
+Epoch 43/100
+Average test loss after Epoch 43: 168.03156
+Epoch 44/100
+Average test loss after Epoch 44: 168.89740
+Epoch 45/100
+Average test loss after Epoch 45: 168.51952
+Epoch 46/100
+Average test loss after Epoch 46: 164.96479
+New best model saved at epoch 46 with loss 164.96479
+Epoch 47/100
+Average test loss after Epoch 47: 166.23966
+Epoch 48/100
+Average test loss after Epoch 48: 166.20742
+Epoch 49/100
+Average test loss after Epoch 49: 165.96360
+Epoch 50/100
+Average test loss after Epoch 50: 167.79085
+Epoch 51/100
+Average test loss after Epoch 51: 168.14161
+Epoch 52/100
+Average test loss after Epoch 52: 164.86051
+New best model saved at epoch 52 with loss 164.86051
+Epoch 53/100
+Average test loss after Epoch 53: 167.00214
+Epoch 54/100
+Average test loss after Epoch 54: 166.31060
+Epoch 55/100
+Average test loss after Epoch 55: 168.79704
+Epoch 56/100
+Average test loss after Epoch 56: 167.11948
+Epoch 57/100
+Average test loss after Epoch 57: 167.06766
+Epoch 58/100
+Average test loss after Epoch 58: 166.59419
+Epoch 59/100
+Average test loss after Epoch 59: 167.40977
+Epoch 60/100
+Average test loss after Epoch 60: 165.43468
+Epoch 61/100
+Average test loss after Epoch 61: 166.16953
+Epoch 62/100
+Average test loss after Epoch 62: 163.22989
+New best model saved at epoch 62 with loss 163.22989
+Epoch 63/100
+Average test loss after Epoch 63: 167.72152
+Epoch 64/100
+Average test loss after Epoch 64: 167.75854
+Epoch 65/100
+Average test loss after Epoch 65: 166.74131
+Epoch 66/100
+Average test loss after Epoch 66: 165.74481
+Epoch 67/100
+Average test loss after Epoch 67: 164.91920
+Epoch 68/100
+Average test loss after Epoch 68: 167.96439
+Epoch 69/100
+Average test loss after Epoch 69: 165.05020
+Epoch 70/100
+Average test loss after Epoch 70: 166.72729
+Epoch 71/100
+Average test loss after Epoch 71: 164.52847
+Epoch 72/100
+Average test loss after Epoch 72: 164.29732
+Epoch 73/100
+Average test loss after Epoch 73: 167.20842
+Epoch 74/100
+Average test loss after Epoch 74: 167.69817
+Epoch 75/100
+Average test loss after Epoch 75: 162.80050
+New best model saved at epoch 75 with loss 162.80050
+Epoch 76/100
+Average test loss after Epoch 76: 163.85815
+Epoch 77/100
+Average test loss after Epoch 77: 168.03972
+Epoch 78/100
+Average test loss after Epoch 78: 168.66286
+Epoch 79/100
+Average test loss after Epoch 79: 164.12256
+Epoch 80/100
+Average test loss after Epoch 80: 163.15541
+Epoch 81/100
+Average test loss after Epoch 81: 165.82124
+Epoch 82/100
+Average test loss after Epoch 82: 164.90078
+Epoch 83/100
+Average test loss after Epoch 83: 164.98712
+Epoch 84/100
+Average test loss after Epoch 84: 165.84564
+Epoch 85/100
+Average test loss after Epoch 85: 161.58687
+New best model saved at epoch 85 with loss 161.58687
+Epoch 86/100
+Average test loss after Epoch 86: 163.69443
+Epoch 87/100
+Average test loss after Epoch 87: 163.15627
+Epoch 88/100
+Average test loss after Epoch 88: 162.15291
+Epoch 89/100
+Average test loss after Epoch 89: 166.78683
+Epoch 90/100
+Average test loss after Epoch 90: 163.87308
+Epoch 91/100
+Average test loss after Epoch 91: 162.90070
+Epoch 92/100
+Average test loss after Epoch 92: 161.38411
+New best model saved at epoch 92 with loss 161.38411
+Epoch 93/100
+Average test loss after Epoch 93: 161.74794
+Epoch 94/100
+Average test loss after Epoch 94: 164.24648
+Epoch 95/100
+Average test loss after Epoch 95: 162.98592
+Epoch 96/100
+Average test loss after Epoch 96: 163.48454
+Epoch 97/100
+Average test loss after Epoch 97: 166.47073
+Epoch 98/100
+Average test loss after Epoch 98: 166.22922
+Epoch 99/100
+Average test loss after Epoch 99: 165.43547
+Epoch 100/100
+Average test loss after Epoch 100: 162.80915
+Fold 2
+device : cuda
+Model not found at ./model/opticflow_2ch_3layers_mse_16frames_/fold_2/fly_model.ckpt
+Epoch 1/100
+Average test loss after Epoch 1: 285.95632
+New best model saved at epoch 1 with loss 285.95632
+Epoch 2/100
+Average test loss after Epoch 2: 170.97396
+New best model saved at epoch 2 with loss 170.97396
+Epoch 3/100
+Average test loss after Epoch 3: 174.58848
+Epoch 4/100
+Average test loss after Epoch 4: 173.28960
+Epoch 5/100
+Average test loss after Epoch 5: 170.69598
+New best model saved at epoch 5 with loss 170.69598
+Epoch 6/100
+Average test loss after Epoch 6: 172.09571
+Epoch 7/100
+Average test loss after Epoch 7: 174.91320
+Epoch 8/100
+Average test loss after Epoch 8: 172.74414
+Epoch 9/100
+Average test loss after Epoch 9: 174.37381
+Epoch 10/100
+Average test loss after Epoch 10: 171.53745
+Epoch 11/100
+Average test loss after Epoch 11: 173.01669
+Epoch 12/100
+Average test loss after Epoch 12: 175.51593
+Epoch 13/100
+Average test loss after Epoch 13: 171.12943
+Epoch 14/100
+Average test loss after Epoch 14: 173.70882
+Epoch 15/100
+Average test loss after Epoch 15: 174.20717
+Epoch 16/100
+Average test loss after Epoch 16: 171.89782
+Epoch 17/100
+Average test loss after Epoch 17: 172.85348
+Epoch 18/100
+Average test loss after Epoch 18: 175.19668
+Epoch 19/100
+Average test loss after Epoch 19: 171.28918
+Epoch 20/100
+Average test loss after Epoch 20: 171.46096
+Epoch 21/100
+Average test loss after Epoch 21: 173.10332
+Epoch 22/100
+Average test loss after Epoch 22: 171.96490
+Epoch 23/100
+Average test loss after Epoch 23: 175.43473
+Epoch 24/100
+Average test loss after Epoch 24: 170.53510
+New best model saved at epoch 24 with loss 170.53510
+Epoch 25/100
+Average test loss after Epoch 25: 175.01872
+Epoch 26/100
+Average test loss after Epoch 26: 172.23230
+Epoch 27/100
+Average test loss after Epoch 27: 170.49658
+New best model saved at epoch 27 with loss 170.49658
+Epoch 28/100
+Average test loss after Epoch 28: 172.34616
+Epoch 29/100
+Average test loss after Epoch 29: 172.78448
+Epoch 30/100
+Average test loss after Epoch 30: 170.59773
+Epoch 31/100
+Average test loss after Epoch 31: 172.24344
+Epoch 32/100
+Average test loss after Epoch 32: 170.34538
+New best model saved at epoch 32 with loss 170.34538
+Epoch 33/100
+Average test loss after Epoch 33: 173.21993
+Epoch 34/100
+Average test loss after Epoch 34: 173.40777
+Epoch 35/100
+Average test loss after Epoch 35: 168.11134
+New best model saved at epoch 35 with loss 168.11134
+Epoch 36/100
+Average test loss after Epoch 36: 173.80040
+Epoch 37/100
+Average test loss after Epoch 37: 169.24080
+Epoch 38/100
+Average test loss after Epoch 38: 170.03297
+Epoch 39/100
+Average test loss after Epoch 39: 171.26420
+Epoch 40/100
+Average test loss after Epoch 40: 170.62248
+Epoch 41/100
+Average test loss after Epoch 41: 168.13986
+Epoch 42/100
+Average test loss after Epoch 42: 173.04821
+Epoch 43/100
+Average test loss after Epoch 43: 175.38577
+Epoch 44/100
+Average test loss after Epoch 44: 173.98364
+Epoch 45/100
+Average test loss after Epoch 45: 168.01559
+New best model saved at epoch 45 with loss 168.01559
+Epoch 46/100
+Average test loss after Epoch 46: 167.60982
+New best model saved at epoch 46 with loss 167.60982
+Epoch 47/100
+Average test loss after Epoch 47: 167.12799
+New best model saved at epoch 47 with loss 167.12799
+Epoch 48/100
+Average test loss after Epoch 48: 170.45403
+Epoch 49/100
+Average test loss after Epoch 49: 170.47816
+Epoch 50/100
+Average test loss after Epoch 50: 170.91172
+Epoch 51/100
+Average test loss after Epoch 51: 170.85745
+Epoch 52/100
+Average test loss after Epoch 52: 170.42468
+Epoch 53/100
+Average test loss after Epoch 53: 167.55169
+Epoch 54/100
+Average test loss after Epoch 54: 171.41908
+Epoch 55/100
+Average test loss after Epoch 55: 171.18710
+Epoch 56/100
+Average test loss after Epoch 56: 172.19375
+Epoch 57/100
+Average test loss after Epoch 57: 168.81684
+Epoch 58/100
+Average test loss after Epoch 58: 167.62586
+Epoch 59/100
+Average test loss after Epoch 59: 168.27301
+Epoch 60/100
+Average test loss after Epoch 60: 168.64306
+Epoch 61/100
+Average test loss after Epoch 61: 168.32824
+Epoch 62/100
+Average test loss after Epoch 62: 167.47595
+Epoch 63/100
+Average test loss after Epoch 63: 170.24245
+Epoch 64/100
+Average test loss after Epoch 64: 166.40901
+New best model saved at epoch 64 with loss 166.40901
+Epoch 65/100
+Average test loss after Epoch 65: 168.93792
+Epoch 66/100
+Average test loss after Epoch 66: 170.40179
+Epoch 67/100
+Average test loss after Epoch 67: 170.68879
+Epoch 68/100
+Average test loss after Epoch 68: 171.99618
+Epoch 69/100
+Average test loss after Epoch 69: 172.59437
+Epoch 70/100
+Average test loss after Epoch 70: 167.92182
+Epoch 71/100
+Average test loss after Epoch 71: 168.36297
+Epoch 72/100
+Average test loss after Epoch 72: 168.22243
+Epoch 73/100
+Average test loss after Epoch 73: 169.61677
+Epoch 74/100
+Average test loss after Epoch 74: 169.54922
+Epoch 75/100
+Average test loss after Epoch 75: 169.53488
+Epoch 76/100
+Average test loss after Epoch 76: 166.76559
+Epoch 77/100
+Average test loss after Epoch 77: 170.45563
+Epoch 78/100
+Average test loss after Epoch 78: 169.15803
+Epoch 79/100
+Average test loss after Epoch 79: 170.39068
+Epoch 80/100
+Average test loss after Epoch 80: 168.60741
+Epoch 81/100
+Average test loss after Epoch 81: 168.52906
+Epoch 82/100
+Average test loss after Epoch 82: 165.92285
+New best model saved at epoch 82 with loss 165.92285
+Epoch 83/100
+Average test loss after Epoch 83: 169.93543
+Epoch 84/100
+Average test loss after Epoch 84: 168.13872
+Epoch 85/100
+Average test loss after Epoch 85: 167.13769
+Epoch 86/100
+Average test loss after Epoch 86: 168.69942
+Epoch 87/100
+Average test loss after Epoch 87: 169.26113
+Epoch 88/100
+Average test loss after Epoch 88: 165.53216
+New best model saved at epoch 88 with loss 165.53216
+Epoch 89/100
+Average test loss after Epoch 89: 167.78144
+Epoch 90/100
+Average test loss after Epoch 90: 168.85175
+Epoch 91/100
+Average test loss after Epoch 91: 168.38428
+Epoch 92/100
+Average test loss after Epoch 92: 165.59697
+Epoch 93/100
+Average test loss after Epoch 93: 169.83626
+Epoch 94/100
+Average test loss after Epoch 94: 166.70817
+Epoch 95/100
+Average test loss after Epoch 95: 166.34320
+Epoch 96/100
+Average test loss after Epoch 96: 166.32532
+Epoch 97/100
+Average test loss after Epoch 97: 168.12911
+Epoch 98/100
+Average test loss after Epoch 98: 166.49267
+Epoch 99/100
+Average test loss after Epoch 99: 166.24123
+Epoch 100/100
+Average test loss after Epoch 100: 166.58308
+Fold 3
+device : cuda
+Model not found at ./model/opticflow_2ch_3layers_mse_16frames_/fold_3/fly_model.ckpt
+Epoch 1/100
+Average test loss after Epoch 1: 192.24871
+New best model saved at epoch 1 with loss 192.24871
+Epoch 2/100
+Average test loss after Epoch 2: 175.95780
+New best model saved at epoch 2 with loss 175.95780
+Epoch 3/100
+Average test loss after Epoch 3: 174.86662
+New best model saved at epoch 3 with loss 174.86662
+Epoch 4/100
+Average test loss after Epoch 4: 172.35279
+New best model saved at epoch 4 with loss 172.35279
+Epoch 5/100
+Average test loss after Epoch 5: 177.14434
+Epoch 6/100
+Average test loss after Epoch 6: 175.66604
+Epoch 7/100
+Average test loss after Epoch 7: 173.14557
+Epoch 8/100
+Average test loss after Epoch 8: 174.54130
+Epoch 9/100
+Average test loss after Epoch 9: 176.28718
+Epoch 10/100
+Average test loss after Epoch 10: 170.67876
+New best model saved at epoch 10 with loss 170.67876
+Epoch 11/100
+Average test loss after Epoch 11: 171.65253
+Epoch 12/100
+Average test loss after Epoch 12: 173.23695
+Epoch 13/100
+Average test loss after Epoch 13: 173.39610
+Epoch 14/100
+Average test loss after Epoch 14: 175.26203
+Epoch 15/100
+Average test loss after Epoch 15: 173.92139
+Epoch 16/100
+Average test loss after Epoch 16: 167.51777
+New best model saved at epoch 16 with loss 167.51777
+Epoch 17/100
+Average test loss after Epoch 17: 169.57359
+Epoch 18/100

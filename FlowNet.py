@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import piq
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1):
@@ -126,12 +127,45 @@ class FlowNet3D(nn.Module):
 def flownet3d(layer_configs, num_classes = 2):
     return FlowNet3D(ResidualBlock, layer_configs, num_classes)
 
-def loss_function(pred, target):
+def loss_function_mse(pred, target):
     loss_ch1 = F.mse_loss(pred[:,:,:,:,0], target[:,:,:,:,0])
     loss_ch2 = F.mse_loss(pred[:,:,:,:,1], target[:,:,:,:,1])
     # loss_ch3 = F.mse_loss(pred[:,:,:,:,2], target[:,:,:,:,2])
     # loss_ch4 = F.mse_loss(pred[:,:,:,:,3], target[:,:,:,:,3])
     return loss_ch1 + loss_ch2# + loss_ch3 + loss_ch4
+
+def loss_function_mae(pred, target):
+    
+    loss_ch1 = F.l1_loss(pred[:,:,:,:,0], target[:,:,:,:,0])
+    loss_ch2 = F.l1_loss(pred[:,:,:,:,1], target[:,:,:,:,1])
+    # loss_ch3 = F.l1_loss(pred[:,:,:,:,2], target[:,:,:,:,2])
+    # loss_ch4 = F.l1_loss(pred[:,:,:,:,3], target[:,:,:,:,3])
+    return loss_ch1 + loss_ch2# + loss_ch3 + loss_ch4
+
+def normalize_per_frame(tensor):
+    """
+    각 배치의 각 프레임별로 0~1로 정규화하는 함수
+    tensor: (batch, frame, h, w, channels)
+    """
+    # 차원을 하나씩 축소하여 min과 max를 계산합니다.
+    min_val = tensor.min(dim=2, keepdim=True)[0]  # height 축을 기준으로 최소값 계산
+    min_val = min_val.min(dim=2, keepdim=True)[0]  # width 축을 기준으로 최소값 계산
+
+    max_val = tensor.max(dim=2, keepdim=True)[0]  # height 축을 기준으로 최대값 계산
+    max_val = max_val.max(dim=2, keepdim=True)[0]  # width 축을 기준으로 최대값 계산
+    
+    # 0~1로 정규화, 1e-8은 0으로 나누는 오류 방지
+    return (tensor - min_val) / (max_val - min_val + 1e-8)
+
+def loss_function_ssim(pred, target):
+    pred_norm = normalize_per_frame(pred)
+    target_norm = normalize_per_frame(target)
+    loss_ch1 = 1 - piq.ssim(pred_norm[:,:,:,:,0], target_norm[:,:,:,:,0])
+    loss_ch2 = 1 - piq.ssim(pred_norm[:,:,:,:,1], target_norm[:,:,:,:,1])
+    # loss_ch3 = 1 - ssim(pred[:,:,:,:,2], target[:,:,:,:,2])
+    # loss_ch4 = 1 - ssim(pred[:,:,:,:,3], target[:,:,:,:,3])
+    return loss_ch1 + loss_ch2# + loss_ch3 + loss_ch4
+
 
 #예시: 다양한 형태의 layer_configs를 입력으로 모델을 구성
 # layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
