@@ -157,10 +157,10 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         print(f"device : {self.device}")
         
         #Encoder와 Decoder의 파라미터를 고정 (freeze)
-        # for param in self.flownet3d.encoder.parameters():
-        #     param.requires_grad = False
-        # for param in self.flownet3d.decoder.parameters():
-        #     param.requires_grad = False
+        for param in self.flownet3d.encoder.parameters():
+            param.requires_grad = False
+        for param in self.flownet3d.decoder.parameters():
+            param.requires_grad = False
         
         # Decoder 각 단계에서 나오는 feature를 변환하는 layer들을 초기화
         self.spatial_attentions = nn.ModuleList()

@@ -29,7 +29,7 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
     frame_per_sliding = 8
     input_ch = 1
 
-    model_string = f"only_forest_predict_wba_diff_random_val_optic_3layers_non_fixed_apply_piece_size_{piece_size}"
+    model_string = f"only_forest_predict_wba_diff_random_val_optic_3layers_fixed_apply_piece_size_{piece_size}"
     model_string += f"_{frame_per_window}frames"
 
     folder_path = "./naturalistic"
@@ -235,13 +235,15 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
                 plt.figure(figsize=(10, 6))
                 
                 # wba_data를 window size만큼 생략하고 플로팅
-                #diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
-                #plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
-                plt.plot(np.array(range(0,len(wba_data[2*aug_factor])))+1, wba_data[2*aug_factor], label='WBA Data', color='blue')
+                diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
+                plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
+                #plt.plot(np.array(range(0,len(wba_data[2*aug_factor])))+1, wba_data[2*aug_factor], label='WBA Data', color='blue')
                 
                 # Validation prediction 결과를 다른 색으로 점으로 플로팅
                 val_frames, val_preds = zip(*val_predictions)
-                plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
+                plt.scatter(np.array(val_frames)//frame_per_window, val_preds, color='red', s=6, label='Validation Predictions')
+                #plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
+                
                 
                 plt.xlabel('Frame')
                 plt.ylabel('WBA Value')
