@@ -530,15 +530,15 @@ import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 if __name__ == "__main__":
-    # mat_file_path = "./saccade_prediction_data.mat"
-    # sac_data = interpolate_data(get_sac_data(mat_file_path))
-    # fig, axes = plt.subplots(2, 1, figsize=(16, 16))
-    # sac_binary = compare_and_create_binary_array(sac_data)
-    # print(np.shape(sac_binary))
-    # axes[0].plot(sac_data[0,:300,0], label='left', color='red')
-    # axes[0].plot(sac_data[0,:300,1], label='right', color='blue')
-    # axes[0].plot(sac_binary[0,:300]/2, label='sac_dir',color='gray')
-    # axes[0].legend()
+    mat_file_path = "./saccade_prediction_data.mat"
+    sac_data = interpolate_data(get_sac_data(mat_file_path))
+    fig, axes = plt.subplots(2, 1, figsize=(16, 16))
+    sac_binary = compare_and_create_binary_array(sac_data)
+    print(np.shape(sac_binary))
+    axes[0].plot(sac_data[0,:300,0], label='left', color='red')
+    axes[0].plot(sac_data[0,:300,1], label='right', color='blue')
+    axes[0].plot(sac_binary[0,:300]/2, label='sac_dir',color='gray')
+    axes[0].legend()
 
     # print(np.shape(sac_binary))
     
