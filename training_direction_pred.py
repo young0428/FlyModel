@@ -29,7 +29,7 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
     frame_per_sliding = 8
     input_ch = 1
 
-    model_string = f"only_forest_predict_wba_diff_random_val_optic_3layers_non_fixed_apply_piece_size_{piece_size}"
+    model_string = f"only_forest_predict_wba_diff_random_val_optic_3layers_fixed_apply_piece_size_{piece_size}"
     model_string += f"_{frame_per_window}frames"
 
     folder_path = "./naturalistic"
