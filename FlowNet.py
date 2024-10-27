@@ -151,89 +151,54 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.flownet3d = flownet3d.to(self.device)
         self.feature_dim = feature_dim
-        self.input_dropout = nn.Dropout2d(p=0.1)
+        #self.input_dropout = nn.Dropout2d(p=0.05)
         self.first = True
         
-        print(f"device : {self.device}")
-        
         #Encoder와 Decoder의 파라미터를 고정 (freeze)
-        for param in self.flownet3d.encoder.parameters():
-            param.requires_grad = False
-        for param in self.flownet3d.decoder.parameters():
-            param.requires_grad = False
+        # for param in self.flownet3d.encoder.parameters():
+        #     param.requires_grad = False
+        # for param in self.flownet3d.decoder.parameters():
+        #     param.requires_grad = False
         
-        # Decoder 각 단계에서 나오는 feature를 변환하는 layer들을 초기화
         self.spatial_attentions = nn.ModuleList()
-        self.conv_layers = nn.ModuleList()
-
-        # # 레이어 초기화는 forward pass에서 수행
-
-        # 최종 스칼라 값을 출력하는 FC layer
-        # 실제 크기는 forward pass에서 결정됨
-        self.final_fc = None
-        D, H, W, C = input_size
-        adaptive_size = 8
-        
-        self.conv_layers = nn.ModuleList()
-        self.fc_layers = nn.ModuleList()
-        for i in range(len(self.flownet3d.decoder.upconvs)):
-            in_channels = flownet3d.decoder.convs[i].out_channels
-            self.spatial_attentions.append(SpatialAttention())
-            self.conv_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, 32, kernel_size=2, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv3d(32, 16, kernel_size=2, padding=1),
-                # #nn.ReLU(inplace=True),
-                # nn.Conv3d(max(1,in_channels//2), max(1,in_channels//4), kernel_size=2, padding=1),
-                # #nn.ReLU(inplace=True),
-                # nn.Conv3d(max(1,in_channels//4), max(1,in_channels//4), kernel_size=2, padding=1),
-                
-                nn.Flatten(),
-                
-                # nn.Linear(feature_dim*(adaptive_size**2), feature_dim*4),
-                # nn.ReLU(inplace=True),
-                # nn.Dropout(0.3),
-            ))
+        self.attention = SpatialAttention()
+        self.conv_layers = nn.Sequential(
+            nn.Conv3d(2, 64, kernel_size=3, stride=1, padding=1),
+            nn.AvgPool3d(kernel_size=2, stride=2),
+            nn.Conv3d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.AvgPool3d(kernel_size=2, stride=2),
+            nn.Conv3d(128, 256, kernel_size=3, stride=1, padding=1),
+        )
         self.conv_layers = self.conv_layers.to(self.device)
-        self.spatial_attentions = self.spatial_attentions.to(self.device)
-        dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
+        
+        D, H, W, C = input_size
+        
         with torch.no_grad():
+            dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
+            dummy_output = self.flownet3d(dummy_input)
+            dummy_output = self.flownet3d.swap_axis_for_input(dummy_output)
+            dummy_output = self.conv_layers(dummy_output)
             
-            x = self.flownet3d.swap_axis_for_input(dummy_input)
-            x = self.input_dropout(x)
-            encoder_outputs = self.flownet3d.encoder(x)
-            
-            decoder_output = encoder_outputs[-1]
+            flattened_dim = dummy_output.shape[1] * dummy_output.shape[2] * dummy_output.shape[3] * dummy_output.shape[4]
 
-            features = []
-            for i in range(len(self.flownet3d.decoder.upconvs)):
-                decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
-                decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
-                decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
-                
-                # attention_map = self.spatial_attentions[i](decoder_output)
-                # decoder_output = decoder_output * attention_map
-                
-                # 각 단계에서의 feature 추출
-
-                conv_output = self.conv_layers[i](decoder_output)
-                feature_flattened = conv_output.size(1)
-
-                self.fc_layers.append(nn.Sequential(
-                    nn.Linear(feature_flattened, feature_dim),
-                    nn.ReLU(inplace=True),
-                    nn.Dropout(0.5),
-                    #nn.Linear(512, 1)
-                ))
-            
-    
-        # 최종 스칼라 값을 출력하는 FC layer
-        self.final_fc = nn.Linear(feature_dim * len(self.conv_layers), 1)
+        self.fc_layers = nn.Sequential(
+            nn.Flatten(),
+            nn.Dropout(p=0.3),
+            nn.Linear(flattened_dim, 1024),
+            nn.ReLU(),
+            nn.Dropout(p=0.3),
+            nn.Linear(1024, 2048),
+            nn.ReLU(),
+            nn.Linear(2048, 1)
+        ).to(self.device)
         
         
-        #self.conv_layers = self.conv_layers.to(self.device)
-        self.fc_layers = self.fc_layers.to(self.device)
-        self.final_fc = self.final_fc.to(self.device)
+
+        
+        self.spatial_attentions = self.spatial_attentions.to(self.device)
+        
+
+        #self.final_fc = self.final_fc.to(self.device)
         
         #nn.AdaptiveAvgPool3d((1, adaptive_size, adaptive_size)),  # Global average pooling    
             
@@ -241,32 +206,38 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
     def forward(self, x):
         
         x = self.flownet3d.swap_axis_for_input(x)
-        x = self.input_dropout(x)
+        #x = self.input_dropout(x)
         encoder_outputs = self.flownet3d.encoder(x)
+        decoder_outputs = self.flownet3d.decoder(encoder_outputs)
+        output = self.conv_layers(decoder_outputs)
         
-        decoder_output = encoder_outputs[-1]
+        # attention_map = self.attention(decoder_outputs)
+        # decoder_outputs = decoder_outputs * attention_map
+        
+        output = self.fc_layers(output)
+        
 
         features = []
         
-        for i in range(len(self.flownet3d.decoder.upconvs)):
-            decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
-            decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
-            decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
+        # for i in range(len(self.flownet3d.decoder.upconvs)):
+        #     decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
+        #     decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
+        #     decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
             
-            # attention_map = self.spatial_attentions[i](decoder_output)
-            # decoder_output = decoder_output * attention_map
+        #     #attention_map = self.spatial_attentions[i](decoder_output)
+        #     #decoder_output = decoder_output * attention_map
             
             
-            # 각 단계에서의 feature 추출
+        #     # 각 단계에서의 feature 추출
 
-            conv_output = self.conv_layers[i](decoder_output)
+        #     conv_output = self.conv_layers[i](decoder_output)
 
-            feature = self.fc_layers[i](conv_output)
-            features.append(feature)
+        #     feature = self.fc_layers[i](conv_output)
+        #     features.append(feature)
         
-        # 모든 feature를 종합하여 최종 스칼라 값 출력
-        combined_features = torch.cat(features, dim=1)
-        output = self.final_fc(combined_features)
+        # # 모든 feature를 종합하여 최종 스칼라 값 출력
+        # combined_features = torch.cat(features, dim=1)
+        #output = self.final_fc(combined_features)
         
         return output
 
@@ -278,18 +249,3 @@ def loss_function_mse(pred, target):
 def loss_function_bce(pred, target):
     return F.binary_cross_entropy_with_logits(pred, target)
  
-
-
-
-#예시: 다양한 형태의 layer_configs를 입력으로 모델을 구성
-# layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
-# model = flownet3d(layer_configs, num_classes=2)
-
-# # 테스트용 입력 데이터 생성
-# x = torch.randn((2, 32, 128, 128, 1))  # Batch size: 1, Channels: 4, Depth: 32, Height: 128, Width: 128
-# output = model(x)
-
-# loss = loss_function(x, output)
-# print(loss.item())
-
-# print(output.shape)  # 출력 크기 확인

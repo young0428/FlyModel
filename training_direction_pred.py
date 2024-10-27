@@ -18,6 +18,7 @@ warnings.filterwarnings("ignore", category=UserWarning, message="dropout2d: Rece
 
 torch.autograd.set_detect_anomaly(True)
 
+
 for piece_size in [1, 5, 10, 20, 30, 40]:
     h = 360
     w = 720
@@ -25,11 +26,11 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
     fps = 30
     downsampling_factor = 5.625
 
-    frame_per_window = 8
-    frame_per_sliding = 8
+    frame_per_window = 16
+    frame_per_sliding = 16
     input_ch = 1
 
-    model_string = f"only_forest_predict_wba_diff_random_val_optic_3layers_fixed_apply_piece_size_{piece_size}"
+    model_string = f"no_pre_only_forest_decoder_output_wba_random_val_optic_3layers_piece_size_{piece_size}"
     model_string += f"_{frame_per_window}frames"
 
     folder_path = "./naturalistic"
@@ -93,7 +94,7 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
 
         # create model
         flownet_model = flownet3d(layer_configs, num_classes=2)
-        flownet_model = load_model(flownet_model, pretrained_model_path)
+        #flownet_model = load_model(flownet_model, pretrained_model_path)
         model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
                                             input_size=(frame_per_window, 
                                                         int(h//downsampling_factor), 
@@ -127,7 +128,6 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
         val_losses = []
         val_f1_scores = []
         val_matrices = []
-        
         
 
         # 타이머 시작
