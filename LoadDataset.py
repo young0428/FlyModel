@@ -610,7 +610,7 @@ def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
-        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:3])
+        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:5])
 
     return np.array(video_data), np.array(flow_data)
 

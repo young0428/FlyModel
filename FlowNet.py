@@ -130,9 +130,9 @@ def flownet3d(layer_configs, num_classes = 2):
 def loss_function_mse(pred, target):
     loss_ch1 = F.mse_loss(pred[:,:,:,:,0], target[:,:,:,:,0])
     loss_ch2 = F.mse_loss(pred[:,:,:,:,1], target[:,:,:,:,1])
-    # loss_ch3 = F.mse_loss(pred[:,:,:,:,2], target[:,:,:,:,2])
-    # loss_ch4 = F.mse_loss(pred[:,:,:,:,3], target[:,:,:,:,3])
-    return loss_ch1 + loss_ch2# + loss_ch3 + loss_ch4
+    loss_ch3 = F.mse_loss(pred[:,:,:,:,2], target[:,:,:,:,2])
+    loss_ch4 = F.mse_loss(pred[:,:,:,:,3], target[:,:,:,:,3])
+    return loss_ch1 + loss_ch2 + loss_ch3 + loss_ch4
 
 def loss_function_mae(pred, target):
     
