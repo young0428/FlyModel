@@ -49,36 +49,19 @@ class Trainer :
         
         return epoch
         
-    def step(self, input, target):
-        self.step_counter += 1
-        input = input.to(self.device)
-        target = target.to(self.device)
-        
+    def step(self, input_data, target_data, wba_data):
         self.optimizer.zero_grad()
-        
-        pred = self.model(input)
-        
-        loss = self.loss_func(pred, target)
-        self.loss_sum += loss.item()
-        if self.step_counter % 500 == 0:
-            avg_loss = self.loss_sum / 100
-            self.loss_sum = 0
-            self.scheduler.step(avg_loss)
-            self.lr = self.optimizer.param_groups[0]['lr']
-        
+        pred = self.model(input_data, wba_data)
+        loss = self.loss_func(pred, target_data)
         loss.backward()
         self.optimizer.step()
         return loss, pred
     
     
-    def evaluate(self, input, target):
-        self.model.eval()
+    def evaluate(self, input_data, target_data, wba_data):
         with torch.no_grad():
-            input = input.to(self.device)
-            target = target.to(self.device)
-            pred = self.model(input)
-            loss = self.loss_func(pred, target)
-        self.model.train()
+            pred = self.model(input_data, wba_data)
+            loss = self.loss_func(pred, target_data)
         return loss, pred
     
     def pred(self, input):

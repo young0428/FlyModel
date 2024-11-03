@@ -504,15 +504,20 @@ def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_slidin
 def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, frame_per_window=1):
     video_data = []
     direction_data = []
+    wba_input_data = []  # WBA 입력 데이터 추가
+    
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
-        #direction_data.append([1] if wba_tensor[video_num, start_frame] >= 0 else [0])
-        #direction_data.append([1] if np.mean(wba_tensor[video_num, start_frame-frame_per_window:start_frame]) >= 0 else [0])
-        #direction_data.append([wba_tensor[video_num, start_frame] - wba_tensor[video_num, start_frame-frame_per_window]])
         direction_data.append([wba_tensor[video_num, start_frame+3]])
+        # 시작 프레임의 WBA 값을 입력으로 추가
+        wba_input_data.append([wba_tensor[video_num, start_frame-frame_per_window+3]])
         
-    return np.array(video_data), np.array(direction_data)
+    return (
+        np.array(video_data), 
+        np.array(direction_data), 
+        np.array(wba_input_data)
+    )
 
 def prepare_data(folder_path, mat_file_name, downsampling_factor):
     video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)

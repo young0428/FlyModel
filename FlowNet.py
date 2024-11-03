@@ -146,21 +146,27 @@ class SpatialAttention(nn.Module):
         return self.sigmoid(x)
 
 class FlowNet3DWithFeatureExtraction(nn.Module):
-    def __init__(self, flownet3d, feature_dim=128, input_size = (16,64,128,1)):
+    def __init__(self, flownet3d, feature_dim=128, input_size=(16,64,128,1), freeze = True):
         super(FlowNet3DWithFeatureExtraction, self).__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.flownet3d = flownet3d.to(self.device)
         self.feature_dim = feature_dim
-        #self.input_dropout = nn.Dropout2d(p=0.05)
         self.first = True
         
         #Encoder와 Decoder의 파라미터를 고정 (freeze)
-        # for param in self.flownet3d.encoder.parameters():
-        #     param.requires_grad = False
-        # for param in self.flownet3d.decoder.parameters():
-        #     param.requires_grad = False
         
-        self.spatial_attentions = nn.ModuleList()
+        for param in self.flownet3d.encoder.parameters():
+            param.requires_grad = not freeze
+        for param in self.flownet3d.decoder.parameters():
+            param.requires_grad = not freeze
+        
+        # WBA 입력을 처리하기 위한 dense layer 추가
+        self.wba_dense = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128)
+        ).to(self.device)
+        
         self.attention = SpatialAttention()
         self.conv_layers = nn.Sequential(
             nn.Conv3d(2, 64, kernel_size=3, stride=1, padding=1),
@@ -181,63 +187,32 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             
             flattened_dim = dummy_output.shape[1] * dummy_output.shape[2] * dummy_output.shape[3] * dummy_output.shape[4]
 
+        # FC 레이어 수정 - WBA feature를 추가로 받도록
         self.fc_layers = nn.Sequential(
             nn.Flatten(),
             nn.Dropout(p=0.3),
-            nn.Linear(flattened_dim, 1024),
+            nn.Linear(flattened_dim + 128, 1024),  # WBA feature 128 추가
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Linear(1024, 2048),
             nn.ReLU(),
             nn.Linear(2048, 1)
         ).to(self.device)
-        
-        
 
-        
-        self.spatial_attentions = self.spatial_attentions.to(self.device)
-        
-
-        #self.final_fc = self.final_fc.to(self.device)
-        
-        #nn.AdaptiveAvgPool3d((1, adaptive_size, adaptive_size)),  # Global average pooling    
-            
-
-    def forward(self, x):
-        
+    def forward(self, x, wba_input):
         x = self.flownet3d.swap_axis_for_input(x)
-        #x = self.input_dropout(x)
         encoder_outputs = self.flownet3d.encoder(x)
         decoder_outputs = self.flownet3d.decoder(encoder_outputs)
         output = self.conv_layers(decoder_outputs)
         
-        # attention_map = self.attention(decoder_outputs)
-        # decoder_outputs = decoder_outputs * attention_map
+        # WBA 입력 처리
+        wba_features = self.wba_dense(wba_input)
         
-        output = self.fc_layers(output)
+        # CNN 출력을 flatten하고 WBA feature와 결합
+        output_flat = output.view(output.size(0), -1)
+        combined_features = torch.cat([output_flat, wba_features], dim=1)
         
-
-        features = []
-        
-        # for i in range(len(self.flownet3d.decoder.upconvs)):
-        #     decoder_output = self.flownet3d.decoder.upconvs[i](decoder_output)
-        #     decoder_output = torch.cat([decoder_output, encoder_outputs[-(i+2)]], dim=1)
-        #     decoder_output = F.relu(self.flownet3d.decoder.convs[i](decoder_output))
-            
-        #     #attention_map = self.spatial_attentions[i](decoder_output)
-        #     #decoder_output = decoder_output * attention_map
-            
-            
-        #     # 각 단계에서의 feature 추출
-
-        #     conv_output = self.conv_layers[i](decoder_output)
-
-        #     feature = self.fc_layers[i](conv_output)
-        #     features.append(feature)
-        
-        # # 모든 feature를 종합하여 최종 스칼라 값 출력
-        # combined_features = torch.cat(features, dim=1)
-        #output = self.final_fc(combined_features)
+        output = self.fc_layers(combined_features)
         
         return output
 

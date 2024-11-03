@@ -30,7 +30,7 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
     frame_per_sliding = 16
     input_ch = 1
 
-    model_string = f"no_pre_only_forest_decoder_output_wba_random_val_optic_3layers_piece_size_{piece_size}"
+    model_string = f"decoder_output_wba_start_wba_input_3layers_piece_size_{piece_size}"
     model_string += f"_{frame_per_window}frames"
 
     folder_path = "./naturalistic"
@@ -94,12 +94,13 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
 
         # create model
         flownet_model = flownet3d(layer_configs, num_classes=2)
-        #flownet_model = load_model(flownet_model, pretrained_model_path)
+        flownet_model = load_model(flownet_model, pretrained_model_path)
         model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
                                             input_size=(frame_per_window, 
                                                         int(h//downsampling_factor), 
                                                         int(w//downsampling_factor), 
-                                                        1))
+                                                        1),
+                                            freeze=False)
         trainer = Trainer(model, loss_function_mse, lr)
         current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
         os.makedirs(fold_path, exist_ok=True)
@@ -149,13 +150,14 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
             total_train_loss = 0.0
             
             for batch in progress_bar:
-                batch_input_data, batch_target_data = get_data_from_batch_direction_pred(
+                batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
                     video_data, wba_data, batch, frame_per_window
                 )
                 batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
                 batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
+                batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
 
-                loss, pred = trainer.step(batch_input_data, batch_target_data)
+                loss, pred = trainer.step(batch_input_data, batch_target_data, batch_wba_data)
 
                 recent_losses.append(loss.item())
                 avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
@@ -168,7 +170,7 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
 
                 total_train_loss += loss.item()
 
-                del batch_input_data, batch_target_data, loss, pred
+                del batch_input_data, batch_target_data, batch_wba_data, loss, pred
 
             avg_train_loss = total_train_loss / len(batches)
             train_losses.append(avg_train_loss)
@@ -181,14 +183,15 @@ for piece_size in [1, 5, 10, 20, 30, 40]:
             progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
 
             for batch in progress_bar:
-                batch_input_data, batch_target_data = get_data_from_batch_direction_pred(
+                batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
                     video_data, wba_data, batch, frame_per_window
                 )
                 batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
                 batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
+                batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
 
                 # Calculate test loss
-                loss, pred = trainer.evaluate(batch_input_data, batch_target_data)
+                loss, pred = trainer.evaluate(batch_input_data, batch_target_data, batch_wba_data)
 
                 progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}")
 
