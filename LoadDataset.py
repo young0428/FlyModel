@@ -509,7 +509,7 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append([wba_tensor[video_num, start_frame+3]])
+        direction_data.append([ wba_tensor[video_num, start_frame+3] - wba_tensor[video_num, start_frame+3-frame_per_window] ])
         # 시작 프레임의 WBA 값을 입력으로 추가
         wba_input_data.append([wba_tensor[video_num, start_frame-frame_per_window+3]])
         
