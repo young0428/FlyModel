@@ -12,7 +12,12 @@ echo "$1" >> "$QUEUE_FILE"
 
     while IFS= read -r task; do
         echo "Executing: $task"
-        eval "$task"
-        sed -i '1d' "$QUEUE_FILE"  # 첫 번째 줄 삭제
+        if eval "$task"; then
+            # 작업이 성공적으로 완료된 경우에만 큐에서 제거
+            sed -i '1d' "$QUEUE_FILE"  # 첫 번째 줄 삭제
+        else
+            echo "Task failed: $task"
+            break  # 실패한 경우 루프를 종료하여 나머지 작업은 대기 상태로 유지
+        fi
     done < "$QUEUE_FILE"
-) 200>"$LOCK_FILE" 
+) 200>"$LOCK_FILE"

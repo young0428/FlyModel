@@ -3,6 +3,7 @@
 /convLSTM_3layers/*
 /convLSTM*
 /model/*
+/result_backup
 /best_model/*
 /pretrained_model/*
 ./output.log

@@ -15,11 +15,13 @@ import pytz
 from sklearn.metrics import f1_score, confusion_matrix  # confusion_matrix import
 import warnings
 import sys
+import argparse
+
 warnings.filterwarnings("ignore", category=UserWarning, message="dropout2d: Received a 5-D input")
 
 torch.autograd.set_detect_anomaly(True)
 
-def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40], fix_pre_trained_model = True):
+def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40], fix_pre_trained_model = True, log_to_file=True):
     for piece_size in piece_sizes:
         h = 360
         w = 720
@@ -31,275 +33,282 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
         frame_per_sliding = 16
         input_ch = 1
 
-        model_string = model_folder_name
-        model_string += f"_piece_size_{piece_size}_fix_{str(fix_pre_trained_model)}"
-        model_string += f"_{frame_per_window}frames"
+        # model_string에 해당하는 폴더를 ./model 폴더 안에 생성
+        base_model_path = os.path.join("./model", model_folder_name)
+        if not os.path.exists(base_model_path):
+            os.makedirs(base_model_path)
 
-        folder_path = "./naturalistic"
-        mat_file_name = f"experimental_data.mat"
-        checkpoint_name = "fly_model"
+        model_string = f"{model_folder_name}_piece_size_{piece_size}_fix_{str(fix_pre_trained_model)}_{frame_per_window}frames"
 
-        model_name = f"./model/{model_string}"
-        if os.path.exists(model_name):
-            for i in range(1,100):
-                model_name = f"./model/{model_string}_{i}"
-                if not os.path.exists(model_name):
-                    os.makedirs(model_name)
+        model_path = os.path.join(base_model_path, model_string)
+        if os.path.exists(model_path):
+            for i in range(1, 100):
+                model_path = os.path.join(base_model_path, f"{model_string}_{i}")
+                if not os.path.exists(model_path):
+                    os.makedirs(model_path)
                     break
-                else:
-                    continue
         else:
-            os.makedirs(model_name)
+            os.makedirs(model_path)
 
         # output.log 파일 경로 설정
-        output_log_path = os.path.join(model_name, "output.log")
+        output_log_path = os.path.join(model_path, "output.log")
 
-        # 표준 출력 및 오류를 output.log 파일로 리다이렉트
-        with open(output_log_path, "w") as log_file:
+        if log_to_file:
+            # 표준 출력 및 오류를 output.log 파일로 리다이렉트
+            log_file = open(output_log_path, "w")
             sys.stdout = log_file
             sys.stderr = log_file
 
-            result_save_path = f"./model/{model_string}/result_data.h5"
+        result_save_path = os.path.join(model_path, "result_data.h5")
 
-            pretrained_model_path = "./pretrained_model/64_to_256_3layers.ckpt"
+        pretrained_model_path = "./pretrained_model/64_to_256_3layers.ckpt"
+        data_folder_path = './naturalistic'
+        mat_file_name = "experimental_data.mat"
 
-            # hyperparameter 
-            batch_size = 20
-            lr = 1e-4
-            epochs = 100
-            fold_factor = 3
+        # hyperparameter 
+        batch_size = 20
+        lr = 1e-4
+        epochs = 100
+        fold_factor = 3
 
-            layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
+        layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
 
-            video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
-            video_data, wba_data, aug_factor = aug_videos(video_data, wba_data)
+        video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(data_folder_path, mat_file_name, downsampling_factor)
+        video_data, wba_data, aug_factor = aug_videos(video_data, wba_data)
 
-            print(f"augmented shape : {video_data.shape}")
-            print(f"augmented shape : {wba_data.shape}")
-            wba_data = wba_data
+        print(f"augmented shape : {video_data.shape}")
+        print(f"augmented shape : {wba_data.shape}")
+        wba_data = wba_data
 
-            # Split period and split for training / test data set
-            recent_losses = deque(maxlen=100)
-            recent_f1_scores = deque(maxlen=100)
-            val_losses_per_epoch = []
+        # Split period and split for training / test data set
+        recent_losses = deque(maxlen=100)
+        recent_f1_scores = deque(maxlen=100)
+        val_losses_per_epoch = []
 
-            batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
-            #kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
-            fold_set_list = []
+        batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
+        #kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
+        fold_set_list = []
+            
+        fold_set_list = split_train_val_index(batch_tuples, aug_factor, fold_factor=fold_factor, piece_size=piece_size, val_ratio=0.3)
+            
+
+        all_fold_losses = []
+
+
+        KST = pytz.timezone('Asia/Seoul')
+        for fold, (train_index, val_index) in enumerate(fold_set_list):
+            print(f"Fold {fold+1}")
+            
+            fold_path = f"{model_path}/fold_{fold+1}"
+            
+            
+
+            # create model
+            flownet_model = flownet3d(layer_configs, num_classes=2)
+            flownet_model = load_model(flownet_model, pretrained_model_path)
+            model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
+                                                input_size=(frame_per_window, 
+                                                            int(h//downsampling_factor), 
+                                                            int(w//downsampling_factor), 
+                                                            1),
+                                                freeze=fix_pre_trained_model)
+            trainer = Trainer(model, loss_function_mse, lr)
+            current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
+            os.makedirs(fold_path, exist_ok=True)
+
+            with open(f"{fold_path}/training_tuples.pkl", "wb") as f:
+                pickle.dump(batch_tuples[train_index], f)
+            with open(f"{fold_path}/validation_tuples.pkl", "wb") as f:
+                pickle.dump(batch_tuples[val_index], f)
+
+            # Load epoch start point if exists
+            epoch_start_file = f"{fold_path}/epoch_start.pkl"
+            if os.path.exists(epoch_start_file):
+                with open(epoch_start_file, "rb") as f:
+                    start_epoch = pickle.load(f)
+            else:
+                start_epoch = current_epoch
+
+            # Initialize minimum loss to a large value
+            min_val_loss = float('inf')
+            best_epoch = 0
+
+            # Initialize lists to store metrics
+            train_losses = []
+            train_f1_scores = []
+            train_matrices = []
+            val_losses = []
+            val_f1_scores = []
+            val_matrices = []
+            
+
+            # 타이머 시작
+            start_time = time.time()
+            
+            for epoch in range(start_epoch, epochs):
+                epoch_start_time = time.time()  # 각 epoch의 시작 시간을 기록합니다.
+
+                training_tuples = batch_tuples[train_index]
                 
-            fold_set_list = split_train_val_index(batch_tuples, aug_factor, fold_factor=fold_factor, piece_size=piece_size, val_ratio=0.3)
+                val_tuples = batch_tuples[val_index]
+                val_tuples = [tup for tup in val_tuples if tup[0] == 2 * aug_factor]
+
+                batches = list(get_batches(training_tuples, batch_size))
+                print(f"Epoch {epoch + 1}/{epochs}")
+
+                progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=150)
                 
-
-            all_fold_losses = []
-
-
-            KST = pytz.timezone('Asia/Seoul')
-            for fold, (train_index, val_index) in enumerate(fold_set_list):
-                print(f"Fold {fold+1}")
+                total_train_loss = 0.0
                 
-                fold_path = f"{model_name}/fold_{fold+1}"
+                for batch in progress_bar:
+                    batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
+                        video_data, wba_data, batch, frame_per_window
+                    )
+                    batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
+                    batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
+                    batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
+
+                    loss, pred = trainer.step(batch_input_data, batch_target_data, batch_wba_data)
+
+                    recent_losses.append(loss.item())
+                    avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
+
+                    progress_bar.set_postfix(
+                        loss=f"{loss.item():.5f}",
+                        avg_recent_loss=f"{avg_recent_loss:.5f}",
+                        lr=f"{trainer.lr:.7f}"
+                    )
+
+                    total_train_loss += loss.item()
+
+                    del batch_input_data, batch_target_data, batch_wba_data, loss, pred
+
+                avg_train_loss = total_train_loss / len(batches)
+                train_losses.append(avg_train_loss)
+
+                # Validation Phase
+                val_batches = list(get_batches(val_tuples, batch_size))
+                total_val_loss = 0.0
+                val_predictions = []
                 
+                progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
+
+                for batch in progress_bar:
+                    batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
+                        video_data, wba_data, batch, frame_per_window
+                    )
+                    batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
+                    batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
+                    batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
+
+                    # Calculate test loss
+                    loss, pred = trainer.evaluate(batch_input_data, batch_target_data, batch_wba_data)
+
+                    progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}")
+
+                    batch_target_data_cpu = batch_target_data.cpu()
+                    predictions_cpu = pred.cpu()
+
+                    # (frame, prediction) 형태로 저장
+                    for i, (video_num, start_frame) in enumerate(batch):
+                        val_predictions.append((start_frame, predictions_cpu[i].item()))
+
+                    total_val_loss += loss.item()
+
+                avg_val_loss = total_val_loss / len(val_batches)
+                val_losses.append(avg_val_loss)
                 
-
-                # create model
-                flownet_model = flownet3d(layer_configs, num_classes=2)
-                flownet_model = load_model(flownet_model, pretrained_model_path)
-                model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
-                                                    input_size=(frame_per_window, 
-                                                                int(h//downsampling_factor), 
-                                                                int(w//downsampling_factor), 
-                                                                1),
-                                                    freeze=fix_pre_trained_model)
-                trainer = Trainer(model, loss_function_mse, lr)
-                current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
-                os.makedirs(fold_path, exist_ok=True)
-
-                with open(f"{fold_path}/training_tuples.pkl", "wb") as f:
-                    pickle.dump(batch_tuples[train_index], f)
-                with open(f"{fold_path}/validation_tuples.pkl", "wb") as f:
-                    pickle.dump(batch_tuples[val_index], f)
-
-                # Load epoch start point if exists
-                epoch_start_file = f"{fold_path}/epoch_start.pkl"
-                if os.path.exists(epoch_start_file):
-                    with open(epoch_start_file, "rb") as f:
-                        start_epoch = pickle.load(f)
-                else:
-                    start_epoch = current_epoch
-
-                # Initialize minimum loss to a large value
-                min_val_loss = float('inf')
-                best_epoch = 0
-
-                # Initialize lists to store metrics
-                train_losses = []
-                train_f1_scores = []
-                train_matrices = []
-                val_losses = []
-                val_f1_scores = []
-                val_matrices = []
+                print(f"Training loss: {avg_train_loss:.5f}")
+                print(f"Validation loss: {avg_val_loss:.5f}")
                 
+                update_metrics_plot(fold_path, epoch, train_losses, val_losses)
 
-                # 타이머 시작
-                start_time = time.time()
-                
-                for epoch in range(start_epoch, epochs):
-                    epoch_start_time = time.time()  # 각 epoch의 시작 시간을 기록합니다.
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
 
-                    training_tuples = batch_tuples[train_index]
+                # Save model if this epoch has the lowest test loss
+                if avg_val_loss < min_val_loss:
+                    min_val_loss = avg_val_loss
+                    best_epoch = epoch + 1
+                    best_model_path = f"{fold_path}/best_model.ckpt"
+                    trainer.save(best_model_path, epoch)
+                    print(f"New best model saved at epoch {best_epoch} with loss {avg_val_loss:.5f}")
+
+                if epoch == start_epoch:
+                    first_epoch_duration = time.time() - start_time
+                    print(f"First epoch took {first_epoch_duration:.2f} seconds.")
+
+                    # 전체 프로그램의 예상 종료 시간 계산
+                    total_duration = first_epoch_duration * epochs * fold_factor
+                    estimated_end_time = datetime.now(KST) + timedelta(seconds=total_duration)
+                    print(f"Estimated total program duration: {total_duration / 3600:.2f} hours")
+                    print(f"Estimated program end time (KST): {estimated_end_time.strftime('%Y/%m/%d %H:%M:%S')}")
+
+                # 5 epoch마다 그래프 플로팅 및 저장
+                if (epoch + 1) % 5 == 0:
+                    plt.figure(figsize=(10, 6))
                     
-                    val_tuples = batch_tuples[val_index]
-                    val_tuples = [tup for tup in val_tuples if tup[0] == 2 * aug_factor]
-
-                    batches = list(get_batches(training_tuples, batch_size))
-                    print(f"Epoch {epoch + 1}/{epochs}")
-
-                    progress_bar = tqdm(batches, desc=f'Epoch {epoch + 1}', leave=False, ncols=150)
+                    # wba_data를 window size만큼 생략하고 플로팅
+                    #diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
+                    #plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
+                    plt.plot(np.array(range(0,len(wba_data[2*aug_factor])))+1, wba_data[2*aug_factor], label='WBA Data', color='blue')
                     
-                    total_train_loss = 0.0
                     
-                    for batch in progress_bar:
-                        batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
-                            video_data, wba_data, batch, frame_per_window
-                        )
-                        batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
-                        batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
-                        batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
-
-                        loss, pred = trainer.step(batch_input_data, batch_target_data, batch_wba_data)
-
-                        recent_losses.append(loss.item())
-                        avg_recent_loss = sum(recent_losses) / len(recent_losses) if recent_losses else 0
-
-                        progress_bar.set_postfix(
-                            loss=f"{loss.item():.5f}",
-                            avg_recent_loss=f"{avg_recent_loss:.5f}",
-                            lr=f"{trainer.lr:.7f}"
-                        )
-
-                        total_train_loss += loss.item()
-
-                        del batch_input_data, batch_target_data, batch_wba_data, loss, pred
-
-                    avg_train_loss = total_train_loss / len(batches)
-                    train_losses.append(avg_train_loss)
-
-                    # Validation Phase
-                    val_batches = list(get_batches(val_tuples, batch_size))
-                    total_val_loss = 0.0
-                    val_predictions = []
+                    val_frames, val_preds = zip(*val_predictions)
+                    for i in range(len(val_frames)):
+                        start_frame = val_frames[i] - frame_per_window
+                        plt.plot([start_frame+3, val_frames[i]+3], [wba_data[2*aug_factor][start_frame+3], val_preds[i]], color='red')
+                        plt.scatter(start_frame+3, wba_data[2*aug_factor][start_frame+3], color='black', s=7)  # 시작점에 작은 초록색 원 추가
+                        plt.scatter(val_frames[i]+3, val_preds[i], color='black', s=7)  # 끝점에 작은 주황색 원 추가
+                    #plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
                     
-                    progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=150)
-
-                    for batch in progress_bar:
-                        batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
-                            video_data, wba_data, batch, frame_per_window
-                        )
-                        batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
-                        batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
-                        batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
-
-                        # Calculate test loss
-                        loss, pred = trainer.evaluate(batch_input_data, batch_target_data, batch_wba_data)
-
-                        progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}")
-
-                        batch_target_data_cpu = batch_target_data.cpu()
-                        predictions_cpu = pred.cpu()
-
-                        # (frame, prediction) 형태로 저장
-                        for i, (video_num, start_frame) in enumerate(batch):
-                            val_predictions.append((start_frame, predictions_cpu[i].item()))
-
-                        total_val_loss += loss.item()
-
-                    avg_val_loss = total_val_loss / len(val_batches)
-                    val_losses.append(avg_val_loss)
+                    plt.xlabel('Frame')
+                    plt.ylabel('WBA Value')
+                    plt.title(f'Validation Predictions vs WBA Data at Epoch {epoch + 1}')
+                    plt.legend()
                     
-                    print(f"Training loss: {avg_train_loss:.5f}")
-                    print(f"Validation loss: {avg_val_loss:.5f}")
-                    
-                    update_metrics_plot(fold_path, epoch, train_losses, val_losses)
+                    intermediate_path = f"{fold_path}/intermediate_epoch"
+                    os.makedirs(intermediate_path, exist_ok=True)
+                    plt.savefig(f"{intermediate_path}/{epoch + 1}.png")
+                    plt.close()
 
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
+            print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with f1 {min_val_loss:.5f}")
+            all_fold_losses.append(min_val_loss)
 
-                    # Save model if this epoch has the lowest test loss
-                    if avg_val_loss < min_val_loss:
-                        min_val_loss = avg_val_loss
-                        best_epoch = epoch + 1
-                        best_model_path = f"{fold_path}/best_model.ckpt"
-                        trainer.save(best_model_path, epoch)
-                        print(f"New best model saved at epoch {best_epoch} with loss {avg_val_loss:.5f}")
+            print(f"Final training loss: {train_losses[-1]:.5f}")
+            print(f"Final test loss: {val_losses[-1]:.5f}")
 
-                    if epoch == start_epoch:
-                        first_epoch_duration = time.time() - start_time
-                        print(f"First epoch took {first_epoch_duration:.2f} seconds.")
+        # Save and print overall results
+        overall_result_path = f"{model_path}/overall_results"
+        os.makedirs(overall_result_path, exist_ok=True)
 
-                        # 전체 프로그램의 예상 종료 시간 계산
-                        total_duration = first_epoch_duration * epochs * fold_factor
-                        estimated_end_time = datetime.now(KST) + timedelta(seconds=total_duration)
-                        print(f"Estimated total program duration: {total_duration / 3600:.2f} hours")
-                        print(f"Estimated program end time (KST): {estimated_end_time.strftime('%Y/%m/%d %H:%M:%S')}")
+        with open(f"{overall_result_path}/fold_losses.pkl", "wb") as f:
+            pickle.dump(all_fold_losses, f)
 
-                    # 5 epoch마다 그래프 플로팅 및 저장
-                    if (epoch + 1) % 5 == 0:
-                        plt.figure(figsize=(10, 6))
-                        
-                        # wba_data를 window size만큼 생략하고 플로팅
-                        #diff_wba_for_plotting = [ wba_data[ 2*aug_factor, frame_per_window * (i+1) ] - wba_data[2*aug_factor, frame_per_window * i ] for i in range(len(wba_data[2*aug_factor]) // frame_per_window - 1) ]
-                        #plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
-                        plt.plot(np.array(range(0,len(wba_data[2*aug_factor])))+1, wba_data[2*aug_factor], label='WBA Data', color='blue')
-                        
-                        
-                        val_frames, val_preds = zip(*val_predictions)
-                        for i in range(len(val_frames)):
-                            start_frame = val_frames[i] - frame_per_window
-                            plt.plot([start_frame+3, val_frames[i]+3], [wba_data[2*aug_factor][start_frame+3], val_preds[i]], color='red')
-                            plt.scatter(start_frame+3, wba_data[2*aug_factor][start_frame+3], color='black', s=7)  # 시작점에 작은 초록색 원 추가
-                            plt.scatter(val_frames[i]+3, val_preds[i], color='black', s=7)  # 끝점에 작은 주황색 원 추가
-                        #plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
-                        
-                        plt.xlabel('Frame')
-                        plt.ylabel('WBA Value')
-                        plt.title(f'Validation Predictions vs WBA Data at Epoch {epoch + 1}')
-                        plt.legend()
-                        
-                        intermediate_path = f"{fold_path}/intermediate_epoch"
-                        os.makedirs(intermediate_path, exist_ok=True)
-                        plt.savefig(f"{intermediate_path}/{epoch + 1}.png")
-                        plt.close()
+        average_loss = np.mean(all_fold_losses)
+        print(f"All fold val losses: {all_fold_losses}")
+        print(f"Average val loss: {average_loss:.5f}")
 
-                print(f"Best model for fold {fold + 1} saved from epoch {best_epoch} with f1 {min_val_loss:.5f}")
-                all_fold_losses.append(min_val_loss)
-
-                print(f"Final training loss: {train_losses[-1]:.5f}")
-                print(f"Final test loss: {val_losses[-1]:.5f}")
-
-            # Save and print overall results
-            overall_result_path = f"{model_name}/overall_results"
-            os.makedirs(overall_result_path, exist_ok=True)
-
-            with open(f"{overall_result_path}/fold_losses.pkl", "wb") as f:
-                pickle.dump(all_fold_losses, f)
-
-            average_loss = np.mean(all_fold_losses)
-            print(f"All fold val losses: {all_fold_losses}")
-            print(f"Average val loss: {average_loss:.5f}")
-
-            with open(f"{overall_result_path}/average_loss.txt", "w") as f:
-                f.write(f"All fold val losses: {all_fold_losses}\n")
-                f.write(f"Average val loss: {average_loss:.5f}\n")
+        with open(f"{overall_result_path}/average_loss.txt", "w") as f:
+            f.write(f"All fold val losses: {all_fold_losses}\n")
+            f.write(f"Average val loss: {average_loss:.5f}\n")
 
         # 리다이렉트를 원래대로 복원
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-        
+        if log_to_file:
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+            log_file.close()
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Train direction prediction model.')
+    parser.add_argument('--log_to_file', type=bool, default=True, help='Set to True to log to file, False to log to console.')
+
+    args = parser.parse_args()
+
     model_string = "decoder_output_wba_start_wba_input_line_plot_crop_centor"
     piece_sizes = [1, 5, 10, 20, 40]
-    #fix_pre_trained_model = True
     
-    training_direction_pred(model_string, piece_sizes, fix_pre_trained_model= True)
-    training_direction_pred(model_string, piece_sizes, fix_pre_trained_model= False)
+    # log_to_file 인자를 argparse로부터 받아서 사용
+    training_direction_pred(model_string, piece_sizes, fix_pre_trained_model=True, log_to_file=args.log_to_file)
+    training_direction_pred(model_string, piece_sizes, fix_pre_trained_model=False, log_to_file=args.log_to_file)
 

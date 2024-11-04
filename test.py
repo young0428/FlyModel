@@ -1,21 +1,22 @@
-import random
+import os
+import shutil
+import re
 
-def split_train_val_index(tuples, aug_factor, piece_size = 1, val_ratio = 0.2):
-    train_index = []
-    val_index = []
-    tuples_num = len(tuples) // aug_factor
-    piece_num = tuples_num // piece_size
-    if int(piece_num * val_ratio) < 1:
-        print("Can't fit validation ratio, check piece size or validation ratio")
-    val_piece_index = random.sample(range(piece_num), max(int(piece_num * val_ratio),1))
-    for i in range(len(tuples)):
-        if (i // aug_factor) // piece_size in val_piece_index:
-            val_index.append(i)
-        else:
-            train_index.append(i)
-    return train_index, val_index
+# 모델 폴더 경로
+model_dir = './model'
 
-tuples_list = [(i, ) for i in range(1000)]
-train_idx, val_idx = split_train_val_index(tuples_list, 5, 3, 0.2)
-print(len(train_idx), train_idx)
-print(len(val_idx), val_idx)
+# 모델 폴더 내의 모든 폴더를 가져옵니다.
+folders = [f for f in os.listdir(model_dir) if os.path.isdir(os.path.join(model_dir, f))]
+
+# 숫자를 제외한 문자열을 기준으로 정리합니다.
+for folder in folders:
+    # 숫자를 제외한 문자열을 추출합니다.
+    common_name = re.sub(r'\d+', '', folder).rstrip('_')
+
+    # 공통된 이름의 폴더 경로를 만듭니다.
+    common_folder_path = os.path.join(model_dir, common_name)
+
+    # 폴더가 자기 자신 안으로 이동되지 않도록 확인합니다.
+    if common_folder_path != os.path.join(model_dir, folder):
+        os.makedirs(common_folder_path, exist_ok=True)
+        shutil.move(os.path.join(model_dir, folder), os.path.join(common_folder_path, folder))
