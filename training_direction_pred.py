@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore", category=UserWarning, message="dropout2d: Rece
 
 torch.autograd.set_detect_anomaly(True)
 
-def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fix_pre_trained_model = True):
+def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40], fix_pre_trained_model = True):
     for piece_size in piece_sizes:
         h = 360
         w = 720
@@ -30,7 +30,7 @@ def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fi
         frame_per_sliding = 16
         input_ch = 1
 
-        model_string = model_name
+        model_string = model_folder_name
         model_string += f"_piece_size_{piece_size}_fix_{str(fix_pre_trained_model)}"
         model_string += f"_{frame_per_window}frames"
 
@@ -58,7 +58,7 @@ def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fi
         batch_size = 20
         lr = 1e-4
         epochs = 100
-        fold_factor = 5
+        fold_factor = 3
 
         layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
 
@@ -77,9 +77,8 @@ def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fi
         batch_tuples = np.array(generate_tuples_direction_pred(total_frame, frame_per_window, frame_per_sliding, video_data.shape[0]))
         #kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
         fold_set_list = []
-        for i in range(fold_factor):
-            train_idx, val_idx = split_train_val_index(batch_tuples, aug_factor, piece_size=piece_size, val_ratio=0.2)
-            fold_set_list.append((train_idx, val_idx))
+            
+        fold_set_list = split_train_val_index(batch_tuples, aug_factor, fold_factor=fold_factor, piece_size=piece_size, val_ratio=0.3)
             
 
         all_fold_losses = []
@@ -201,7 +200,7 @@ def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fi
 
                     # (frame, prediction) 형태로 저장
                     for i, (video_num, start_frame) in enumerate(batch):
-                        val_predictions.append((start_frame, wba_data[video_num, start_frame+3-frame_per_window] + predictions_cpu[i].item()))
+                        val_predictions.append((start_frame, predictions_cpu[i].item()))
 
                     total_val_loss += loss.item()
 
@@ -243,9 +242,14 @@ def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fi
                     #plt.plot(np.array(range(len(diff_wba_for_plotting)))+1, diff_wba_for_plotting, label='WBA Data', color='blue')
                     plt.plot(np.array(range(0,len(wba_data[2*aug_factor])))+1, wba_data[2*aug_factor], label='WBA Data', color='blue')
                     
-                    # Validation prediction 결과를 다른 색으로 점으로 플로팅
+                    
                     val_frames, val_preds = zip(*val_predictions)
-                    plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
+                    for i in range(len(val_frames)):
+                        start_frame = val_frames[i] - frame_per_window
+                        plt.plot([start_frame+3, val_frames[i]+3], [wba_data[2*aug_factor][start_frame+3], val_preds[i]], color='red')
+                        plt.scatter(start_frame+3, wba_data[2*aug_factor][start_frame+3], color='black', s=7)  # 시작점에 작은 초록색 원 추가
+                        plt.scatter(val_frames[i]+3, val_preds[i], color='black', s=7)  # 끝점에 작은 주황색 원 추가
+                    #plt.scatter(np.array(val_frames), val_preds, color='red', s=6, label='Validation Predictions')
                     
                     plt.xlabel('Frame')
                     plt.ylabel('WBA Value')
@@ -279,7 +283,7 @@ def training_direction_pred(model_name, piece_sizes = [1, 5, 10, 20, 30, 40], fi
             f.write(f"Average val loss: {average_loss:.5f}\n")
         
 if __name__ == "__main__":
-    model_string = "decoder_output_wba_diff_start_wba_input_3layers"
+    model_string = "decoder_output_wba_start_wba_input_line_plot"
     piece_sizes = [1, 5, 10, 20, 30, 40]
     #fix_pre_trained_model = True
     

@@ -117,21 +117,63 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
                     
     return training_tuples_list, test_tuples_list
 
-def split_train_val_index(tuples, aug_factor, piece_size = 1, val_ratio = 0.2):
-    train_index = []
-    val_index = []
+def split_train_val_index(tuples, aug_factor, fold_factor=5, piece_size=1, val_ratio=0.2):
+    """
+    각 fold마다 전체 데이터의 val_ratio 만큼을 겹치지 않게 validation set으로 사용
+    
+    Args:
+        tuples: 전체 데이터 튜플
+        aug_factor: augmentation factor
+        fold_factor: 생성할 fold의 수
+        piece_size: 데이터를 나눌 piece의 크기
+        val_ratio: 각 fold의 validation set 비율
+        
+    Returns:
+        list of tuples: (train_indices, val_indices) 쌍의 리스트
+    """
+    fold_sets = []
     tuples_num = len(tuples) // aug_factor
     piece_num = tuples_num // piece_size
-    if int(piece_num * val_ratio) < 1:
-        print("Can't fit validation ratio, check piece size or validation ratio")
-    val_piece_index = random.sample(range(piece_num), max(int(piece_num * val_ratio),1))
-    for i in range(len(tuples)):
-        if (i // aug_factor) // piece_size in val_piece_index:
-            val_index.append(i)
-        else:
-            train_index.append(i)
-    return train_index, val_index
     
+    # 각 fold마다 필요한 validation piece 개수 계산
+    pieces_per_val = int(piece_num * val_ratio)
+    
+    # 전체 piece 인덱스를 생성하고 섞음
+    all_piece_indices = list(range(piece_num))
+    random.shuffle(all_piece_indices)
+    
+    # 이미 validation set으로 사용된 piece들을 추적
+    used_pieces = set()
+    
+    # 각 fold에 대해
+    for fold in range(fold_factor):
+        val_index = []
+        train_index = []
+        
+        # 아직 사용되지 않은 piece들 중에서 랜덤하게 선택
+        available_pieces = [p for p in all_piece_indices if p not in used_pieces]
+        if len(available_pieces) < pieces_per_val:
+            print(f"Warning: Not enough unused pieces for fold {fold+1}")
+            break
+            
+        # 현재 fold의 validation piece 선택
+        val_pieces = set(random.sample(available_pieces, pieces_per_val))
+        used_pieces.update(val_pieces)
+        
+        # 각 데이터에 대해
+        for i in range(len(tuples)):
+            piece_idx = (i // aug_factor) // piece_size
+            
+            # validation set에 해당하는 piece라면
+            if piece_idx in val_pieces:
+                val_index.append(i)
+            else:
+                train_index.append(i)
+                
+        fold_sets.append((train_index, val_index))
+    
+    return fold_sets
+
 
 
 
@@ -416,7 +458,7 @@ def calculate_manual_wba(video_data):
     각 프레임별로 leftward와 rightward flow vector의 평균을 구하고, 이를 빼서 최종적으로 manual_wba를 반환하는 함수.
     
     Args:
-    video_data (numpy.ndarray): (3, frame#, h, w, c) 형태의 비디오 데이터. c=3, c=4가 leftward, rightward flow vector의 정보를 담고 있음.
+    video_data (numpy.ndarray): (3, frame#, h, w, c) 형태의 비디오 데이터. c=3, c=4가 leftward, rightward flow vector의 정보를 담 있음.
     
     Returns:
     numpy.ndarray: (3, frame#) 형태의 manual_wba.
@@ -509,7 +551,7 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame,:,:,0:1])
-        direction_data.append([ wba_tensor[video_num, start_frame+3] - wba_tensor[video_num, start_frame+3-frame_per_window] ])
+        direction_data.append([ wba_tensor[video_num, start_frame+3] ])
         # 시작 프레임의 WBA 값을 입력으로 추가
         wba_input_data.append([wba_tensor[video_num, start_frame-frame_per_window+3]])
         
