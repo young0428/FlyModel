@@ -30,7 +30,19 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
 
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frame = cv2.resize(frame, (int(frame.shape[1] // downsampling_factor), int(frame.shape[0] // downsampling_factor)))
+            
+            # Get center crop coordinates
+            h, w = frame.shape
+            crop_h = h // 2
+            crop_w = w // 2
+            start_h = (h - crop_h) // 2
+            start_w = (w - crop_w) // 2
+            
+            # Crop center region
+            frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
+            
+            # Apply reduced downsampling to maintain final size
+            frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
             frames.append(frame)
 
         cap.release()
