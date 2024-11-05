@@ -55,7 +55,7 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
 
         result_save_path = os.path.join(model_path, "result_data.h5")
 
-        pretrained_model_path = "./pretrained_model/64x128_opticflow_64t51216frames.ckpt"
+        pretrained_model_path = "./pretrained_model/64_to_256_3layers.ckpt"
 
         # hyperparameter 
         batch_size = 20
@@ -63,8 +63,8 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
         epochs = 100
         fold_factor = 3
 
-        layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
-        #layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
+        #layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
+        layer_configs = [[64, 2], [128, 2], [256, 2]]#, [512, 2]]
         video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)
         video_data, wba_data, aug_factor = aug_videos(video_data, wba_data)
 
@@ -286,7 +286,7 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
             f.write(f"Average val loss: {average_loss:.5f}\n")
         
 if __name__ == "__main__":
-    model_string = "decoder_output_wba_start_wba_input_centor_crop"
+    model_string = "decoder_output_wba_start_wba_LSTM"
     piece_sizes = [1, 5, 10, 20, 40]
     #fix_pre_trained_model = True
     
