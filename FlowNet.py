@@ -146,73 +146,100 @@ class SpatialAttention(nn.Module):
         return self.sigmoid(x)
 
 class FlowNet3DWithFeatureExtraction(nn.Module):
-    def __init__(self, flownet3d, feature_dim=128, input_size=(16,64,128,1), freeze = True):
+    def __init__(self, flownet3d, feature_dim=128, input_size=(16,64,128,1), freeze=True):
         super(FlowNet3DWithFeatureExtraction, self).__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.flownet3d = flownet3d.to(self.device)
         self.feature_dim = feature_dim
-        self.first = True
+        self.num_lstm_layers = 2
+        self.bidirectional = False
+        self.num_directions = 1
         
-        #Encoder와 Decoder의 파라미터를 고정 (freeze)
-        
+        # Encoder와 Decoder 파라미터 고정
         for param in self.flownet3d.encoder.parameters():
             param.requires_grad = not freeze
         for param in self.flownet3d.decoder.parameters():
             param.requires_grad = not freeze
         
-        # WBA 입력을 처리하기 위한 dense layer 추가
-        self.wba_dense = nn.Sequential(
-            nn.Linear(1, 64),
+        # WBA 값으로부터 LSTM 초기 상태를 생성하는 레이어
+        self.wba_to_hidden = nn.Sequential(
+            nn.Linear(1, 256),
             nn.ReLU(),
-            nn.Linear(64, 128)
+            nn.Linear(256, self.num_lstm_layers * feature_dim)
         ).to(self.device)
         
-        self.attention = SpatialAttention()
-        self.conv_layers = nn.Sequential(
-            nn.Conv3d(2, 64, kernel_size=3, stride=1, padding=1),
-            nn.AvgPool3d(kernel_size=2, stride=2),
-            nn.Conv3d(64, 128, kernel_size=3, stride=1, padding=1),
-            nn.AvgPool3d(kernel_size=2, stride=2),
-            nn.Conv3d(128, 256, kernel_size=3, stride=1, padding=1),
-        )
-        self.conv_layers = self.conv_layers.to(self.device)
+        self.wba_to_cell = nn.Sequential(
+            nn.Linear(1, 256),
+            nn.ReLU(),
+            nn.Linear(256, self.num_lstm_layers * feature_dim)
+        ).to(self.device)
         
+        # Dummy forward pass로 LSTM input size 계산
         D, H, W, C = input_size
-        
         with torch.no_grad():
             dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
             dummy_output = self.flownet3d(dummy_input)
             dummy_output = self.flownet3d.swap_axis_for_input(dummy_output)
-            dummy_output = self.conv_layers(dummy_output)
-            
-            flattened_dim = dummy_output.shape[1] * dummy_output.shape[2] * dummy_output.shape[3] * dummy_output.shape[4]
-
-        # FC 레이어 수정 - WBA feature를 추가로 받도록
+            self.lstm_input_size = dummy_output.shape[1] * dummy_output.shape[3] * dummy_output.shape[4]
+        
+        # LSTM 레이어
+        self.lstm = nn.LSTM(
+            input_size=self.lstm_input_size,
+            hidden_size=feature_dim,
+            num_layers=self.num_lstm_layers,
+            batch_first=True,
+            dropout=0.3,
+            bidirectional=False
+        ).to(self.device)
+        
+        # FC 레이어
         self.fc_layers = nn.Sequential(
-            nn.Flatten(),
             nn.Dropout(p=0.3),
-            nn.Linear(flattened_dim + 128, 1024),  # WBA feature 128 추가
+            nn.Linear(feature_dim, 512),
             nn.ReLU(),
             nn.Dropout(p=0.3),
-            nn.Linear(1024, 2048),
+            nn.Linear(512, 256),
             nn.ReLU(),
-            nn.Linear(2048, 1)
+            nn.Linear(256, 1)
         ).to(self.device)
 
+    def init_lstm_states(self, wba_input, batch_size):
+        # WBA 값으로부터 초기 hidden state와 cell state 생성
+        h0 = self.wba_to_hidden(wba_input)
+        c0 = self.wba_to_cell(wba_input)
+        
+        h0 = h0.view(batch_size, 
+                     self.num_lstm_layers, 
+                     self.feature_dim).transpose(0, 1).contiguous()
+        
+        c0 = c0.view(batch_size, 
+                     self.num_lstm_layers, 
+                     self.feature_dim).transpose(0, 1).contiguous()
+        
+        return h0, c0
+
     def forward(self, x, wba_input):
+        # FlowNet 처리
         x = self.flownet3d.swap_axis_for_input(x)
         encoder_outputs = self.flownet3d.encoder(x)
-        decoder_outputs = self.flownet3d.decoder(encoder_outputs)
-        output = self.conv_layers(decoder_outputs)
+        decoder_output = self.flownet3d.decoder(encoder_outputs)
         
-        # WBA 입력 처리
-        wba_features = self.wba_dense(wba_input)
+        # LSTM을 위한 데이터 재구성
+        batch_size = decoder_output.size(0)
+        time_steps = decoder_output.size(2)
         
-        # CNN 출력을 flatten하고 WBA feature와 결합
-        output_flat = output.view(output.size(0), -1)
-        combined_features = torch.cat([output_flat, wba_features], dim=1)
+        lstm_input = decoder_output.permute(0, 2, 1, 3, 4)
+        lstm_input = lstm_input.reshape(batch_size, time_steps, self.lstm_input_size)
         
-        output = self.fc_layers(combined_features)
+        # WBA 값으로부터 LSTM 초기 상태 생성
+        h0, c0 = self.init_lstm_states(wba_input, batch_size)
+        
+        # LSTM 처리
+        lstm_output, _ = self.lstm(lstm_input, (h0, c0))
+        lstm_features = lstm_output[:, -1, :]  # 마지막 시점의 출력만 사용
+        
+        # 최종 예측
+        output = self.fc_layers(lstm_features)
         
         return output
 

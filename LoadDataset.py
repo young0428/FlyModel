@@ -492,8 +492,8 @@ def aug_videos(videos, wba_data):
         augmented_videos.append(apply_salt_and_pepper(video))
         augmented_wba.append(wba_data[i])
 
-        augmented_videos.append(vertical_flip(video))
-        augmented_wba.append(wba_data[i])
+        # augmented_videos.append(vertical_flip(video))
+        # augmented_wba.append(wba_data[i])
         
         horizontal_flipped_video = horizontal_flip(video)
         augmented_videos.append(horizontal_flipped_video)
@@ -504,8 +504,9 @@ def aug_videos(videos, wba_data):
         
         augmented_videos.append(apply_salt_and_pepper(horizontal_flipped_video))
         augmented_wba.append(-wba_data[i])
-        augmented_videos.append(vertical_flip(horizontal_flipped_video))
-        augmented_wba.append(-wba_data[i])
+        
+        # augmented_videos.append(vertical_flip(horizontal_flipped_video))
+        # augmented_wba.append(-wba_data[i])
         
     after_aug_num = len(augmented_videos)
     
@@ -517,9 +518,10 @@ def aug_videos(videos, wba_data):
 def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
     video_data = LoadVideo(folder_path, downsampling_factor)
+    
     #manual_wba_data = calculate_manual_wba(video_data)
     wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
-    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.4)
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7)
     wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
     diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
     total_frame = np.shape(video_data)[1]
