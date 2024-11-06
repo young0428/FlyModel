@@ -30,6 +30,21 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
 
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+                        
+            ## Get center crop coordinates
+            #h, w = frame.shape
+            #crop_h = h // 2
+            #crop_w = w // 2
+            #start_h = (h - crop_h) // 2
+            #start_w = (w - crop_w) // 2
+            
+            ## Crop center region
+            #frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
+            
+            ## Apply reduced downsampling to maintain final size
+            #frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
+           
             frame = cv2.resize(frame, (int(frame.shape[1] // downsampling_factor), int(frame.shape[0] // downsampling_factor)))
             frames.append(frame)
 
@@ -118,19 +133,6 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
     return training_tuples_list, test_tuples_list
 
 def split_train_val_index(tuples, aug_factor, fold_factor=5, piece_size=1, val_ratio=0.2):
-    """
-    각 fold마다 전체 데이터의 val_ratio 만큼을 겹치지 않게 validation set으로 사용
-    
-    Args:
-        tuples: 전체 데이터 튜플
-        aug_factor: augmentation factor
-        fold_factor: 생성할 fold의 수
-        piece_size: 데이터를 나눌 piece의 크기
-        val_ratio: 각 fold의 validation set 비율
-        
-    Returns:
-        list of tuples: (train_indices, val_indices) 쌍의 리스트
-    """
     fold_sets = []
     tuples_num = len(tuples) // aug_factor
     piece_num = tuples_num // piece_size
@@ -518,10 +520,9 @@ def aug_videos(videos, wba_data):
 def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downsampling_factor):
     
     video_data = LoadVideo(folder_path, downsampling_factor)
-    
     #manual_wba_data = calculate_manual_wba(video_data)
     wba_data = convert_mat_to_array(f"{folder_path}/{mat_file_path}")
-    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.7)
+    wba_data_filtered = apply_low_pass_filter_to_wba_data(wba_data, 0.4)
     wba_data_interpolated = np.mean(interpolate_wba_data(wba_data_filtered, original_freq=1000, target_freq=30),axis=0)
     diff_wba_data = np.diff(wba_data_interpolated,axis=-1)
     total_frame = np.shape(video_data)[1]

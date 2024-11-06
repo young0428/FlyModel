@@ -19,16 +19,19 @@ warnings.filterwarnings("ignore", category=UserWarning, message="dropout2d: Rece
 torch.autograd.set_detect_anomaly(True)
 
 def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40], fix_pre_trained_model = True):
+    frame_per_window = 8
+    frame_per_sliding = 8
+    
     # Create base model directory
-    base_model_path = f"./model/{model_folder_name}"
+    base_model_path = f"./model/{model_folder_name}_{frame_per_window}frames"
     os.makedirs(base_model_path, exist_ok=True)
     
     # 먼저 frame_per_window 변수를 정의
-    frame_per_window = 16
+    
     
     for piece_size in piece_sizes:
         # Create subdirectory for each configuration
-        config_string = f"piece_size_{piece_size}_fix_{str(fix_pre_trained_model)}_{frame_per_window}frames"
+        config_string = f"piece_size_{piece_size}_fix_{str(fix_pre_trained_model)}"
         model_path = os.path.join(base_model_path, config_string)
         os.makedirs(model_path, exist_ok=True)
         
@@ -41,8 +44,7 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
         fps = 30
         downsampling_factor = 5.625
 
-        frame_per_window = 16
-        frame_per_sliding = 16
+        
         input_ch = 1
 
         model_string = model_folder_name
@@ -58,7 +60,7 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
         pretrained_model_path = "./pretrained_model/64_to_256_3layers.ckpt"
 
         # hyperparameter 
-        batch_size = 20
+        batch_size = 10
         lr = 1e-4
         epochs = 100
         fold_factor = 3
@@ -286,7 +288,7 @@ def training_direction_pred(model_folder_name, piece_sizes = [1, 5, 10, 20, 40],
             f.write(f"Average val loss: {average_loss:.5f}\n")
         
 if __name__ == "__main__":
-    model_string = "decoder_output_wba_start_wba_LSTM"
+    model_string = "wba_value_whole_features"
     piece_sizes = [1, 5, 10, 20, 40]
     #fix_pre_trained_model = True
     

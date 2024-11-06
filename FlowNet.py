@@ -198,7 +198,6 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         with torch.no_grad():
             
             x = self.flownet3d.swap_axis_for_input(dummy_input)
-            x = self.input_dropout(x)
             encoder_outputs = self.flownet3d.encoder(x)
             
             decoder_output = encoder_outputs[-1]
@@ -236,7 +235,6 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
     def forward(self, x, wba_input):
         
         x = self.flownet3d.swap_axis_for_input(x)
-        x = self.input_dropout(x)
         encoder_outputs = self.flownet3d.encoder(x)
         
         decoder_output = encoder_outputs[-1]
