@@ -7,9 +7,10 @@
 
 
 FILE_NAME=$1
-sudo docker exec -it torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME}"
-#sudo docker exec -d torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME} | tee output.log"
+#sudo docker exec -it torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME}"
+sudo docker exec -d torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME} 2>&1 | tee output.log"
 
+: <<'END'
 # GPU 사용 여부를 확인하는 함수
 check_gpu_usage() {
     nvidia-smi | grep -q 'No running processes found'
@@ -27,7 +28,8 @@ done
 if check_gpu_usage; then
     echo "작업을 시작합니다."
     #sudo docker exec -it torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME}"
-    #sudo docker exec -d torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME} | tee output.log"
+    sudo docker exec -d torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME} 2>&1 | tee output.log"
 else
     echo "다른 사용자가 GPU를 사용 중입니다. 스크립트를 종료합니다."
 fi
+END

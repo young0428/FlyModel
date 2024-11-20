@@ -9,6 +9,8 @@ from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
 
+import warnings
+
 def load_videos_to_tensor(video_paths, downsampling_factor = 1):
     video_tensors = []
     first = True
@@ -32,18 +34,18 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             
                         
-            ## Get center crop coordinates
-            #h, w = frame.shape
-            #crop_h = h // 2
-            #crop_w = w // 2
-            #start_h = (h - crop_h) // 2
-            #start_w = (w - crop_w) // 2
+            # # Get center crop coordinates
+            # h, w = frame.shape
+            # crop_h = h // 2
+            # crop_w = w // 2
+            # start_h = (h - crop_h) // 2
+            # start_w = (w - crop_w) // 2
             
-            ## Crop center region
-            #frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
+            # # Crop center region
+            # frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
             
-            ## Apply reduced downsampling to maintain final size
-            #frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
+            # # Apply reduced downsampling to maintain final size
+            # frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
            
             frame = cv2.resize(frame, (int(frame.shape[1] // downsampling_factor), int(frame.shape[0] // downsampling_factor)))
             frames.append(frame)
@@ -132,9 +134,9 @@ def generate_tuples(frame_num, frame_per_sliding, fps=30, fly_num = 38, video_nu
                     
     return training_tuples_list, test_tuples_list
 
-def split_train_val_index(tuples, aug_factor, fold_factor=5, piece_size=1, val_ratio=0.2):
+def split_train_val_index(tuples, aug_factor, fold_factor=5, piece_size=1, val_ratio=0.2, video_index_num = 1):
     fold_sets = []
-    tuples_num = len(tuples) // aug_factor
+    tuples_num = len(tuples) // aug_factor // video_index_num
     piece_num = tuples_num // piece_size
     
     # 각 fold마다 필요한 validation piece 개수 계산
@@ -164,7 +166,7 @@ def split_train_val_index(tuples, aug_factor, fold_factor=5, piece_size=1, val_r
         
         # 각 데이터에 대해
         for i in range(len(tuples)):
-            piece_idx = (i // aug_factor) // piece_size
+            piece_idx =  ((i % (len(tuples)//video_index_num)) // aug_factor) // piece_size
             
             # validation set에 해당하는 piece라면
             if piece_idx in val_pieces:
@@ -434,7 +436,7 @@ def apply_salt_and_pepper(video, salt_prob=0.001, pepper_prob=0.001):
         for ch in range(c):
             frames[i, coords[0], coords[1], ch] = 1  # 각 채널에 같은 위치에 salt 노이즈 적용
 
-        # Pepper noise: 모든 채널에 동일한 위치에 적용
+        # Pepper noise: 모든 채널에 동일한 위치에 ��용
         num_pepper = np.ceil(pepper_threshold)
         coords = [np.random.randint(0, dim - 1, int(num_pepper)) for dim in frames[i, :, :, 0].shape]
         for ch in range(c):
@@ -474,7 +476,7 @@ def calculate_manual_wba(video_data):
     leftward_mean = np.mean(leftward_flow, axis=(2, 3))  # (3, frame#)
     rightward_mean = np.mean(rightward_flow, axis=(2, 3))  # (3, frame#)
 
-    # leftward와 rightward의 평균을 빼서 manual_wba 계산
+    # leftward와 rightward의 균을 빼서 manual_wba 계산
     manual_wba = leftward_mean - rightward_mean  # (3, frame#)
 
     return manual_wba
@@ -529,16 +531,16 @@ def direction_pred_training_data_preparing_seq(folder_path, mat_file_path, downs
 
     return video_data, wba_data_interpolated, total_frame
 
-def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_sliding, video_num = 3):
+def generate_tuples_direction_pred(frame_num, frame_per_window, frame_per_sliding, video_indices = [2], video_num = 3):
     tuples = []
     
     # 0 = Bird
     # 1 = City
     # 2 = forest
-    selected_video_num = 2
-    for start_frame in range(frame_per_window, frame_num-3, frame_per_sliding): # start_frame
-        for video_n in range((video_num//3)*selected_video_num, (video_num//3)*(selected_video_num+1)):
-            tuples.append((video_n, start_frame))
+    for selected_video_num in video_indices:
+        for start_frame in range(frame_per_window, frame_num-3, frame_per_sliding): # start_frame
+            for video_n in range((video_num//3)*selected_video_num, (video_num//3)*(selected_video_num+1)):
+                tuples.append((video_n, start_frame))
             
     # for start_frame in range(frame_per_window, frame_num, frame_per_sliding): # start_frame
     #     for video_n in range(1, 6, 3):
@@ -563,6 +565,34 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
         np.array(direction_data), 
         np.array(wba_input_data)
     )
+
+def search_related_tuples(base_model_path, config_string, fold_num):
+    # 현재 설정의 파라미터 문자열에서 True/False 제거
+    def erase_parameter_string(string):
+        return string.replace("False", "").replace("True", "")
+    
+    current_model_non_parameter_string = erase_parameter_string(config_string)
+    
+    # base_model_path 내의 모든 폴더 검색
+    for folder in os.listdir(base_model_path):
+        folder_path = os.path.join(base_model_path, folder)
+        if os.path.isdir(folder_path):
+            # 폴더 이름에서 True/False 제거하여 비교
+            if current_model_non_parameter_string == erase_parameter_string(folder):
+                fold_path = os.path.join(folder_path, f"fold_{fold_num}")
+                try:
+                    with open(f"{fold_path}/training_tuples.pkl", "rb") as f:
+                        training_tuples = pickle.load(f)
+                    with open(f"{fold_path}/validation_tuples.pkl", "rb") as f:
+                        validation_tuples = pickle.load(f)
+                    print(f"{fold_path}에서 튜플 파일을 불러왔습니다.")
+                    return training_tuples, validation_tuples
+                except (FileNotFoundError, IOError) as e:
+                    warnings.warn(f"튜플 파일을 불러오는 중 문제가 발생했습니다 ({fold_path}): {e}")
+                    return None, None
+    
+    warnings.warn(f"fold {fold_num}에서 {config_string}와 관련된 모델을 찾을 수 없습니다.")
+    return None, None
 
 def prepare_data(folder_path, mat_file_name, downsampling_factor):
     video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(folder_path, mat_file_name, downsampling_factor)

@@ -1,0 +1,2 @@
+nohup: ignoring input
+the input device is not a TTY

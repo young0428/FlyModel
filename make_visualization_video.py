@@ -35,7 +35,7 @@ def load_model_and_data(model_name, piece_size):
     
     model_path = None
     for base_path in base_paths:
-        temp_path = f"{base_path}/piece_size_{piece_size}_fix_True/fold_1"
+        temp_path = f"{base_path}/piece_size_{piece_size}_fix_False/fold_1"
         if os.path.exists(temp_path):
             model_path = temp_path
             break
@@ -61,9 +61,9 @@ def load_model_and_data(model_name, piece_size):
     return trainer, train_tuples, val_tuples, frame_per_window
 
 def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_list, 
-          video_data, wba_data, frame_per_windows, prev_predictions, prediction_lines, piece_sizes):
+          video_data, wba_data, frame_per_windows, prev_predictions, prediction_lines, piece_sizes,video_type):
     # 비디오 프레임 업데이트
-    video_frame = video_data[2, frame, :, :, 0]
+    video_frame = video_data[video_type, frame, :, :, 0]
     ax_video.clear()
     ax_video.imshow(video_frame, cmap='gray')
     ax_video.axis('off')
@@ -74,9 +74,9 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
         
         # 그래프 초기화 (하얀 배경 유지)
         ax.clear()
-        ax.plot(wba_data[2], color='gray', alpha=0.3)
+        ax.plot(wba_data[video_type], color='gray', alpha=0.3)
         ax.set_title(f'Piece Size: {piece_size} (Window: {fpw} frames)')
-        ax.set_ylim(-10, 30)
+        ax.set_ylim(-20, 40)
         
         # x축 틱 설정
         if i == len(piece_sizes) - 1:  # 마지막 그래프
@@ -99,7 +99,7 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
         # train 또는 val 프레임과 정확히 일치할 때만 예측 수행
         if (is_train or is_val) and frame >= fpw:
             input_data = torch.tensor(
-                video_data[2:3, frame-fpw:frame, :, :, 0:1], 
+                video_data[video_type:video_type+1, frame-fpw:frame, :, :, 0:1],    
                 dtype=torch.float32
             ).to(trainer.device)
             
@@ -107,7 +107,7 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
             if frame-fpw in prev_predictions[i]:
                 prev_wba = prev_predictions[i][frame-fpw]
             else:
-                prev_wba = wba_data[2, frame-fpw]
+                prev_wba = wba_data[video_type, frame-fpw]
                 
             wba_input = torch.tensor(
                 [[prev_wba]], 
@@ -127,14 +127,19 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
             # 예측선 저장
             prediction_lines[i][frame] = (x_coords, y_coords, color)
 
-def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40]):
+def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video_type=2):
     """전체 시각화 동영상을 생성하는 메인 함수"""
     # 데이터 로드
+    video_name = {
+        0 : 'bird',
+        1 : 'city',
+        2 : 'forest'
+    }
     video_data, wba_data, total_frame = direction_pred_training_data_preparing_seq(
         "./naturalistic", "experimental_data.mat", 5.625)
     
     # 그래프 설정
-    fig = plt.figure(figsize=(15, 10))
+    fig = plt.figure(figsize=(15, 12))
     gs = GridSpec(len(piece_sizes) + 1, 1, height_ratios=[2] + [1]*len(piece_sizes))
     
     # 비디오 표시 영역
@@ -157,13 +162,16 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40]):
         frame_per_windows.append(fpw)
         
         # 실제 WBA 데이터 플롯
-        ax_graphs[-1].plot(wba_data[2], color='gray', alpha=0.3)
+        ax_graphs[-1].plot(wba_data[video_type], color='gray', alpha=0.3)
         ax_graphs[-1].set_title(f'Piece Size: {piece_size} (Window: {fpw} frames)')
     
-    frame_size = (1500, 1000)  # 현재 프레임 크기
+    output_folder = f"./visualization_video"
+    os.makedirs(output_folder, exist_ok=True)
+    
+    frame_size = (1500, 1200)  # 현재 프레임 크기
     fps = 30
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # AVI 포맷 사용
-    output_filename = 'wba_value_whole_features_visualization.avi'  # 확장자를 .avi로 변경
+    output_filename = f"{output_folder}/{video_name[video_type]}_{model_name}.avi"  # 확장자를 .avi로 변경
 
     # 비디오 writer 객체 생성
     out = cv2.VideoWriter(output_filename, fourcc, fps, frame_size, isColor=True)
@@ -180,7 +188,7 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40]):
             # 프레임 업데이트
             update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_list, 
                    video_data, wba_data, frame_per_windows, 
-                   prev_predictions, prediction_lines, piece_sizes)
+                   prev_predictions, prediction_lines, piece_sizes, video_type)
             
             # 실시간으로 plot 업데이트
             plt.pause(0.001)  # 화면 업데이트를 위한 짧은 일시 정지
@@ -212,5 +220,5 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40]):
 
 # 사용 예시
 if __name__ == "__main__":
-    model_name = "wba_value_whole_features"
-    create_visualization_video(model_name)
+    model_name = "city_wba_value_whole_features_center_crop_8frames"
+    create_visualization_video(model_name, video_type=1)

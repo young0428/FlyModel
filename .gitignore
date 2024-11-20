@@ -1,4 +1,7 @@
 *.mat
+*.mp4
+*.avi
+
 /naturalistic/*
 /convLSTM_3layers/*
 /convLSTM*
