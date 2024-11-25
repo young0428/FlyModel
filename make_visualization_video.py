@@ -24,21 +24,17 @@ def get_frame_per_window(model_path):
     
     return 8  # 기본값 반환
 
-def load_model_and_data(model_name, piece_size):
+def load_model_and_data(model_name, piece_size, config):
     """모델과 관련 데이터를 로드하는 함수"""
     # 먼저 기본 경로에서 frame_per_window 찾기
-    base_paths = [
-        f"./model/{model_name}",  # 기본 경로
-        f"./model/{model_name}_8frames",  # 8frames가 포함된 경로
-        f"./model/{model_name}_16frames"  # 16frames가 포함된 경로
-    ]
     
-    model_path = None
-    for base_path in base_paths:
-        temp_path = f"{base_path}/piece_size_{piece_size}_fix_False/fold_1"
-        if os.path.exists(temp_path):
-            model_path = temp_path
-            break
+    base_path = f"./model/{model_name}"
+    config_string = ''.join([f"_{key}_{value}" for key, value in config.items()])
+    
+    model_path = f"{base_path}/piece_size_{piece_size}{config_string}/fold_1"
+        
+            
+            
     
     if model_path is None:
         raise FileNotFoundError(f"Could not find model path for piece_size {piece_size}")
@@ -127,7 +123,7 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
             # 예측선 저장
             prediction_lines[i][frame] = (x_coords, y_coords, color)
 
-def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video_type=2):
+def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video_type=2, config={}):
     """전체 시각화 동영상을 생성하는 메인 함수"""
     # 데이터 로드
     video_name = {
@@ -155,7 +151,7 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video
     
     for i, piece_size in enumerate(piece_sizes):
         ax_graphs.append(fig.add_subplot(gs[i+1]))
-        trainer, train_tuples, val_tuples, fpw = load_model_and_data(model_name, piece_size)
+        trainer, train_tuples, val_tuples, fpw = load_model_and_data(model_name, piece_size, config)
         trainers.append(trainer)
         train_tuples_list.append(train_tuples)
         val_tuples_list.append(val_tuples)
@@ -171,7 +167,9 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video
     frame_size = (1500, 1200)  # 현재 프레임 크기
     fps = 30
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # AVI 포맷 사용
-    output_filename = f"{output_folder}/{video_name[video_type]}_{model_name}.avi"  # 확장자를 .avi로 변경
+    # config 값에 따라 파일 이름 변경
+    config_string = ''.join([f"_{key}_{value}" for key, value in config.items()])
+    output_filename = f"{output_folder}/{video_name[video_type]}_{model_name}{config_string}.avi"  # 확장자를 .avi로 변경
 
     # 비디오 writer 객체 생성
     out = cv2.VideoWriter(output_filename, fourcc, fps, frame_size, isColor=True)
@@ -220,5 +218,9 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video
 
 # 사용 예시
 if __name__ == "__main__":
-    model_name = "city_wba_value_whole_features_center_crop_8frames"
-    create_visualization_video(model_name, video_type=1)
+    model_name = "city_and_forest_wba_value_whole_features_8frames"
+    config = {
+        "fix" : False,
+        
+    }
+    create_visualization_video(model_name, video_type=1, config=config)

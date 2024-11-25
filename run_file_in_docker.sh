@@ -7,8 +7,8 @@
 
 
 FILE_NAME=$1
-#sudo docker exec -it torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME}"
-sudo docker exec -d torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME} 2>&1 | tee output.log"
+sudo docker exec -it torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME}"
+#sudo docker exec -d torch_container bash -c "cd /myhome/FlyModel && python3 ${FILE_NAME} 2>&1 | tee output.log"
 
 : <<'END'
 # GPU 사용 여부를 확인하는 함수

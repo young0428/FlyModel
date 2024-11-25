@@ -588,7 +588,9 @@ def search_related_tuples(base_model_path, config_string, fold_num):
                     print(f"{fold_path}에서 튜플 파일을 불러왔습니다.")
                     return training_tuples, validation_tuples
                 except (FileNotFoundError, IOError) as e:
-                    warnings.warn(f"튜플 파일을 불러오는 중 문제가 발생했습니다 ({fold_path}): {e}")
+                    if os.path.exists(fold_path):
+                        print(f"튜플 파일을 불러오는 중 문제가 발생했습니다 ({fold_path}): {e}")
+
                     return None, None
     
     warnings.warn(f"fold {fold_num}에서 {config_string}와 관련된 모델을 찾을 수 없습니다.")

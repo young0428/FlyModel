@@ -22,16 +22,12 @@ frame_per_window = 16
 frame_per_sliding = 16
 input_ch = 1 
 
-model_string = "64x128_opticflow_64t512"
-model_string += f"{frame_per_window}frames_"
+model_string = "64_to_256_3layers.ckpt"
+#model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
 mat_file_name = "experimental_data.mat"
 checkpoint_name = "fly_model"
-
-model_name = f"./model/{model_string}"
-os.makedirs(model_name, exist_ok=True)
-result_save_path = f"./model/{model_string}/result_data.h5"
 
 # hyperparameter 
 batch_size = 50
@@ -39,7 +35,7 @@ lr = 1e-3
 epochs = 100
 fold_factor = 8
 
-layer_configs = [[64, 2], [128, 2], [256, 2], [512, 2]]
+layer_configs = [[64, 2], [128, 2], [256, 2]]
 
 video_data, total_frame = load_video_data(folder_path, downsampling_factor)
 video_data = aug_videos(video_data)
