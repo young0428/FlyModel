@@ -3,4 +3,7 @@
 /convLSTM_3layers/*
 /convLSTM*
 /model
-/best_model
+/pretrained_model
+/result_backup
+/visualization_video
+/extracted_feature
