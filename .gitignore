@@ -4,3 +4,6 @@
 /convLSTM*
 /model
 /pretrained_model
+/result_backup
+/visualization_video
+/extracted_feature
