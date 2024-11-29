@@ -31,7 +31,7 @@ def load_model_and_data(model_name, piece_size, config):
     base_path = f"./model/{model_name}"
     config_string = ''.join([f"_{key}_{value}" for key, value in config.items()])
     
-    model_path = f"{base_path}/piece_size_{piece_size}{config_string}/fold_1"
+    model_path = f"{base_path}/piece_size_{piece_size}{config_string}/fold_3"
         
             
             
@@ -72,7 +72,7 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
         ax.clear()
         ax.plot(wba_data[video_type], color='gray', alpha=0.3)
         ax.set_title(f'Piece Size: {piece_size} (Window: {fpw} frames)')
-        ax.set_ylim(-20, 40)
+        ax.set_ylim(-20, 70)
         
         # x축 틱 설정
         if i == len(piece_sizes) - 1:  # 마지막 그래프
@@ -218,9 +218,10 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video
 
 # 사용 예시
 if __name__ == "__main__":
-    model_name = "city_and_forest_wba_value_whole_features_8frames"
-    config = {
-        "fix" : False,
-        
-    }
-    create_visualization_video(model_name, video_type=1, config=config)
+    model_name = "forest_wba_value_compare_pretrained_and_non_8frames"
+    for pretrained in [True, False]:
+        config = {
+            "fix" : False,
+            "pretrained" : pretrained
+        }
+        create_visualization_video(model_name, video_type=2, config=config)

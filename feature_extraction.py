@@ -37,8 +37,7 @@ def extract_and_save_feature_video(model_config, video_type=2):
     flownet_model_trained = flownet3d([[64, 2], [128, 2], [256, 2]])
     
     # 사전학습 모델 로드
-    pretrained_model = FlowNet3DWithFeatureExtraction(flownet_model_pretrained, feature_dim=128, 
-                                                    input_size=(8, 64, 128, 1))
+    pretrained_model = flownet_model_pretrained
     pretrained_checkpoint = torch.load("./pretrained_model/64_to_256_3layers.ckpt", map_location=device)
     pretrained_model.load_state_dict(pretrained_checkpoint['model_state_dict'], strict=False)
     pretrained_model.to(device)
@@ -53,7 +52,8 @@ def extract_and_save_feature_video(model_config, video_type=2):
     trained_model.eval()
     
     # Feature Extractor 생성
-    pretrained_extractor = FeatureExtractor(pretrained_model)
+    #pretrained_extractor = FeatureExtractor(pretrained_model)
+    pretrained_extractor = pretrained_model
     trained_extractor = FeatureExtractor(trained_model)
     pretrained_extractor.to(device)
     trained_extractor.to(device)
@@ -83,6 +83,10 @@ def extract_and_save_feature_video(model_config, video_type=2):
     with torch.no_grad():
         video = video_data[video_type:video_type+1]
         
+        # 전체 영상에 대한 feature extraction을 먼저 수행하여 전역 min/max 계산
+        all_pretrained_frames = []
+        all_trained_frames = []
+        
         # window_size 단위로 처리 (no overlap)
         for start_idx in range(0, video.shape[1] - window_size + 1, window_size):
             input_data = torch.tensor(
@@ -94,32 +98,41 @@ def extract_and_save_feature_video(model_config, video_type=2):
             pretrained_output = pretrained_extractor(input_data)
             trained_output = trained_extractor(input_data)
             
-            # 각 time step의 feature를 프레임으로 변환
-            for t in range(pretrained_output.shape[1]):  # time dimension
-                # 사전학습 모델의 feature
+            # 각 time step의 feature 저장
+            for t in range(pretrained_output.shape[1]):
                 pretrained_frame = pretrained_output[0, t, :, :, 0].cpu().numpy() + pretrained_output[0, t, :, :, 1].cpu().numpy()
-                pretrained_frame = pretrained_frame * (254/pretrained_frame.max())
-                pretrained_frame = pretrained_frame.astype(np.uint8)
-                #pretrained_frame = (pretrained_frame * 255).astype(np.uint8)
-                
-                # 학습된 모델의 feature
                 trained_frame = trained_output[0, t, :, :, 0].cpu().numpy() + trained_output[0, t, :, :, 1].cpu().numpy()
-                trained_frame = trained_frame * (254/trained_frame.max())
-                trained_frame = trained_frame.astype(np.uint8)
-                #trained_frame = (trained_frame - trained_frame.min()) / (trained_frame.max() - trained_frame.min())
-                #trained_frame = (trained_frame * 255).astype(np.uint8)
                 
-                # 두 프레임을 가로로 연결
-                combined_frame = np.hstack([pretrained_frame, trained_frame])
-                reconstructed_frames.append(combined_frame)
+                all_pretrained_frames.append(pretrained_frame)
+                all_trained_frames.append(trained_frame)
+        
+        # 전체 영상에 대한 min/max 계산
+        all_pretrained_frames = np.array(all_pretrained_frames)
+        all_trained_frames = np.array(all_trained_frames)
+        global_min = min(all_pretrained_frames.min(), all_trained_frames.min())
+        global_max = max(all_pretrained_frames.max(), all_trained_frames.max())
+        
+        # 각 프레임을 전역 min/max로 정규화하여 시각화
+        for pretrained_frame, trained_frame in zip(all_pretrained_frames, all_trained_frames):
+            # 동일한 전역 스케일로 정규화
+            pretrained_frame = (pretrained_frame - global_min) / (global_max - global_min)
+            trained_frame = (trained_frame - global_min) / (global_max - global_min)
             
-            if start_idx % 100 == 0:
-                print(f"Processing frame {start_idx}/{video.shape[1]}")
+            # 히트맵 컬러맵 적용
+            pretrained_frame_colored = cv2.applyColorMap((np.clip(pretrained_frame*2, 0, 1) * 255).astype(np.uint8), cv2.COLORMAP_JET)
+            trained_frame_colored = cv2.applyColorMap((np.clip(trained_frame*20, 0, 1) * 255).astype(np.uint8), cv2.COLORMAP_JET)
+            
+            # 두 프레임을 가로로 연결
+            combined_frame = np.hstack([pretrained_frame_colored, trained_frame_colored])
+            reconstructed_frames.append(combined_frame)
+            
+            if len(reconstructed_frames) % 100 == 0:
+                print(f"Processing frame {len(reconstructed_frames)}/{len(all_pretrained_frames)}")
     
     # 비디오 저장
     print(np.shape(reconstructed_frames))
-    height, width = reconstructed_frames[0].shape
-    out = cv2.VideoWriter(video_filename, fourcc, fps, (width, height), False)
+    height, width = reconstructed_frames[0].shape[:2]  # 컬러 이미지이므로 shape[:2]로 수정
+    out = cv2.VideoWriter(video_filename, fourcc, fps//2, (width, height), True)  # isColor=True로 설정
     
     for frame in reconstructed_frames:
         # 프레임에 텍스트 추가
@@ -139,7 +152,7 @@ if __name__ == "__main__":
         'name': 'city_wba_value_compare_pretrained_and_non_8frames',
         'piece_size': 1,
         'fix': False,
-        'pretrained': True,
+        'pretrained': False,
         'fold': 1
     }
     

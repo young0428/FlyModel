@@ -24,9 +24,11 @@ torch.autograd.set_detect_anomaly(True)
 def training_direction_pred(model_folder_name, 
                             video_indices = [2], 
                             piece_sizes = [1, 5, 10, 20, 40], 
-                            frame_size = 8, 
+                            frame_size = 8,
+                            validation_ratio = 0.3,
                             use_pretrained_model = True, 
                             fix_pre_trained_model = True,
+                            fold_factor = 3,
                             making_video_type = [2],
                             share_tuples = True):
     frame_per_window = frame_size
@@ -50,7 +52,6 @@ def training_direction_pred(model_folder_name,
     batch_size = 10
     lr = 1e-4
     epochs = 100
-    fold_factor = 3
     
     
     folder_path = "./naturalistic"
@@ -113,7 +114,7 @@ def training_direction_pred(model_folder_name,
                                                 aug_factor, 
                                                 fold_factor=fold_factor, 
                                                 piece_size=piece_size, 
-                                                val_ratio=0.3, 
+                                                val_ratio=validation_ratio, 
                                                 video_index_num = len(video_indices),
                                                 )
             
@@ -224,58 +225,60 @@ def training_direction_pred(model_folder_name,
                     train_losses.append(avg_train_loss)
 
                     # Validation Phase
-                    val_batches = list(get_batches(val_tuples, batch_size))
-                    total_val_loss = 0.0
-                    val_predictions = []
-                    
-                    progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=120, disable=True)
-
-                    for batch in progress_bar:
-                        batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
-                            video_data,
-                            wba_data, 
-                            batch, 
-                            frame_per_window
-                        )
-                        batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
-                        batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
-                        batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
-
-                        # Calculate test loss
-                        loss, pred = trainer.evaluate(batch_input_data, batch_target_data, batch_wba_data)
-
-                        #progress_bar.set_postfix(loss=f"{loss.item():.5f}", lr=f"{trainer.lr:.7f}")
-
-                        batch_target_data_cpu = batch_target_data.cpu()
-                        predictions_cpu = pred.cpu()
-
-                        # (frame, prediction) 형태로 저장
-                        for i, (video_num, start_frame) in enumerate(batch):
-                            val_predictions.append((video_num, start_frame, predictions_cpu[i].item()))
-
-                        total_val_loss += loss.item()
+                    if validation_ratio > 0:
+                        val_batches = list(get_batches(val_tuples, batch_size))
+                        total_val_loss = 0.0
+                        val_predictions = []
                         
-                    try:
-                        avg_val_loss = total_val_loss / len(val_batches)
+                        progress_bar = tqdm(val_batches, desc=f'Testing after Epoch {epoch + 1}', leave=False, ncols=120, disable=True)
+
+                        for batch in progress_bar:
+                            batch_input_data, batch_target_data, batch_wba_data = get_data_from_batch_direction_pred(
+                                video_data,
+                                wba_data, 
+                                batch, 
+                                frame_per_window
+                            )
+                            batch_input_data = torch.tensor(batch_input_data, dtype=torch.float32).to(trainer.device)
+                            batch_target_data = torch.tensor(batch_target_data, dtype=torch.float32).to(trainer.device)
+                            batch_wba_data = torch.tensor(batch_wba_data, dtype=torch.float32).to(trainer.device)
+
+                            loss, pred = trainer.evaluate(batch_input_data, batch_target_data, batch_wba_data)
+
+                            batch_target_data_cpu = batch_target_data.cpu()
+                            predictions_cpu = pred.cpu()
+
+                            for i, (video_num, start_frame) in enumerate(batch):
+                                val_predictions.append((video_num, start_frame, predictions_cpu[i].item()))
+
+                            total_val_loss += loss.item()
+                        
+                        avg_val_loss = total_val_loss / len(val_batches) if val_batches else float('inf')
                         val_losses.append(avg_val_loss)
-                    except ZeroDivisionError:
-                        print(f"Epoch {epoch + 1} has no validation batches. Skipping this epoch.")
-                        continue   
-                    
-                    print(f"Training loss: {avg_train_loss:.5f} || Validation loss: {avg_val_loss:.5f}")
-                    
+                        print(f"Training loss: {avg_train_loss:.5f} || Validation loss: {avg_val_loss:.5f}")
+                    else:
+                        avg_val_loss = avg_train_loss
+                        val_losses.append(avg_val_loss)
+                        val_predictions = []  # 빈 리스트로 초기화
+                        print(f"Training loss: {avg_train_loss:.5f} (No validation)")
+
                     update_metrics_plot(fold_path, epoch, train_losses, val_losses)
 
                     if torch.cuda.is_available():
                         torch.cuda.empty_cache()
 
+
+                    
                     # Save model if this epoch has the lowest test loss
                     if avg_val_loss < min_val_loss:
                         min_val_loss = avg_val_loss
                         best_epoch = epoch + 1
                         best_model_path = f"{fold_path}/best_model.ckpt"
                         trainer.save(best_model_path, epoch)
-                        print(f"New best model saved at epoch {best_epoch} with loss {avg_val_loss:.5f}")
+                        if validation_ratio > 0:
+                            print(f"New best model saved at epoch {best_epoch} with validation loss {avg_val_loss:.5f}")
+                        else:
+                            print(f"New best model saved at epoch {best_epoch} with training loss {avg_val_loss:.5f}")
 
                     if epoch == start_epoch and fold == 0 and piece_index == 0:
                         first_epoch_duration = time.time() - start_time
@@ -343,7 +346,7 @@ def training_direction_pred(model_folder_name,
             create_visualization_video(model_name_for_visualization, video_type=video_type, config=config)
     
 if __name__ == "__main__":
-    model_string = "city_wba_value_compare_pretrained_and_non"
+    model_string = "forest_wba_value_compare_pretrained_and_non"
     video_name = {
         0 : 'bird',
         1 : 'city',
@@ -351,12 +354,14 @@ if __name__ == "__main__":
     }
     
     piece_sizes = [1, 5, 10, 20, 40]
-    frame_sizes = [8, 16, 32]
+    frame_sizes = [8, 16]
     video_indices = [1]
     making_video_type = [1]
     use_pretrained_model = False
     fix_pre_trained_model = False
     share_tuples = True
+    fold_factor = 1
+    validation_ratio = 0.3
     
     
     #training_direction_pred(model_string, piece_sizes, fix_pre_trained_model= True)
@@ -368,6 +373,8 @@ if __name__ == "__main__":
             video_indices=video_indices, 
             piece_sizes=piece_sizes, 
             frame_size=frame_size, 
+            validation_ratio = 0.3,
+            fold_factor = 3,
             use_pretrained_model= use_pretrained_model,
             fix_pre_trained_model= fix_pre_trained_model,
             making_video_type=making_video_type,
