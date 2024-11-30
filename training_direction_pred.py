@@ -110,13 +110,17 @@ def training_direction_pred(model_folder_name,
             #kf = KFold(n_splits=fold_factor, random_state=42, shuffle=True)
             fold_set_list = []
                 
-            fold_set_list = split_train_val_index(batch_tuples, 
-                                                aug_factor, 
-                                                fold_factor=fold_factor, 
-                                                piece_size=piece_size, 
-                                                val_ratio=validation_ratio, 
-                                                video_index_num = len(video_indices),
-                                                )
+            if validation_ratio > 0:
+                fold_set_list = split_train_val_index(batch_tuples, 
+                                                    aug_factor, 
+                                                    fold_factor=fold_factor, 
+                                                    piece_size=piece_size, 
+                                                    val_ratio=validation_ratio, 
+                                                    video_index_num = len(video_indices),
+                                                    )
+            else:
+                # validation_ratio가 0일 때는 모든 데이터를 training set으로
+                fold_set_list = [(np.arange(len(batch_tuples)), np.array([])) for _ in range(fold_factor)]
             
 
             all_fold_losses = []
@@ -346,7 +350,7 @@ def training_direction_pred(model_folder_name,
             create_visualization_video(model_name_for_visualization, video_type=video_type, config=config)
     
 if __name__ == "__main__":
-    model_string = "forest_wba_value_compare_pretrained_and_non"
+    model_string = "bird_wba_value_compare_pretrained_and_non"
     video_name = {
         0 : 'bird',
         1 : 'city',
@@ -355,8 +359,8 @@ if __name__ == "__main__":
     
     piece_sizes = [1, 5, 10, 20, 40]
     frame_sizes = [8, 16]
-    video_indices = [1]
-    making_video_type = [1]
+    video_indices = [0]
+    making_video_type = [0]
     use_pretrained_model = False
     fix_pre_trained_model = False
     share_tuples = True
@@ -374,7 +378,7 @@ if __name__ == "__main__":
             piece_sizes=piece_sizes, 
             frame_size=frame_size, 
             validation_ratio = 0.3,
-            fold_factor = 3,
+            fold_factor = fold_factor,
             use_pretrained_model= use_pretrained_model,
             fix_pre_trained_model= fix_pre_trained_model,
             making_video_type=making_video_type,

@@ -57,7 +57,7 @@ def load_model_and_data(model_name, piece_size, config):
     return trainer, train_tuples, val_tuples, frame_per_window
 
 def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_list, 
-          video_data, wba_data, frame_per_windows, prev_predictions, prediction_lines, piece_sizes,video_type):
+          video_data, wba_data, frame_per_windows, prev_predictions, prediction_lines, piece_sizes, video_type):
     # 비디오 프레임 업데이트
     video_frame = video_data[video_type, frame, :, :, 0]
     ax_video.clear()
@@ -90,10 +90,18 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
         
         # train/val 튜플에서 현재 프레임이 정확히 일치하는지 확인
         is_train = any(tup[1] == frame for tup in train_tuples)
-        is_val = any(tup[1] == frame for tup in val_tuples)
         
-        # train 또는 val 프레임과 정확히 일치할 때만 예측 수행
-        if (is_train or is_val) and frame >= fpw:
+        # validation이 있는 경우에만 validation 체크
+        if len(val_tuples) > 0:
+            is_val = any(tup[1] == frame for tup in val_tuples)
+            should_predict = (is_train or is_val) and frame >= fpw
+            color = 'blue' if is_train else 'red'
+        else:
+            # validation이 없는 경우
+            should_predict = is_train and frame >= fpw
+            color = 'blue'  # 모든 예측을 training으로 표시
+        
+        if should_predict:
             input_data = torch.tensor(
                 video_data[video_type:video_type+1, frame-fpw:frame, :, :, 0:1],    
                 dtype=torch.float32
@@ -112,10 +120,8 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
             
             with torch.no_grad():
                 pred = trainer.model(input_data, wba_input)
-                # 예측값 저장
                 prev_predictions[i][frame] = pred.item()
                 
-            color = 'blue' if is_train else 'red'
             x_coords = [frame-fpw, frame]
             y_coords = [prev_wba, pred.item()]
             ax.plot(x_coords, y_coords, color=color, linewidth=1)

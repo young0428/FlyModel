@@ -11,7 +11,44 @@ from scipy.interpolate import interp1d
 
 import warnings
 
-def load_videos_to_tensor(video_paths, downsampling_factor = 1):
+           
+            
+           
+
+
+def fractional_max_pooling(image, down_factor):
+    """
+    비정수 다운샘플링 팩터를 이용한 max pooling
+    :param image: 입력 이미지 (numpy 배열)
+    :param down_factor: 다운샘플링 팩터 (float)
+    :return: 다운스케일된 이미지
+    """
+    # 입력 이미지 크기
+    h, w = image.shape[:2]
+
+    # 최종 출력 크기 계산
+    new_h = int(h // down_factor)
+    new_w = int(w // down_factor)
+
+    # 결과 이미지를 초기화
+    pooled_image = np.zeros((new_h, new_w), dtype=image.dtype)
+
+    # 각 출력 픽셀에 대응하는 입력 영역 계산
+    for i in range(new_h):
+        for j in range(new_w):
+            # 슬라이싱 범위 계산
+            start_h = int(i * down_factor)
+            end_h = min(h, int((i + 1) * down_factor))
+            start_w = int(j * down_factor)
+            end_w = min(w, int((j + 1) * down_factor))
+
+            # 해당 영역에서 최대값 추출
+            pooled_image[i, j] = np.max(image[start_h:end_h, start_w:end_w])
+
+    return pooled_image
+
+
+def load_videos_to_tensor(video_paths, downsampling_factor=1):
     video_tensors = []
     first = True
     for video_path in video_paths:
@@ -32,22 +69,23 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
 
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            
-                        
+
+            # # Max pooling 기반의 fractional 다운샘플링 적용
             # # Get center crop coordinates
             # h, w = frame.shape
             # crop_h = h // 2
             # crop_w = w // 2
             # start_h = (h - crop_h) // 2
             # start_w = (w - crop_w) // 2
-            
+            |
             # # Crop center region
             # frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
             
             # # Apply reduced downsampling to maintain final size
             # frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
-           
-            frame = cv2.resize(frame, (int(frame.shape[1] // downsampling_factor), int(frame.shape[0] // downsampling_factor)))
+            
+            frame = fractional_max_pooling(frame, downsampling_factor)
+
             frames.append(frame)
 
         cap.release()
