@@ -23,7 +23,7 @@ frame_per_window = 16
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "opticflow_4ch_2layers_mse_"
+model_string = "opticflow_2ch_3layers_mse_max_pooling"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
@@ -40,7 +40,7 @@ lr = 1e-3
 epochs = 100
 fold_factor = 5
 
-layer_configs = [[128, 3], [256, 3]]#, [512, 2]]
+layer_configs = [[64, 2], [128, 2], [256, 2]]
 
 video_data, total_frame = load_video_data(folder_path, downsampling_factor)
 video_data = aug_videos(video_data)
@@ -65,7 +65,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
 
     # create model
     #model = p3d_resnet(input_ch, block_list, feature_output_dims)
-    model = flownet3d(layer_configs, num_classes=4)
+    model = flownet3d(layer_configs, num_classes=2)
     trainer = Trainer(model, loss_function_mse, lr)
     current_epoch = trainer.load(f"{fold_path}/{checkpoint_name}.ckpt")
     os.makedirs(fold_path, exist_ok=True)
@@ -204,7 +204,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # target
             for j in range(3):
                 img_left = batch_target_data[j,-1,:,:,0].cpu()
-                img_right = batch_target_data[j,-1,:,:,2].cpu()
+                img_right = batch_target_data[j,-1,:,:,1].cpu()
                 axes[1, j*2].imshow(img_left)
                 axes[1, j*2+1].imshow(img_right)
                 axes[1, j*2].axis('off')  # 축 숨기기
@@ -213,7 +213,7 @@ for fold, (train_index, val_index) in enumerate(kf.split(batch_tuples)):
             # prediction       
             for j in range(3):
                 img_left = predictions[j,-1,:,:,0].cpu()
-                img_right = predictions[j,-1,:,:,2].cpu()
+                img_right = predictions[j,-1,:,:,1].cpu()
                 axes[2, j*2].imshow(img_left)
                 axes[2, j*2+1].imshow(img_right)
                 axes[2, j*2].axis('off')  # 축 숨기기

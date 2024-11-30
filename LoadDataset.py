@@ -5,11 +5,21 @@ import random
 import numpy as np
 import pickle
 import torch
+import torch.nn.functional as F
 from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
 
-def load_videos_to_tensor(video_paths, downsampling_factor = 1):
+def torch_max_pooling(image, down_factor):
+    """
+    PyTorch를 사용한 GPU 가속 max pooling
+    """
+    tensor_image = torch.tensor(image, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, H, W]
+    pooled = F.adaptive_max_pool2d(tensor_image, output_size=(int(image.shape[0] // down_factor), int(image.shape[1] // down_factor)))
+    return pooled.squeeze().numpy()
+
+
+def load_videos_to_tensor(video_paths, downsampling_factor=1):
     video_tensors = []
     first = True
     for video_path in video_paths:
@@ -19,6 +29,8 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
 
         cap = cv2.VideoCapture(video_path)
         frames = []
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_count = 0
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -30,9 +42,19 @@ def load_videos_to_tensor(video_paths, downsampling_factor = 1):
 
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frame = cv2.resize(frame, (int(frame.shape[1] // downsampling_factor), int(frame.shape[0] // downsampling_factor)))
-            frames.append(frame)
 
+            # Max pooling 기반의 fractional 다운샘플링 적용 
+            frame = torch_max_pooling(frame, downsampling_factor)
+
+            frames.append(frame)
+            frame_count += 1
+            
+            # 진행상황 출력 (10% 단위로)
+            if frame_count % (total_frames // 100) == 0:
+                progress = (frame_count / total_frames) * 100
+                print(f"\r비디오 로딩 진행률: {progress:.1f}%", end="")
+
+        print()  # 줄바꿈
         cap.release()
 
         if frames:
@@ -610,7 +632,7 @@ def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=
     for set in batch_set:
         video_num, start_frame = set
         video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
-        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:5])
+        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:3])
 
     return np.array(video_data), np.array(flow_data)
 

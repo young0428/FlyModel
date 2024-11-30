@@ -1,0 +1,10 @@
+./naturalistic/01_Bird.avi                                   Loaded : (5, 3596, 64, 128, 1)
+./naturalistic/02_City.avi                                   Loaded : (5, 3596, 64, 128, 1)
+./naturalistic/03_Forest.avi                                 Loaded : (5, 3596, 64, 128, 1)
+Video is allocated on memory!
+Shape : (3, 3596, 64, 128, 5)
+augmented shape : (33, 3596, 64, 128, 5)
+Fold 1
+device : cuda
+Model not found at ./model/opticflow_2ch_3layers_mse_max_pooling16frames_/fold_1/fly_model.ckpt
+Epoch 1/100
