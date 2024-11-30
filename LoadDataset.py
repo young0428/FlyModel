@@ -604,6 +604,17 @@ def get_data_from_batch_direction_pred(video_tensor, wba_tensor, batch_set, fram
         np.array(wba_input_data)
     )
 
+def get_data_from_batch_flow_estimate(video_tensor, batch_set, frame_per_window=1):
+    video_data = []
+    flow_data = []
+    for set in batch_set:
+        video_num, start_frame = set
+        video_data.append(video_tensor[video_num,start_frame-frame_per_window:start_frame,:,:,0:1])
+        flow_data.append(video_tensor[video_num, start_frame-frame_per_window:start_frame:2, ::2 , ::2, 1:5])
+
+    return np.array(video_data), np.array(flow_data)
+
+
 def search_related_tuples(base_model_path, config_string, fold_num):
     # 현재 설정의 파라미터 문자열에서 True/False 제거
     def erase_parameter_string(string):
