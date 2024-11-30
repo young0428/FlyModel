@@ -5,6 +5,7 @@ import random
 import numpy as np
 import pickle
 import torch
+import torch.nn.functional as F
 from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
@@ -16,36 +17,13 @@ import warnings
            
 
 
-def fractional_max_pooling(image, down_factor):
+def torch_max_pooling(image, down_factor):
     """
-    비정수 다운샘플링 팩터를 이용한 max pooling
-    :param image: 입력 이미지 (numpy 배열)
-    :param down_factor: 다운샘플링 팩터 (float)
-    :return: 다운스케일된 이미지
+    PyTorch를 사용한 GPU 가속 max pooling
     """
-    # 입력 이미지 크기
-    h, w = image.shape[:2]
-
-    # 최종 출력 크기 계산
-    new_h = int(h // down_factor)
-    new_w = int(w // down_factor)
-
-    # 결과 이미지를 초기화
-    pooled_image = np.zeros((new_h, new_w), dtype=image.dtype)
-
-    # 각 출력 픽셀에 대응하는 입력 영역 계산
-    for i in range(new_h):
-        for j in range(new_w):
-            # 슬라이싱 범위 계산
-            start_h = int(i * down_factor)
-            end_h = min(h, int((i + 1) * down_factor))
-            start_w = int(j * down_factor)
-            end_w = min(w, int((j + 1) * down_factor))
-
-            # 해당 영역에서 최대값 추출
-            pooled_image[i, j] = np.max(image[start_h:end_h, start_w:end_w])
-
-    return pooled_image
+    tensor_image = torch.tensor(image, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, H, W]
+    pooled = F.adaptive_max_pool2d(tensor_image, output_size=(int(image.shape[0] // down_factor), int(image.shape[1] // down_factor)))
+    return pooled.squeeze().numpy()
 
 
 def load_videos_to_tensor(video_paths, downsampling_factor=1):
@@ -84,7 +62,7 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
             # # Apply reduced downsampling to maintain final size
             # frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
             
-            frame = fractional_max_pooling(frame, downsampling_factor)
+            frame = torch_max_pooling(frame, downsampling_factor)
 
             frames.append(frame)
 
