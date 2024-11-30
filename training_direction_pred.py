@@ -57,7 +57,7 @@ def training_direction_pred(model_folder_name,
     folder_path = "./naturalistic"
     mat_file_name = f"experimental_data.mat"
     checkpoint_name = "fly_model"
-    pretrained_model_path = "./pretrained_model/64_to_256_3layers.ckpt"
+    pretrained_model_path = "./pretrained_model/64x128_max_poolled.ckpt"
     
     video_name = {
         0 : 'bird',

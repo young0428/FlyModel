@@ -77,7 +77,7 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
             # crop_w = w // 2
             # start_h = (h - crop_h) // 2
             # start_w = (w - crop_w) // 2
-            |
+            
             # # Crop center region
             # frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
             
