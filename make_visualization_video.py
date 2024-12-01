@@ -24,7 +24,7 @@ def get_frame_per_window(model_path):
     
     return 8  # 기본값 반환
 
-def load_model_and_data(model_name, piece_size, config):
+def load_model_and_data(model_name, model_class, piece_size, config):
     """모델과 관련 데이터를 로드하는 함수"""
     # 먼저 기본 경로에서 frame_per_window 찾기
     
@@ -43,7 +43,7 @@ def load_model_and_data(model_name, piece_size, config):
     
     # 모델 로드
     flownet_model = flownet3d([[64, 2], [128, 2], [256, 2]])
-    model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
+    model = model_class(flownet_model, feature_dim=128, 
                                          input_size=(frame_per_window, 64, 128, 1))
     trainer = Trainer(model, loss_function_mse, 1e-4)
     trainer.load(f"{model_path}/best_model.ckpt")

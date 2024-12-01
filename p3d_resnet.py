@@ -54,12 +54,6 @@ class P3DResNet(nn.Module):
         self.fc = nn.Linear(layers[-1][0] * block.expansion, num_classes)
         self.dropout = nn.Dropout(p=0.2)
         self.image_dropout = nn.Dropout3d(p=0.1)
-        
-        
-        self.fc_binary = nn.Sequential(
-            nn.Linear(num_classes,1),
-            nn.Sigmoid()
-        )
 
 
     def _make_layer(self, block, planes, blocks, stride=1):
@@ -97,9 +91,9 @@ class P3DResNet(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
         
-        x = self.fc_binary(x)
+        #x = self.fc_binary(x)
 
 
 
@@ -108,9 +102,6 @@ class P3DResNet(nn.Module):
         # total_pred = torch.cat((left_pred, right_pred),dim=-1)
 
         return x
-    
-import torch
-import torch.nn as nn
 
 class BasicBlock3D(nn.Module):
     expansion = 1
@@ -159,10 +150,7 @@ class ResNet3D(nn.Module):
         self.dropout = nn.Dropout(p=0.2)
         self.avgpool = nn.AdaptiveAvgPool3d((1, 1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
-        self.fc_categorical = nn.Sequential(
-            nn.Linear(num_classes,3),
-            nn.Softmax(dim=-1)
-        )
+
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
@@ -200,9 +188,7 @@ class ResNet3D(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
-        x = F.relu(x)
-        x = self.dropout(x)
-        x = self.fc_categorical(x)
+
 
         return x
 
@@ -221,8 +207,6 @@ def resnet3d101(num_classes=400):
 def resnet3d152(num_classes=400):
     return ResNet3D(BasicBlock3D, [3, 8, 36, 3], num_classes=num_classes)
 
-
-
 def loss_function(pred, target):
     criterion = nn.CrossEntropyLoss()
 
@@ -230,8 +214,60 @@ def loss_function(pred, target):
     #right_loss = criterion(pred[:, 1], target[:, 1])
     return loss
 
-def p3d_resnet(input_ch, block_list = [[64, 2], [128, 2], [256, 2], [512, 2]], num_classes=400):
+def p3d_resnet(input_ch, block_list = [[64, 2], [128, 2], [256, 2]], num_classes=400):
     return P3DResNet(P3DBlock, input_ch, block_list, num_classes=num_classes)
+
+class ResNet3DWithFeatureExtraction(nn.Module):
+    def __init__(self, blank=None, feature_dim=128, input_size=(16,64,128,1), freeze=True):
+        super(ResNet3DWithFeatureExtraction, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.resnet3d = resnet3d50().to(self.device)
+        self.feature_dim = feature_dim
+
+        
+        # WBA 처리를 위한 레이어
+        self.wba_dense = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128)
+        ).to(self.device)
+        
+        # 특징 추출을 위한 추가 레이어들
+        self.feature_layers = nn.ModuleList([
+            nn.Sequential(
+                nn.Linear(400, 256),  # p3d_resnet의 기본 출력 차원이 400
+                nn.ReLU(),
+                nn.Dropout(0.3),
+                nn.Linear(256, feature_dim)
+            ).to(self.device)
+        ])
+        
+        # 최종 출력 레이어
+        self.final_fc = nn.Sequential(
+            nn.Linear(feature_dim + 128, 64),  # feature_dim + wba_feature_dim
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 1),
+            nn.Sigmoid()
+        ).to(self.device)
+
+    def forward(self, x, wba_input):
+        # P3D ResNet을 통한 특징 추출
+        resnet3d_features = self.resnet3d(x)
+        
+        # WBA 특징 추출
+        wba_features = self.wba_dense(wba_input)
+
+        # 특징 변환
+        transformed_features = self.feature_layers[0](resnet3d_features)
+        
+        # 특징 결합
+        combined_features = torch.cat([transformed_features, wba_features], dim=1)
+        
+        # 최종 출력
+        output = self.final_fc(combined_features)
+        
+        return output
 
 if __name__ == '__main__':
     import numpy as np

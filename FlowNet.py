@@ -186,9 +186,11 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
             in_channels = flownet3d.decoder.convs[i].out_channels
             self.spatial_attentions.append(SpatialAttention())
             self.conv_layers.append(nn.Sequential(
-                nn.Conv3d(in_channels, 32, kernel_size=2, padding=1),
+                nn.Conv3d(in_channels, 32, kernel_size=3, padding=1),
                 nn.ReLU(inplace=True),
-                nn.Conv3d(32, 16, kernel_size=2, padding=1),
+                nn.Conv3d(32, 64, kernel_size=3, padding=1),
+                nn.ReLU(inplace=True),
+                nn.Conv3d(64, 1, kernel_size=3, padding=1),
                 nn.Flatten(),
 
             ))
@@ -333,6 +335,83 @@ class FlowNet3DWithFeatureExtraction_decoder_output(nn.Module):
         output = self.fc_layers(combined_features)
         
         return output
+
+class DenseComparison(nn.Module):
+    def __init__(self, flownet3d, feature_dim=128, input_size=(8,64,128,1), freeze = True):
+        super(DenseComparison, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        D, H, W, C = input_size
+        self.frame_size = H * W * C  # 64 * 128 * 1 = 8,192
+        self.num_frames = D  # 8
+        
+        # WBA 처리를 위한 레이어
+        self.wba_dense = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128)
+        ).to(self.device)
+        
+        # 각 프레임을 처리하는 네트워크
+        self.frame_network = nn.Sequential(
+            nn.Linear(self.frame_size, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.3)
+        ).to(self.device)
+        
+        # 프레임 특성들을 결합하는 네트워크
+        self.combine_network = nn.Sequential(
+            nn.Linear(self.num_frames * 128, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.3)
+        ).to(self.device)
+        
+        # 최종 출력 레이어
+        self.final_layers = nn.Sequential(
+            nn.Linear(256, 64),  # 128(combined) + 128(wba) = 256
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 1)
+        ).to(self.device)
+        
+        print("parameter count : ", self.count_parameters())
+    
+    def forward(self, x, wba_input):
+        batch_size = x.size(0)
+        
+        # 각 프레임 처리
+        frame_features = []
+        for i in range(self.num_frames):
+            frame = x[:, i, :, :, :].reshape(batch_size, -1)  # (batch_size, H*W*C)
+            frame_feat = self.frame_network(frame)  # (batch_size, 128)
+            frame_features.append(frame_feat)
+        
+        # 프레임 특성 결합
+        frame_features = torch.cat(frame_features, dim=1)  # (batch_size, num_frames*128)
+        combined_features = self.combine_network(frame_features)  # (batch_size, 128)
+        
+        # WBA 처리
+        wba_features = self.wba_dense(wba_input)  # (batch_size, 128)
+        
+        # 특성 결합 및 최종 출력
+        final_features = torch.cat([combined_features, wba_features], dim=1)
+        output = self.final_layers(final_features)
+        
+        return output
+
+    def count_parameters(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
 
 def loss_function_mse(pred, target):

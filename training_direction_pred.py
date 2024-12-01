@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from FlowNet import *
+from p3d_resnet import *
 from trainer_func import *
 from LoadDataset import *
 from tqdm import tqdm
@@ -22,7 +23,8 @@ warnings.filterwarnings("ignore", category=UserWarning, message="dropout2d: Rece
 torch.autograd.set_detect_anomaly(True)
 
 def training_direction_pred(model_folder_name,
-                            model_class, 
+                            model_class,
+                            batch_size=10,
                             video_indices = [2], 
                             piece_sizes = [1, 5, 10, 20, 40], 
                             frame_size = 8,
@@ -31,7 +33,8 @@ def training_direction_pred(model_folder_name,
                             fix_pre_trained_model = True,
                             fold_factor = 3,
                             making_video_type = [2],
-                            share_tuples = True):
+                            share_tuples = True,
+                            epochs = 30):
     frame_per_window = frame_size
     frame_per_sliding = frame_size
     
@@ -50,9 +53,8 @@ def training_direction_pred(model_folder_name,
     input_ch = 1
     
     # hyperparameter 
-    batch_size = 10
+    batch_size = batch_size
     lr = 1e-4
-    epochs = 50
     
     
     folder_path = "./naturalistic"
@@ -76,7 +78,7 @@ def training_direction_pred(model_folder_name,
     print(f"augmented shape : {wba_data.shape}")
     
     model_name = base_model_path
-    for pre_trained in [True, False]:
+    for pre_trained in [True,False]:
         use_pretrained_model = pre_trained
         for piece_index, piece_size in enumerate(piece_sizes):
             # Create subdirectory for each configuration
@@ -346,10 +348,10 @@ def training_direction_pred(model_folder_name,
         
         model_name_for_visualization = f"{model_folder_name}_{frame_per_window}frames"
         for video_type in making_video_type:
-            create_visualization_video(model_name_for_visualization, video_type=video_type, config=config)
+            create_visualization_video(model_name_for_visualization, model_class, video_type=video_type, config=config)
     
 if __name__ == "__main__":
-    model_string = "forest_wba_value_compare_pretrained_and_non_decoder_output"
+    model_string = "bird_wba_value_dense_comparison"
     video_name = {
         0 : 'bird',
         1 : 'city',
@@ -358,17 +360,20 @@ if __name__ == "__main__":
     
     piece_sizes = [1, 5, 10, 20, 40]
     frame_sizes = [8]
-    video_indices = [2]
-    making_video_type = [2]
+    video_indices = [0]
+    making_video_type = [0]
     use_pretrained_model = False
     fix_pre_trained_model = False
     share_tuples = True
     fold_factor = 1
     validation_ratio = 0.3
+    batch_size = 20
+    epochs = 100
     
     
-    model_class = FlowNet3DWithFeatureExtraction_decoder_output
-    
+    #model_class = FlowNet3DWithFeatureExtraction
+    #model_class = ResNet3DWithFeatureExtraction
+    model_class = DenseComparison
     #training_direction_pred(model_string, piece_sizes, fix_pre_trained_model= True)
     
     
@@ -376,6 +381,7 @@ if __name__ == "__main__":
         training_direction_pred(
             model_string,
             model_class = model_class,
+            batch_size = batch_size,
             video_indices=video_indices, 
             piece_sizes=piece_sizes, 
             frame_size=frame_size, 
@@ -384,7 +390,8 @@ if __name__ == "__main__":
             use_pretrained_model= use_pretrained_model,
             fix_pre_trained_model= fix_pre_trained_model,
             making_video_type=making_video_type,
-            share_tuples = share_tuples
+            share_tuples = share_tuples,
+            epochs = epochs
         )
         torch.cuda.empty_cache()
         torch.cuda.synchronize()
