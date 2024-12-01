@@ -21,7 +21,8 @@ warnings.filterwarnings("ignore", category=UserWarning, message="dropout2d: Rece
 
 torch.autograd.set_detect_anomaly(True)
 
-def training_direction_pred(model_folder_name, 
+def training_direction_pred(model_folder_name,
+                            model_class, 
                             video_indices = [2], 
                             piece_sizes = [1, 5, 10, 20, 40], 
                             frame_size = 8,
@@ -51,7 +52,7 @@ def training_direction_pred(model_folder_name,
     # hyperparameter 
     batch_size = 10
     lr = 1e-4
-    epochs = 100
+    epochs = 50
     
     
     folder_path = "./naturalistic"
@@ -75,7 +76,7 @@ def training_direction_pred(model_folder_name,
     print(f"augmented shape : {wba_data.shape}")
     
     model_name = base_model_path
-    for pre_trained in [False]:
+    for pre_trained in [True, False]:
         use_pretrained_model = pre_trained
         for piece_index, piece_size in enumerate(piece_sizes):
             # Create subdirectory for each configuration
@@ -136,12 +137,10 @@ def training_direction_pred(model_folder_name,
                 flownet_model = flownet3d(layer_configs, num_classes=2)
                 if use_pretrained_model:
                     flownet_model = load_model(flownet_model, pretrained_model_path)
-                model = FlowNet3DWithFeatureExtraction(flownet_model, feature_dim=128, 
-                                                    input_size=(frame_per_window, 
-                                                                int(h//downsampling_factor), 
-                                                                int(w//downsampling_factor), 
-                                                                1),
-                                                    freeze=fix_pre_trained_model)
+                model = model_class(flownet_model, 
+                                    feature_dim=128, 
+                                    input_size=(frame_per_window, int(h//downsampling_factor), int(w//downsampling_factor), c),
+                                    freeze=fix_pre_trained_model)
                 trainer = Trainer(model, loss_function_mse, lr)
                 
                 
@@ -350,7 +349,7 @@ def training_direction_pred(model_folder_name,
             create_visualization_video(model_name_for_visualization, video_type=video_type, config=config)
     
 if __name__ == "__main__":
-    model_string = "bird_wba_value_compare_pretrained_and_non"
+    model_string = "forest_wba_value_compare_pretrained_and_non_decoder_output"
     video_name = {
         0 : 'bird',
         1 : 'city',
@@ -358,9 +357,9 @@ if __name__ == "__main__":
     }
     
     piece_sizes = [1, 5, 10, 20, 40]
-    frame_sizes = [8, 16]
-    video_indices = [0]
-    making_video_type = [0]
+    frame_sizes = [8]
+    video_indices = [2]
+    making_video_type = [2]
     use_pretrained_model = False
     fix_pre_trained_model = False
     share_tuples = True
@@ -368,12 +367,15 @@ if __name__ == "__main__":
     validation_ratio = 0.3
     
     
+    model_class = FlowNet3DWithFeatureExtraction_decoder_output
+    
     #training_direction_pred(model_string, piece_sizes, fix_pre_trained_model= True)
     
     
     for frame_size in frame_sizes:
         training_direction_pred(
-            model_string, 
+            model_string,
+            model_class = model_class,
             video_indices=video_indices, 
             piece_sizes=piece_sizes, 
             frame_size=frame_size, 

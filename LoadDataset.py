@@ -57,7 +57,7 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
             frame_count += 1
             
             # 진행상황 출력 (10% 단위로)
-            if frame_count % (total_frames // 10) == 0:
+            if frame_count % (total_frames // 40) == 0:
                 progress = (frame_count / total_frames) * 100
                 print(f"\r비디오 로딩 진행률: {progress:.1f}%", end="")
 

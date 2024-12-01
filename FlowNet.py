@@ -268,6 +268,72 @@ class FlowNet3DWithFeatureExtraction(nn.Module):
         
         return output
 
+class FlowNet3DWithFeatureExtraction_decoder_output(nn.Module):
+    def __init__(self, flownet3d, feature_dim=128, input_size=(16,64,128,1), freeze = True):
+        super(FlowNet3DWithFeatureExtraction_decoder_output, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.flownet3d = flownet3d.to(self.device)
+        self.feature_dim = feature_dim
+        self.first = True
+        
+        #Encoder와 Decoder의 파라미터를 고정 (freeze)
+        
+        for param in self.flownet3d.encoder.parameters():
+            param.requires_grad = not freeze
+        for param in self.flownet3d.decoder.parameters():
+            param.requires_grad = not freeze
+        
+        # WBA 입력을 처리하기 위한 dense layer 추가
+        self.wba_dense = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128)
+        ).to(self.device)
+        
+        self.attention = SpatialAttention()
+        self.conv_layers = nn.Sequential(
+            nn.Conv3d(2, 64, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool3d(kernel_size=2, stride=2),
+            nn.Conv3d(64, 128, kernel_size=3, stride=1, padding=1),
+        )
+        self.conv_layers = self.conv_layers.to(self.device)
+        
+        D, H, W, C = input_size
+        
+        with torch.no_grad():
+            dummy_input = torch.zeros(1, D, H, W, C).to(self.device)
+            dummy_output = self.flownet3d(dummy_input)
+            dummy_output = self.flownet3d.swap_axis_for_input(dummy_output)
+            dummy_output = self.conv_layers(dummy_output)
+            
+            flattened_dim = dummy_output.shape[1] * dummy_output.shape[2] * dummy_output.shape[3] * dummy_output.shape[4]
+
+        # FC 레이어 수정 - WBA feature를 추가로 받도록
+        self.fc_layers = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(flattened_dim + 128, 1024),  # WBA feature 128 추가
+            nn.Dropout(p=0.3),
+            nn.ReLU(),
+            nn.Linear(1024, 1)
+        ).to(self.device)
+
+    def forward(self, x, wba_input):
+        x = self.flownet3d.swap_axis_for_input(x)
+        encoder_outputs = self.flownet3d.encoder(x)
+        decoder_outputs = self.flownet3d.decoder(encoder_outputs)
+        output = self.conv_layers(decoder_outputs)
+        
+        # WBA 입력 처리
+        wba_features = self.wba_dense(wba_input)
+        
+        # CNN 출력을 flatten하고 WBA feature와 결합
+        output_flat = output.reshape(output.size(0), -1)
+        combined_features = torch.cat([output_flat, wba_features], dim=1)
+        
+        output = self.fc_layers(combined_features)
+        
+        return output
+
 
 def loss_function_mse(pred, target):
     loss = F.mse_loss(pred, target)
