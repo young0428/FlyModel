@@ -10,14 +10,13 @@ from scipy.signal import butter, filtfilt
 
 from scipy.interpolate import interp1d
 
-def torch_max_pooling(image, down_factor):
-    """
-    PyTorch를 사용한 GPU 가속 max pooling
-    """
-    tensor_image = torch.tensor(image, dtype=torch.float32).unsqueeze(0).unsqueeze(0)  # [1, 1, H, W]
-    pooled = F.adaptive_max_pool2d(tensor_image, output_size=(int(image.shape[0] // down_factor), int(image.shape[1] // down_factor)))
-    return pooled.squeeze().numpy()
+def torch_max_pooling(images, down_factor):
 
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # 이미 배치 형태로 입력됨 [batch, H, W]
+    tensor_images = torch.tensor(images, dtype=torch.float32).unsqueeze(1).to(device)  # [batch, 1, H, W]
+    pooled = F.adaptive_max_pool2d(tensor_images, output_size=(int(images.shape[1] // down_factor), int(images.shape[2] // down_factor)))
+    return pooled.cpu().squeeze(1).numpy()  # [batch, H', W']
 
 def load_videos_to_tensor(video_paths, downsampling_factor=1):
     video_tensors = []
@@ -31,6 +30,7 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
         frames = []
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         frame_count = 0
+        batch_frames = []
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -38,15 +38,24 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
                 first = False
                 continue
             if not ret:
+                # 마지막 배치 처리
+                if batch_frames:
+                    batch_array = np.stack(batch_frames, axis=0)
+                    pooled_batch = torch_max_pooling(batch_array, downsampling_factor)
+                    frames.extend(list(pooled_batch))
                 break
 
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            batch_frames.append(frame)
 
-            # Max pooling 기반의 fractional 다운샘플링 적용 
-            frame = torch_max_pooling(frame, downsampling_factor)
+            # 배치 크기에 도달하면 처리
+            if len(batch_frames) == batch_size:
+                batch_array = np.stack(batch_frames, axis=0)
+                pooled_batch = torch_max_pooling(batch_array, downsampling_factor)
+                frames.extend(list(pooled_batch))
+                batch_frames = []
 
-            frames.append(frame)
             frame_count += 1
             
             # 진행상황 출력 (10% 단위로)
@@ -85,7 +94,7 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
 def LoadVideo(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
-    appendix = ['','_upward','_downward','_leftward','_rightward']
+    appendix = ['','_leftward','_rightward']
     video_paths_list = [[f"{folder_path}/{type}{ap}.avi" for ap in appendix] for type in type_list ]
 
     combined_video_tensors = combine_videos_to_tensor(video_paths_list, downsampling_factor)
