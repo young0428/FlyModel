@@ -75,7 +75,7 @@ def training_direction_pred(model_folder_name,
     print(f"augmented shape : {wba_data.shape}")
     
     model_name = base_model_path
-    for pre_trained in [True, False]:
+    for pre_trained in [False]:
         use_pretrained_model = pre_trained
         for piece_index, piece_size in enumerate(piece_sizes):
             # Create subdirectory for each configuration

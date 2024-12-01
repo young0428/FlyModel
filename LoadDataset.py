@@ -36,6 +36,8 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
 
         cap = cv2.VideoCapture(video_path)
         frames = []
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_count = 0
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -48,24 +50,18 @@ def load_videos_to_tensor(video_paths, downsampling_factor=1):
             # Convert frame to grayscale
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            # # Max pooling 기반의 fractional 다운샘플링 적용
-            # # Get center crop coordinates
-            # h, w = frame.shape
-            # crop_h = h // 2
-            # crop_w = w // 2
-            # start_h = (h - crop_h) // 2
-            # start_w = (w - crop_w) // 2
-            
-            # # Crop center region
-            # frame = frame[start_h:start_h+crop_h, start_w:start_w+crop_w]
-            
-            # # Apply reduced downsampling to maintain final size
-            # frame = cv2.resize(frame, (int(w // downsampling_factor), int(h // downsampling_factor)))
-            
+            # Max pooling 기반의 fractional 다운샘플링 적용 
             frame = torch_max_pooling(frame, downsampling_factor)
 
             frames.append(frame)
+            frame_count += 1
+            
+            # 진행상황 출력 (10% 단위로)
+            if frame_count % (total_frames // 10) == 0:
+                progress = (frame_count / total_frames) * 100
+                print(f"\r비디오 로딩 진행률: {progress:.1f}%", end="")
 
+        print()  # 줄바꿈
         cap.release()
 
         if frames:
@@ -96,7 +92,7 @@ def combine_videos_to_tensor(video_paths_list, downsampling_factor = 1):
 def LoadVideo(folder_path, downsampling_factor = 1):
     
     type_list = ['01_Bird', '02_City', '03_Forest']
-    appendix = ['','_upward','_downward','_leftward','_rightward']
+    appendix = ['']#'_upward','_downward','_leftward','_rightward']
     video_paths_list = [[f"{folder_path}/{type}{ap}.avi" for ap in appendix] for type in type_list ]
 
     combined_video_tensors = combine_videos_to_tensor(video_paths_list, downsampling_factor)
