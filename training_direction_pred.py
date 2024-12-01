@@ -60,7 +60,7 @@ def training_direction_pred(model_folder_name,
     folder_path = "./naturalistic"
     mat_file_name = f"experimental_data.mat"
     checkpoint_name = "fly_model"
-    pretrained_model_path = "./pretrained_model/64x128_max_poolled_lr.ckpt"
+    pretrained_model_path = "./pretrained_model/64x128_max_poolled_avg.ckpt"
     
     video_name = {
         0 : 'bird',
@@ -351,7 +351,7 @@ def training_direction_pred(model_folder_name,
             create_visualization_video(model_name_for_visualization, model_class, video_type=video_type, config=config)
     
 if __name__ == "__main__":
-    model_string = "bird_wba_value_dense_comparison"
+    model_string = "forest_wba_value_full_res_avg"
     video_name = {
         0 : 'bird',
         1 : 'city',
@@ -360,20 +360,20 @@ if __name__ == "__main__":
     
     piece_sizes = [1, 5, 10, 20, 40]
     frame_sizes = [8]
-    video_indices = [0]
-    making_video_type = [0]
+    video_indices = [2]
+    making_video_type = [2]
     use_pretrained_model = False
     fix_pre_trained_model = False
     share_tuples = True
     fold_factor = 1
     validation_ratio = 0.3
     batch_size = 20
-    epochs = 100
+    epochs = 50
     
     
-    #model_class = FlowNet3DWithFeatureExtraction
+    model_class = FlowNet3DWithFeatureExtraction
     #model_class = ResNet3DWithFeatureExtraction
-    model_class = DenseComparison
+    #model_class = DenseComparison
     #training_direction_pred(model_string, piece_sizes, fix_pre_trained_model= True)
     
     

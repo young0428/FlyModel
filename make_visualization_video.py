@@ -32,9 +32,7 @@ def load_model_and_data(model_name, model_class, piece_size, config):
     config_string = ''.join([f"_{key}_{value}" for key, value in config.items()])
     
     model_path = f"{base_path}/piece_size_{piece_size}{config_string}/fold_1"
-        
-            
-            
+          
     
     if model_path is None:
         raise FileNotFoundError(f"Could not find model path for piece_size {piece_size}")
@@ -45,6 +43,7 @@ def load_model_and_data(model_name, model_class, piece_size, config):
     flownet_model = flownet3d([[64, 2], [128, 2], [256, 2]])
     model = model_class(flownet_model, feature_dim=128, 
                                          input_size=(frame_per_window, 64, 128, 1))
+    model.eval()
     trainer = Trainer(model, loss_function_mse, 1e-4)
     trainer.load(f"{model_path}/best_model.ckpt")
     
@@ -129,7 +128,7 @@ def update(frame, ax_video, ax_graphs, trainers, train_tuples_list, val_tuples_l
             # 예측선 저장
             prediction_lines[i][frame] = (x_coords, y_coords, color)
 
-def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video_type=2, config={}):
+def create_visualization_video(model_name, model_class, piece_sizes=[1, 5, 10, 20, 40], video_type=2, config={}):
     """전체 시각화 동영상을 생성하는 메인 함수"""
     # 데이터 로드
     video_name = {
@@ -157,7 +156,9 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video
     
     for i, piece_size in enumerate(piece_sizes):
         ax_graphs.append(fig.add_subplot(gs[i+1]))
-        trainer, train_tuples, val_tuples, fpw = load_model_and_data(model_name, piece_size, config)
+        
+        trainer, train_tuples, val_tuples, fpw = load_model_and_data(model_name, model_class, piece_size, config)
+        
         trainers.append(trainer)
         train_tuples_list.append(train_tuples)
         val_tuples_list.append(val_tuples)
@@ -224,10 +225,19 @@ def create_visualization_video(model_name, piece_sizes=[1, 5, 10, 20, 40], video
 
 # 사용 예시
 if __name__ == "__main__":
-    model_name = "bird_wba_value_compare_pretrained_and_non_8frames"
+    
+    video_type = 0
+    video_name = {
+        0 : 'bird',
+        1 : 'city',
+        2 : 'forest'
+    }
+    
+    model_name = f"{video_name[video_type]}_wba_value_dense_comparison_8frames"
+    
     for pretrained in [True]:
         config = {
             "fix" : False,
             "pretrained" : pretrained
         }
-        create_visualization_video(model_name, video_type=2, config=config)
+        create_visualization_video(model_name, DenseComparison, video_type=video_type, config=config)
