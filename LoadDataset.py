@@ -15,12 +15,13 @@ def torch_max_pooling(images, down_factor):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # 이미 배치 형태로 입력됨 [batch, H, W]
     tensor_images = torch.tensor(images, dtype=torch.float32).unsqueeze(1).to(device)  # [batch, 1, H, W]
-    pooled = F.adaptive_max_pool2d(tensor_images, output_size=(int(images.shape[1] // down_factor), int(images.shape[2] // down_factor)))
+    pooled = F.adaptive_avg_pool2d(tensor_images, output_size=(int(images.shape[1] // down_factor), int(images.shape[2] // down_factor)))
     return pooled.cpu().squeeze(1).numpy()  # [batch, H', W']
 
 def load_videos_to_tensor(video_paths, downsampling_factor=1):
     video_tensors = []
     first = True
+    batch_size = 20
     for video_path in video_paths:
         if not os.path.exists(video_path):
             print(f"File {video_path} does not exist.")

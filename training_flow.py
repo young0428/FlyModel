@@ -23,7 +23,7 @@ frame_per_window = 16
 frame_per_sliding = 5
 input_ch = 1 
 
-model_string = "opticflow_2ch_3layers_mse_max_pooling_final"
+model_string = "opticflow_2ch_3layers_avg_pooling_final"
 model_string += f"{frame_per_window}frames_"
 
 folder_path = "./naturalistic"
